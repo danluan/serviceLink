@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignora todos os arquivos .properties por padrão
+*.properties
+
+# Mas não ignore o arquivo principal
+!application.properties
