@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 
 import br.com.servicelink.entity.Prestador;
 import br.com.servicelink.repository.PrestadorRepository;
-import br.com.servicelink.service.PrestadorSerivce;
+import br.com.servicelink.service.PrestadorService;
 
 @Service
-public class PrestadorServiceImpl implements PrestadorSerivce{
+public class PrestadorServiceImpl implements PrestadorService {
 
     private final PrestadorRepository prestadorRepository;
 

@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import br.com.servicelink.entity.Agendamento;
 import br.com.servicelink.repository.AgendamentoRepository;
 import br.com.servicelink.service.AgendamentoService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AgendamentoSerivceImpl implements AgendamentoService {
 
     private final AgendamentoRepository agendamentoRepository;

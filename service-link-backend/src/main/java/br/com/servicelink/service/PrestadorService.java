@@ -4,7 +4,7 @@ import br.com.servicelink.entity.Prestador;
 import java.util.List;
 import java.util.Optional;
 
-public interface PrestadorSerivce {
+public interface PrestadorService {
     Prestador salvarPrestador(Prestador prestador);
     List<Prestador> listarPrestadores();
     Optional<Prestador> buscarPrestadorPorId(Long id);
