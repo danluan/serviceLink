@@ -5,8 +5,8 @@ import java.util.Optional;
 import br.com.servicelink.entity.Cliente;
 
 public interface ClienteService {
-    Cliente salvar(Cliente cliente);
-    List<Cliente> buscarTodos();
-    Optional<Cliente> buscarPorId(Long id);
-    void deletar(Long id);
+    Cliente salvarCliente(Cliente cliente);
+    List<Cliente> listarClientes();
+    Optional<Cliente> buscarClientePorId(Long id);
+    void deletarCliente(Long id);
 }

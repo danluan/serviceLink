@@ -5,9 +5,9 @@ import java.util.Optional;
 import br.com.servicelink.entity.Servico;
 
 public interface ServicoService {
-    Servico salvar(Servico servico);
-    List<Servico> buscarTodos();
-    Optional<Servico> buscarPorId(Long id);
-    void deletar(Long id);
-    List<Servico> buscarPorNome(String nome);
+    Servico salvarServico(Servico servico);
+    List<Servico> listarServicos();
+    Optional<Servico> buscarServicoPorId(Long id);
+    void deletarServico(Long id);
+    List<Servico> buscarServicoPorNome(String nome);
 }

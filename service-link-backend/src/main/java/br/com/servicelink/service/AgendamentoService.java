@@ -5,9 +5,9 @@ import java.util.Optional;
 import br.com.servicelink.entity.Agendamento;
 
 public interface AgendamentoService {
-    Agendamento salvar(Agendamento agendamento);
-    List<Agendamento> buscarTodos();
-    Optional<Agendamento> buscarPorId(Long id);
-    void deletar(Long id);
+    Agendamento salvarAgendamento(Agendamento agendamento);
+    List<Agendamento> listarAgendamentos();
+    Optional<Agendamento> buscarAgendamentosPorId(Long id);
+    void deletarAgendamento(Long id);
 }
 
