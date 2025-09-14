@@ -3,6 +3,7 @@ package br.com.servicelink.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import br.com.servicelink.DTO.PrestadorCadastroDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,15 @@ public class PrestadorServiceImpl implements PrestadorService {
     }
 
     @Override
-    public Prestador salvarPrestador(Prestador prestador) {
+    public Prestador salvarPrestador(PrestadorCadastroDTO prestadorDTO) {
+        Prestador prestador = new Prestador();
+        prestador.setNome(prestadorDTO.getNome());
+        prestador.setEmail(prestadorDTO.getEmail());
+        prestador.setTelefone(prestadorDTO.getTelefone());
+        prestador.setDescricao(prestadorDTO.getDescricao());
+        prestador.setDescricao(prestadorDTO.getDescricao());
+        prestador.setCpfCnpj(prestadorDTO.getCpfCnpj());
+
         return prestadorRepository.save(prestador);
     }
 

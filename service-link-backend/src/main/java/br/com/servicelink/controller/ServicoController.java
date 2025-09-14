@@ -1,5 +1,6 @@
 package br.com.servicelink.controller;
 
+import br.com.servicelink.DTO.ServicoDTO;
 import br.com.servicelink.entity.Servico;
 import br.com.servicelink.service.ServicoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +25,13 @@ public class ServicoController {
         return servicoService.buscarServicoPorId(id);
     }
 
-    @PostMapping
-    public Servico save(@RequestBody Servico servico){
-        return servicoService.salvarServico(servico);
-    }
-
     @DeleteMapping(value = "/{id}")
     public void delete(@PathVariable Long id){
         servicoService.deletarServico(id);
+    }
+
+    @PostMapping("/prestador/{prestadorId}")
+    public List<Servico> addServicos(@PathVariable Long prestadorId, @RequestBody List<ServicoDTO> servicosDTO) {
+        return servicoService.adicionarServicos(prestadorId, servicosDTO);
     }
 }

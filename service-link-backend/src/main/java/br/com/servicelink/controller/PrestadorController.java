@@ -1,5 +1,6 @@
 package br.com.servicelink.controller;
 
+import br.com.servicelink.DTO.PrestadorCadastroDTO;
 import br.com.servicelink.entity.Prestador;
 import br.com.servicelink.service.PrestadorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class PrestadorController {
     }
 
     @PostMapping
-    public Prestador save(@RequestBody Prestador prestador){
+    public Prestador save(@RequestBody PrestadorCadastroDTO prestador){
         return prestadorService.salvarPrestador(prestador);
     }
 

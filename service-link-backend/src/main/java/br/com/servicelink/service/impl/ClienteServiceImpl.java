@@ -16,12 +16,11 @@ public class ClienteServiceImpl implements ClienteService {
     private final ClienteRepository clienteRepository;
 
     @Autowired
-    public ClienteServiceImpl(ClienteRepository clienteRepository) {
-        this.clienteRepository = clienteRepository;
-    }
+    public ClienteServiceImpl(ClienteRepository clienteRepository) {    this.clienteRepository = clienteRepository;}
 
     @Override
     public Cliente salvarCliente(Cliente cliente) {
+
         return clienteRepository.save(cliente);
     }
 

@@ -1,35 +1,24 @@
-package br.com.servicelink.entity;
+package br.com.servicelink.DTO;
+
+import br.com.servicelink.entity.Servico;
 
 import java.math.BigDecimal;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import jakarta.persistence.Id;
-
-@Entity
-public class Servico {
-
-    @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    private Long id;
+public class ServicoDTO {
     private String nome;
     private String descricao;
     private BigDecimal precoBase;
     private String categoria;
     private String imagemUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "prestador_id")
-    @JsonIgnore
-    private Prestador prestador;
+    public ServicoDTO() {}
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public ServicoDTO(String nome, String descricao, BigDecimal precoBase, String categoria, String imagemUrl) {
+        this.nome = nome;
+        this.descricao = descricao;
+        this.precoBase = precoBase;
+        this.categoria = categoria;
+        this.imagemUrl = imagemUrl;
     }
 
     public String getNome() {
@@ -71,12 +60,5 @@ public class Servico {
     public void setImagemUrl(String imagemUrl) {
         this.imagemUrl = imagemUrl;
     }
-
-    public Prestador getPrestador() {
-        return prestador;
-    }
-
-    public void setPrestador(Prestador prestador) {
-        this.prestador = prestador;
-    }
 }
+
