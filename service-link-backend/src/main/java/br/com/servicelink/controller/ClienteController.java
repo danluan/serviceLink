@@ -1,5 +1,6 @@
 package br.com.servicelink.controller;
 
+import br.com.servicelink.DTO.ClienteCadastroDTO;
 import br.com.servicelink.entity.Cliente;
 import br.com.servicelink.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    public Cliente save(@RequestBody Cliente cliente){
+    public Cliente save(@RequestBody ClienteCadastroDTO cliente){
         return clienteService.salvarCliente(cliente);
     }
 
