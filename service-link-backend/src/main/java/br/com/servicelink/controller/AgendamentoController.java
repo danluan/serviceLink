@@ -1,5 +1,7 @@
 package br.com.servicelink.controller;
 
+import br.com.servicelink.DTO.AgendamentoDTO;
+import br.com.servicelink.DTO.AgendamentoListagemDTO;
 import br.com.servicelink.entity.Agendamento;
 import br.com.servicelink.service.AgendamentoService;
 import br.com.servicelink.service.ServicoService;
@@ -16,18 +18,18 @@ public class AgendamentoController {
     private AgendamentoService agendamentoService;
 
     @GetMapping
-    public List<Agendamento> findAll(){
+    public List<AgendamentoListagemDTO> findAll(){
         return agendamentoService.listarAgendamentos();
     }
 
     @GetMapping(value = "/{id}")
-    public Optional<Agendamento> findById(@PathVariable Long id){
+    public Optional<AgendamentoListagemDTO> findById(@PathVariable Long id){
         return agendamentoService.buscarAgendamentosPorId(id);
     }
 
     @PostMapping
-    public Agendamento save(@RequestBody Agendamento agendamento){
-        return agendamentoService.salvarAgendamento(agendamento);
+    public Agendamento save(@RequestBody AgendamentoDTO agendamentoDTO){
+        return agendamentoService.salvarAgendamento(agendamentoDTO);
     }
 
     @DeleteMapping(value = "/{id}")

@@ -2,12 +2,15 @@ package br.com.servicelink.service;
 
 import java.util.List;
 import java.util.Optional;
+
+import br.com.servicelink.DTO.AgendamentoDTO;
+import br.com.servicelink.DTO.AgendamentoListagemDTO;
 import br.com.servicelink.entity.Agendamento;
 
 public interface AgendamentoService {
-    Agendamento salvarAgendamento(Agendamento agendamento);
-    List<Agendamento> listarAgendamentos();
-    Optional<Agendamento> buscarAgendamentosPorId(Long id);
+    Agendamento salvarAgendamento(AgendamentoDTO agendamentoDTO);
+    List<AgendamentoListagemDTO> listarAgendamentos();
+    Optional<AgendamentoListagemDTO> buscarAgendamentosPorId(Long id);
     void deletarAgendamento(Long id);
 }
 
