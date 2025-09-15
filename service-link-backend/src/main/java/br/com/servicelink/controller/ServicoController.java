@@ -34,4 +34,9 @@ public class ServicoController {
     public List<Servico> addServicos(@PathVariable Long prestadorId, @RequestBody List<ServicoDTO> servicosDTO) {
         return servicoService.adicionarServicos(prestadorId, servicosDTO);
     }
+
+    @GetMapping("/categoria")
+    public List<ServicoDTO> buscarPorCategoria(@RequestParam String categoria) {
+        return servicoService.buscarServicosPorCategoria(categoria);
+    }
 }

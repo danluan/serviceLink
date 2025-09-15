@@ -12,4 +12,5 @@ public interface ServicoService {
     Optional<Servico> buscarServicoPorId(Long id);
     void deletarServico(Long id);
     List<Servico> buscarServicoPorNome(String nome);
+    List<ServicoDTO> buscarServicosPorCategoria(String categoria);
 }
