@@ -12,5 +12,6 @@ public interface AgendamentoService {
     List<AgendamentoListagemDTO> listarAgendamentos();
     Optional<AgendamentoListagemDTO> buscarAgendamentosPorId(Long id);
     void deletarAgendamento(Long id);
+    List<AgendamentoListagemDTO> listarAgendamentosPorPrestador(Long prestadorId);
 }
 

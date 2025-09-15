@@ -36,4 +36,9 @@ public class AgendamentoController {
     public void delete(@PathVariable Long id){
         agendamentoService.deletarAgendamento(id);
     }
+
+    @GetMapping("/{prestadorId}/agendamentos")
+    public List<AgendamentoListagemDTO> listarAgendamentosDoPrestador(@PathVariable Long prestadorId) {
+        return agendamentoService.listarAgendamentosPorPrestador(prestadorId);
+    }
 }
