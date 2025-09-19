@@ -1,16 +1,13 @@
 package br.com.servicelink.controller;
 
-import br.com.servicelink.DTO.AuthDTO;
-import br.com.servicelink.DTO.LoginResponseDTO;
-import br.com.servicelink.DTO.RegisterDTO;
+import br.com.servicelink.DTO.*;
 import br.com.servicelink.entity.User;
-import br.com.servicelink.repository.UserRepository;
 import br.com.servicelink.security.TokenService;
+import br.com.servicelink.service.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,30 +22,23 @@ public class AuthController {
     private TokenService tokenService;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private AuthService authService;
 
     @Autowired
-    private UserRepository userRepository;
+    private AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody  AuthDTO authData) {
-        var usernamePassword = new UsernamePasswordAuthenticationToken(authData.email(), authData.senha());
-        var auth = authenticationManager.authenticate(usernamePassword);
-        var token = tokenService.generateToken((User) auth.getPrincipal());
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+
+        AuthResponseDTO loginResponse = authService.login(authData);
+
+        return ResponseEntity.ok(loginResponse);
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid RegisterDTO registerData) {
-        if(userRepository.findByEmail(registerData.email()) != null){
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity register(@RequestBody @Valid UserRegisterDTO userRegisterData) {
+        UserDTO userDTO = authService.registerUser(userRegisterData);
 
-        String encryptedPassword = new BCryptPasswordEncoder().encode(registerData.senha());
-
-        User user = new User(registerData.email(), encryptedPassword, registerData.perfil());
-
-        userRepository.save(user);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(userDTO);
     }
 }
