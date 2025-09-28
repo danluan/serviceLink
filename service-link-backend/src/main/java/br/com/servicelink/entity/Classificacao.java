@@ -2,7 +2,7 @@ package br.com.servicelink.entity;
 
 import java.util.Arrays;
 
-public enum Intencao {
+public enum Classificacao {
     SERVICO_DOMESTICO,
     ORCAMENTO,
     DUVIDA_COMUM,
@@ -12,7 +12,7 @@ public enum Intencao {
     SAUDACAO,
     GERAL; // Categoria para o que não se encaixar em nenhum dos outros
 
-    public static Intencao fromString(String texto){
+    public static Classificacao fromString(String texto){
         if (texto == null) {
             return GERAL;
         }
@@ -20,7 +20,7 @@ public enum Intencao {
         String textoNormalizado = texto.toUpperCase();
 
         return Arrays.stream(values())
-                .filter(intencao -> intencao.name().equals(textoNormalizado))
+                .filter(classificacao -> classificacao.name().equals(textoNormalizado))
                 .findFirst()
                 .orElse(GERAL);
     }
