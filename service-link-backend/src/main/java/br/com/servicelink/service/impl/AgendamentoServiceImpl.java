@@ -73,6 +73,26 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                 )).collect(Collectors.toList());
     }
 
+    @Transactional
+    @Override
+    public List<AgendamentoListagemDTO> listarAgendamentosPorPrestador(Long prestadorId) {
+
+        List<Agendamento> agendamentosDoPrestador = agendamentoRepository.findByServico_Prestador_Id(prestadorId);
+
+        return agendamentosDoPrestador.stream()
+                .map(agendamento -> new AgendamentoListagemDTO(
+                        agendamento.getId(),
+                        agendamento.getDataHora(),
+                        agendamento.getStatus().toString(),
+                        agendamento.getObservacao(),
+                        agendamento.getCliente().getId(),
+                        agendamento.getCliente().getNome(),
+                        agendamento.getServico().getId(),
+                        agendamento.getServico().getNome()
+                ))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public Optional<AgendamentoListagemDTO> buscarAgendamentosPorId(Long id) {
         return agendamentoRepository.findById(id)

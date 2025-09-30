@@ -54,6 +54,24 @@ public class ServicoServiceImpl implements ServicoService {
         return servicoRepository.saveAll(novosServicos);
     }
 
+    public List<ServicoDTO> buscarServicosPorCategoria(String categoria) {
+
+        List<Servico> servicos = servicoRepository.findByCategoria(categoria);
+
+        // Mapeia a lista de entidades para a lista de DTOs
+        return servicos.stream()
+                .map(servico -> {
+                    ServicoDTO dto = new ServicoDTO();
+                    dto.setNome(servico.getNome());
+                    dto.setDescricao(servico.getDescricao());
+                    dto.setPrecoBase(servico.getPrecoBase());
+                    dto.setCategoria(servico.getCategoria());
+                    dto.setImagemUrl(servico.getImagemUrl());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
     @Override
     public List<Servico> listarServicos() {
         return servicoRepository.findAll();
