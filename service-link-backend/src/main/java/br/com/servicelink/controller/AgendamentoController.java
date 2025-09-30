@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/agendamento")
+@RequestMapping("/api/agendamento")
 public class AgendamentoController {
     @Autowired
     private AgendamentoService agendamentoService;

@@ -16,16 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
-    private TokenService tokenService;
-
-    @Autowired
     private AuthService authService;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody  AuthDTO authData) {

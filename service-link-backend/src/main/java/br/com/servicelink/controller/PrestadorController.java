@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/prestador")
+@RequestMapping("/api/prestador")
 public class PrestadorController {
     @Autowired
     private PrestadorService prestadorService;
