@@ -32,7 +32,7 @@ public class LLMServiceImpl implements LLMService {
         String prompt = String.format(
                 "Você é um classificador de intenções para um chatbot de serviços domésticos. " +
                 "Sua única tarefa é analisar a mensagem do usuário e responder APENAS com uma das seguintes categorias: " +
-                "SERVICO_DOMESTICO, ORCAMENTO, DUVIDA_COMUM, ELOGIO, RECLAMACAO, AGRADECIMENTO, SAUDACAO, GERAL. " +
+                "RECOMENDACAO_SERVICO, ORCAMENTO, DUVIDA_COMUM, ELOGIO, RECLAMACAO, AGRADECIMENTO, SAUDACAO, GERAL. " +
                 "Mensagem do usuário: \"%s\"", mensagemCliente
         );
         System.out.print(prompt);
@@ -102,6 +102,23 @@ public class LLMServiceImpl implements LLMService {
 
         String respostaDaLLM = chamarAPI(prompt);
 
+        return respostaDaLLM.trim();
+    }
+
+    public String recomendarServico(String mensagemCliente) {
+        String prompt = String.format(
+                "Você é um consultor especializado em serviços domésticos. Sua tarefa é analisar a descrição do problema de um cliente e recomendar o serviço mais adequado, retornando APENAS a categoria do serviço, o nome do serviço, e uma breve justificativa para a sua recomendação. Os três campos devem ser separados por um ponto e vírgula (;).\n" +
+                        "Se a descrição não se encaixar em nenhuma, use 'OUTRA'.\n" +
+                        "Siga estritamente as categorias de serviço: [HIDRÁULICA, ELÉTRICA, JARDINAGEM, LIMPEZA, OUTRA].\n" +
+                        "\n" +
+                        "Exemplo:\n" +
+                        "Descrição: 'A pia da cozinha está vazando e eu já tentei apertar a rosca, mas não adiantou.'\n" +
+                        "Retorno esperado: HIDRÁULICA;conserto de vazamento;A pia vazando é um problema hidráulico comum que exige reparo no encanamento.\n\n" +
+                        "Mensagem do cliente: \"%s\"",
+                mensagemCliente
+        );
+
+        String respostaDaLLM = chamarAPI(prompt);
         return respostaDaLLM.trim();
     }
 

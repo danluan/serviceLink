@@ -19,8 +19,10 @@ public class ChatOrchestrator {
 
     private final Map<Classificacao, EtapaConversa> classificacaoParaEstado = Map.of(
             Classificacao.ORCAMENTO, EtapaConversa.ORCAMENTO_SOLICITADO,
+            Classificacao.RECOMENDACAO_SERVICO, EtapaConversa.RECOMENDACAO_SOLICITADA,
             Classificacao.DUVIDA_COMUM, EtapaConversa.DUVIDAS,
             Classificacao.ELOGIO, EtapaConversa.ELOGIO,
+            Classificacao.AGRADECIMENTO, EtapaConversa.ELOGIO,
             Classificacao.RECLAMACAO, EtapaConversa.RECLAMACAO,
             Classificacao.SAUDACAO, EtapaConversa.INICIO,
             Classificacao.GERAL, EtapaConversa.GERAL
@@ -61,6 +63,13 @@ public class ChatOrchestrator {
             userState.setEtapaAtual(EtapaConversa.ORCAMENTO_DESCRITO);
             chatService.updateState(chatId, EtapaConversa.ORCAMENTO_DESCRITO);
         } else if (userState.getEtapaAtual() == EtapaConversa.ORCAMENTO_DESCRITO) {
+            chatService.clearUserState(chatId);
+        }
+
+        if (userState.getEtapaAtual() == EtapaConversa.RECOMENDACAO_SOLICITADA) {
+            userState.setEtapaAtual(EtapaConversa.RECOMENDACAO_DESCRITA);
+            chatService.updateState(chatId, EtapaConversa.RECOMENDACAO_DESCRITA);
+        } else if (userState.getEtapaAtual() == EtapaConversa.RECOMENDACAO_DESCRITA) {
             chatService.clearUserState(chatId);
         }
 

@@ -4,10 +4,15 @@ import br.com.servicelink.chatbot.model.UserState;
 import org.springframework.stereotype.Component;
 
 @Component("inicioHandler")
-public class InicioConversaHandler implements IntentionHandler{
+public class InicioConversaHandler implements IntentionHandler {
 
     @Override
     public String handle(String mensagem, String chatId, UserState userState) {
-        return "Olá! 😊 Seja bem-vindo à ServiceLink. Eu sou seu assistente virtual e estou aqui para ajudar com serviços domésticos de forma rápida e prática.\n\n" +
-                "Para começar, me diga se você precisa de um *orçamento*, se tem alguma *dúvida comum* ou se deseja *agendar* um serviço.";    }
+        return "Olá! 😊 Bem-vindo à ServiceLink. Sou seu assistente virtual e estou aqui para ajudar com seus serviços domésticos.\n\n" +
+                "Você pode me perguntar sobre: \n" +
+                "💰 **Orçamento:** para saber o preço de um serviço.\n" +
+                "✅ **Recomendação de Serviço:** para encontrar o serviço ideal para o seu problema.\n" +
+                "❓ **Dúvidas:** para tirar dúvidas comuns sobre nossa plataforma.\n\n" +
+                "Se tiver um elogio ou reclamação, também pode me dizer!";
+    }
 }

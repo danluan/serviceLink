@@ -33,6 +33,11 @@ public class OrcamentoDescritoHandler implements IntentionHandler{
 
         List<Servico> servicosEncontrados = servicoService.buscarServicosPorPrecoBase(categoria, nome);
 
+        if(servicosEncontrados.isEmpty()){
+            return "Ops! Não conseguimos encontrar serviços que correspondam à sua descrição. 😕\n\n" +
+                    "Por favor, tente descrever o serviço de uma forma diferente ou verifique se você digitou a categoria e o nome corretamente.";
+        }
+
         StringBuilder resposta = new StringBuilder();
         resposta.append("Veja o orçamento de alguns serviços encontrados com os critérios definidos:\n\n");
 

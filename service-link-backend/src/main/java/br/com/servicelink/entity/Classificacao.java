@@ -3,7 +3,7 @@ package br.com.servicelink.entity;
 import java.util.Arrays;
 
 public enum Classificacao {
-    SERVICO_DOMESTICO,
+    RECOMENDACAO_SERVICO,
     ORCAMENTO,
     DUVIDA_COMUM,
     ELOGIO,

@@ -14,6 +14,5 @@ public class OrcamentoHandler implements IntentionHandler {
 
     @Override
     public String handle(String mensagem, String chatId, UserState userState) {
-        return "Ok! Por favor, me dê uma descrição detalhada do problema ou serviço que você precisa.";
-    }
+        return "Certo! Qual serviço você precisa? Digite a sua solicitação em uma frase curta, como por exemplo: 'conserto de torneira'.";    }
 }
