@@ -1,6 +1,7 @@
 package br.com.servicelink.controller;
 
-import br.com.servicelink.service.waha.WahaService;
+import br.com.servicelink.chatbot.service.ChatOrchestrator;
+import br.com.servicelink.chatbot.service.WahaService;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,9 @@ public class WahaController {
     @Autowired
     WahaService wahaService;
 
+    @Autowired
+    ChatOrchestrator chatOrchestrator;
+
     @PostMapping("/webhook")
     public void handleIncomingMessage(@RequestBody JsonNode payload) {
         String sessionId = payload.get("session").asText();
@@ -21,9 +25,13 @@ public class WahaController {
         String senderId = messagePayload.get("from").asText();
         String messageText = messagePayload.get("body").asText();
 
+        if (senderId.contains("@g.us") || senderId.contains("@broadcast")) {
+            System.out.println("Mensagem de grupo ignorada. Não irei responder.");
+            return;
+        }
+
         System.out.println("Mensagem recebida da sessão '" + sessionId + "' de " + senderId + ": " + messageText);
-        //Aplicar lógica. Para testar vou só retornar a mesma mensagem por enquanto
-        String respostaBot = "Você enviou " + messageText;
+        String respostaBot = chatOrchestrator.processarMensagem(messageText, senderId);
 
         wahaService.sendMessage(sessionId, senderId, respostaBot);
     }

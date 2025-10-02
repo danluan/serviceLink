@@ -4,6 +4,7 @@ import br.com.servicelink.entity.Agendamento;
 import br.com.servicelink.entity.Classificacao;
 import br.com.servicelink.service.LLMService;
 
+import com.google.cloud.vertexai.VertexAI;
 import com.google.cloud.vertexai.api.GenerateContentResponse;
 import com.google.cloud.vertexai.generativeai.ContentMaker;
 import com.google.cloud.vertexai.generativeai.GenerativeModel;
@@ -21,7 +22,9 @@ public class LLMServiceImpl implements LLMService {
     private final GenerativeModel generativeModel;
 
     public LLMServiceImpl(GenerativeModel generativeModel) {
-        this.generativeModel = generativeModel;
+        VertexAI vertexAi = new VertexAI("gen-lang-client-0859440912", "us-central1");
+
+        this.generativeModel = new GenerativeModel("gemini-2.5-pro", vertexAi);
     }
 
     @Override
@@ -32,8 +35,10 @@ public class LLMServiceImpl implements LLMService {
                 "SERVICO_DOMESTICO, ORCAMENTO, DUVIDA_COMUM, ELOGIO, RECLAMACAO, AGRADECIMENTO, SAUDACAO, GERAL. " +
                 "Mensagem do usuário: \"%s\"", mensagemCliente
         );
-        String categoriaRetornada = chamarAPI(prompt);
-        return Classificacao.valueOf(categoriaRetornada);
+        System.out.print(prompt);
+        String categoriaRetornada = chamarAPI(prompt).trim();
+        String categoriaNormalizada = categoriaRetornada.toUpperCase();
+        return Classificacao.valueOf(categoriaNormalizada);
     }
 
     @Override
@@ -84,4 +89,20 @@ public class LLMServiceImpl implements LLMService {
             return "";
         }
     }
+
+    public String classificarServico(String mensagemCliente) {
+        String prompt = String.format(
+                "Você é um extrator de informações de serviços domésticos. Sua única tarefa é analisar a mensagem do usuário e retornar APENAS a categoria do serviço e o nome do serviço, separados por um ponto e vírgula (;). " +
+                        "Se a categoria não for encontrada, retorne 'OUTRA'.\n" +
+                        "Categorias de serviço: [HIDRÁULICA, ELÉTRICA, JARDINAGEM, LIMPEZA, OUTRA].\n" +
+                        "Exemplo de Retorno: 'HIDRÁULICA;conserto de torneira'.\n\n" +
+                        "Mensagem: \"%s\"",
+                mensagemCliente
+        );
+
+        String respostaDaLLM = chamarAPI(prompt);
+
+        return respostaDaLLM.trim();
+    }
+
 }

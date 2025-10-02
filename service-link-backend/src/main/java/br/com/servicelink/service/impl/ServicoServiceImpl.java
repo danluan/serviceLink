@@ -1,5 +1,6 @@
 package br.com.servicelink.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -90,5 +91,17 @@ public class ServicoServiceImpl implements ServicoService {
     @Override
     public List<Servico> buscarServicoPorNome(String nome) {
         return servicoRepository.findByNomeContainingIgnoreCase(nome);
+    }
+
+    @Override
+    public List<Servico> buscarServicosPorPrecoBase(String categoria, String nome) {
+        Optional<Servico> servicoMaisCaro = servicoRepository.findTop1ByOrderByPrecoBaseDesc(categoria, nome);
+        Optional<Servico> servicoMaisBarato = servicoRepository.findTop1ByOrderByPrecoBaseAsc(categoria, nome);
+
+        List<Servico> servicosEncontrados = new ArrayList<>();
+        servicoMaisCaro.ifPresent(servicosEncontrados::add);
+        servicoMaisBarato.ifPresent(servicosEncontrados::add);
+
+        return servicosEncontrados;
     }
 }
