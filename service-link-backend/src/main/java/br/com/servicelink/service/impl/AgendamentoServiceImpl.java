@@ -8,7 +8,7 @@ import br.com.servicelink.DTO.AgendamentoDTO;
 import br.com.servicelink.DTO.AgendamentoListagemDTO;
 import br.com.servicelink.entity.Cliente;
 import br.com.servicelink.entity.Servico;
-import br.com.servicelink.entity.Status;
+import br.com.servicelink.enumerations.Status;
 import br.com.servicelink.repository.ClienteRepository;
 import br.com.servicelink.repository.ServicoRepository;
 import jakarta.persistence.EntityNotFoundException;

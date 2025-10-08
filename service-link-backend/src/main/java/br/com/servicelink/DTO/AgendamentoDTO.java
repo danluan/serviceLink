@@ -1,10 +1,5 @@
 package br.com.servicelink.DTO;
 
-import br.com.servicelink.entity.Cliente;
-import br.com.servicelink.entity.Servico;
-import br.com.servicelink.entity.Status;
-import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 public class AgendamentoDTO {

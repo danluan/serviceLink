@@ -1,6 +1,8 @@
 package br.com.servicelink.entity;
 
 import java.time.LocalDateTime;
+
+import br.com.servicelink.enumerations.Status;
 import jakarta.persistence.*;
 
 @Entity

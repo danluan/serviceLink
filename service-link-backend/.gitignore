@@ -37,3 +37,6 @@ build/
 
 # Mas não ignore o arquivo principal
 !application.properties
+
+# Ignora variáveis de ambiente e segredos
+.env
