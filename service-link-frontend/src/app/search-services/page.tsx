@@ -1,105 +1,96 @@
 'use client';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Professional/LogadoNavbar";
 import ServiceSearch from "@/components/SearchServices/ServiceSearch";
 import ServiceCard from "@/components/SearchServices/ServiceCard";
+import WhatsAppButton from "@/components/WhatsAppButton";
+
 
 interface Service {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  category: string;
+    id: number;
+    nome: string;
+    descricao: string;
+    precoBase: number;
+    categoria: string;
+    imagemUrl: string;
 }
 
-const mockServices: Service[] = [
-  {
-    id: 1,
-    name: "Limpeza Residencial Completa",
-    description: "Limpeza profunda de todos os cômodos, incluindo cozinhas e banheiros. Deixa sua casa brilhando!",
-    price: "R$ 180,00",
-    category: "Limpeza"
-  },
-  {
-    id: 2,
-    name: "Conserto de Vazamentos",
-    description: "Reparo de vazamentos em torneiras, canos e tubulações. Serviço rápido e garantido.",
-    price: "A partir de R$ 80,00/hora",
-    category: "Encanamento"
-  },
-  {
-    id: 3,
-    name: "Corte de Grama",
-    description: "Corte e manutenção de gramados, deixando seu jardim impecável e bem cuidado.",
-    price: "R$ 120,00",
-    category: "Jardinagem"
-  },
-  {
-    id: 4,
-    name: "Instalação Elétrica",
-    description: "Instalação e manutenção de sistemas elétricos residenciais com segurança e qualidade.",
-    price: "A partir de R$ 100,00/hora",
-    category: "Elétrica"
-  },
-  {
-    id: 5,
-    name: "Babá Especializada",
-    description: "Cuidado profissional para crianças com experiência e referências verificadas.",
-    price: "R$ 25,00/hora",
-    category: "Babá"
-  },
-  {
-    id: 6,
-    name: "Limpeza de Estofados",
-    description: "Limpeza profissional de sofás, cadeiras e colchões, removendo manchas e odores.",
-    price: "R$ 150,00",
-    category: "Limpeza"
-  }
-];
+const Service = () => {
+
+}
 
 const Page = () => {
-  const [filteredServices, setFilteredServices] = useState<Service[]>(mockServices);
+    const [services, setServices] = useState<Service[]>([]);
+    const [filteredServices, setFilteredServices] = useState<Service[]>([]);
 
-  const handleFilter = (searchTerm: string, minPrice: string, maxPrice: string, category: string) => {
-    let filtered = mockServices;
+    useEffect(() => {
+        async function fetchServices(){
+            try{
+                const token = localStorage.getItem('@servicelink:token');
 
-    if (searchTerm) {
-      filtered = filtered.filter(service => 
-        service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+                if (!token) {
+                    console.error('Token não encontrado.');
+                    return;
+                }
 
-    if (category && category !== "all") {
-      filtered = filtered.filter(service => service.category === category);
-    }
-
-    if (minPrice) {
-      const min = parseFloat(minPrice);
-      filtered = filtered.filter(service => {
-        const priceMatch = service.price.match(/R\$\s*(\d+(?:,\d+)?(?:\.\d+)?)/);
-        if (priceMatch) {
-          const price = parseFloat(priceMatch[1].replace(',', '.'));
-          return price >= min;
+                const res = await fetch('http://localhost:8080/api/servico', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                if(!res.ok){
+                    throw new Error(`Erro HTTP! Status: ${res.status}`)
+                }
+                const data = await res.json();
+                const mapped = data.map((s: any) => ({
+                    id: s.id,
+                    nome: s.nome,
+                    descricao: s.descricao,
+                    precoBase: `R$ ${s.precoBase.toFixed(2)}`,
+                    categoria: s.categoria,
+                }));
+                setServices(mapped);
+                setFilteredServices(mapped);
+            }catch (error){
+                console.error("Erro ao buscar servicos:", error);
+            }
         }
-        return true;
-      });
-    }
+        fetchServices();
+    }, []);
 
-    if (maxPrice) {
-      const max = parseFloat(maxPrice);
-      filtered = filtered.filter(service => {
-        const priceMatch = service.price.match(/R\$\s*(\d+(?:,\d+)?(?:\.\d+)?)/);
-        if (priceMatch) {
-          const price = parseFloat(priceMatch[1].replace(',', '.'));
-          return price <= max;
+    const handleFilter = (searchTerm: string, minPrice: string, maxPrice: string, category: string) => {
+        let filtered = [...services];
+
+        if (searchTerm) {
+            filtered = filtered.filter(service =>
+                service.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                service.descricao.toLowerCase().includes(searchTerm.toLowerCase())
+            );
         }
-        return true;
-      });
-    }
 
-    setFilteredServices(filtered);
-  };
+        if (category && category !== "all") {
+            filtered = filtered.filter(service => service.categoria === category);
+        }
+
+        if (minPrice) {
+            const min = parseFloat(minPrice);
+            filtered = filtered.filter(service => {
+                const price = service.precoBase;
+                return !isNaN(price) && price >= min;
+            });
+        }
+
+        if (maxPrice) {
+            const max = parseFloat(maxPrice);
+            filtered = filtered.filter(service => {
+                const price = service.precoBase;
+                return !isNaN(price) && price <= max;
+            });
+        }
+
+        setFilteredServices(filtered);
+    };
 
   return (
     <div className="min-h-screen bg-background">
@@ -125,6 +116,7 @@ const Page = () => {
           </div>
         )}
       </main>
+        <WhatsAppButton/>
     </div>
   );
 };

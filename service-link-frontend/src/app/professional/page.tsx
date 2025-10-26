@@ -1,8 +1,11 @@
+'use client';
+
 import LogadoNavbar from "@/components/Professional/LogadoNavbar";
 import KPICards from "@/components/Professional/KPICards";
 import CalendarComponent from "@/components/Professional/Calendar";
 import AppointmentsList from "@/components/Professional/AppointmentsList";
 import FinanceChart from "@/components/Professional/FinanceChart";
+import WhatsAppButton from "@/components/WhatsAppButton";
 const Index = () => {
     return (
         <div className="min-h-screen bg-background">
@@ -32,6 +35,7 @@ const Index = () => {
                     <FinanceChart />
                 </section>
             </main>
+            <WhatsAppButton/>
         </div>
     );
 };

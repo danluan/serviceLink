@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const HomePage = () => {
   const { user, logout } = useAuth();
@@ -101,6 +102,8 @@ const HomePage = () => {
           </div>
         </div>
       </main>
+          <WhatsAppButton/>
+
     </div>
     </ProtectedRoute>
   );

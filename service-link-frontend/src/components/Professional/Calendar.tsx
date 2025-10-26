@@ -182,7 +182,8 @@ const CalendarComponent = () => {
                     </p>
                     <div className="flex gap-2">
                       {appointment.status === "pendente" && (
-                        <Button size="sm" className="flex-1 bg-success hover:bg-success/90">
+                        <Button size="sm" className="flex-1"
+                        variant="default">
                           <CheckCircle className="h-4 w-4 mr-1" />
                           Confirmar
                         </Button>

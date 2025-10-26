@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 interface Service {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  category: string;
+    id: number;
+    nome: string;
+    descricao: string;
+    precoBase: number;
+    categoria: string;
+    imagemUrl: string;
 }
 
 interface ServiceCardProps {
@@ -19,16 +20,16 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
     <Card className="flex flex-col h-full hover:shadow-hover transition-shadow">
       <CardHeader>
         <div className="flex items-start justify-between gap-2 mb-2">
-          <CardTitle className="text-xl">{service.name}</CardTitle>
+          <CardTitle className="text-xl">{service.nome}</CardTitle>
           <Badge variant="secondary" className="shrink-0">
-            {service.category}
+            {service.categoria}
           </Badge>
         </div>
-        <CardDescription>{service.description}</CardDescription>
+        <CardDescription>{service.descricao}</CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
         <div className="text-2xl font-bold text-primary">
-          {service.price}
+          {service.precoBase}
         </div>
       </CardContent>
       <CardFooter>
