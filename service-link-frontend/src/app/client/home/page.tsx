@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import WhatsAppButton from "@/components/WhatsAppButton";
+import Link from 'next/link';
 
 const HomePage = () => {
   const { user, logout } = useAuth();
@@ -52,9 +53,11 @@ const HomePage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
+                <Link href="/search-services">
               <Button className="w-full">
                 Explorar Serviços
               </Button>
+                </Link>
             </CardContent>
           </Card>
 
