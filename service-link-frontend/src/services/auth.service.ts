@@ -26,8 +26,8 @@ export class AuthService {
    */
   static async register(data: RegisterRequest): Promise<AuthResponse> {
     const endpoint = data.perfil === 'PRESTADOR' 
-      ? '/api/prestador' 
-      : '/api/cliente';
+      ? '/api/auth/register'
+      : '/api/auth/register';
 
     const response = await apiClient.post<AuthResponse>(
       endpoint,

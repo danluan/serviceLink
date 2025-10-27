@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { z } from 'zod';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,11 +29,15 @@ const LoginPage = () => {
         setApiError('');
         await login(formData);
       } catch (error) {
-        if (error instanceof ApiError) {
-          setApiError(error.message);
-        } else {
-          setApiError('Erro ao realizar login. Tente novamente.');
-        }
+          if (error instanceof ApiError) {
+              setApiError(error.message);
+
+          } else if (error instanceof z.ZodError) {
+              setApiError('Erro de validação inesperado. Tente novamente.');
+
+          } else {
+              setApiError('Erro ao realizar login. Tente novamente.');
+          }
       }
     },
   });

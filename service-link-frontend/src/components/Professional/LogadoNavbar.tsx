@@ -11,19 +11,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
 
-// Removendo as props 'user' e 'logout' para simplificar o componente
+
 const PrestadorNavbarSimples = () => {
-
-    // Dados fictícios para o Dropdown (que seriam do usuário logado)
-    const nomeUsuario = "João Paulo";
-    const emailUsuario = "joao@servicepro.com";
-
-    // Função de exemplo para o logout
-    const handleLogout = () => {
-        console.log("Usuário deslogado.");
-        // Aqui viria a lógica real de logout (ex: router.push('/login'))
-    };
+    const { user, logout } = useAuth();
 
     return (
         <header className="bg-white shadow border-b border-border sticky top-0 z-10">
@@ -71,18 +64,20 @@ const PrestadorNavbarSimples = () => {
                             {/* Informações do Usuário no Menu */}
                             <DropdownMenuLabel>
                                 <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium">{nomeUsuario}</p>
+                                    <p className="text-sm font-medium">{user?.nome}</p>
                                     <p className="text-xs text-muted-foreground">
-                                        {emailUsuario}
+                                        {user?.email}
                                     </p>
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
 
                             {/* Itens de Navegação */}
+                            <Link href="/professional/profile">
                             <DropdownMenuItem className="cursor-pointer">
-                                Meu Perfil
+                                    Meu Perfil
                             </DropdownMenuItem>
+                            </Link>
                             <DropdownMenuItem className="cursor-pointer">
                                 Configurações
                             </DropdownMenuItem>
@@ -93,7 +88,7 @@ const PrestadorNavbarSimples = () => {
 
                             {/* Botão Sair */}
                             <DropdownMenuItem
-                                onClick={handleLogout}
+                                onClick={logout}
                                 className="cursor-pointer text-destructive focus:bg-destructive/10"
                             >
                                 Sair

@@ -44,10 +44,12 @@ export function useFormValidation<T extends Record<string, unknown>>({
       });
       return true;
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        const errorMessage = getFieldError(error, field as string) || 'Campo inválido';
-        setErrors((prev) => ({ ...prev, [field as string]: errorMessage }));
-        return false;
+        if (error instanceof z.ZodError) {
+            // ASSERÇÃO DE TIPO
+            const zodError = error as z.ZodError; // <-- NOVA LINHA
+
+            const formattedErrors = formatZodError(zodError);
+            setErrors(formattedErrors);
       }
       return false;
     }

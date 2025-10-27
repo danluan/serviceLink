@@ -6,7 +6,7 @@ import { z } from 'zod';
 export function formatZodError(error: z.ZodError): Record<string, string> {
   const formattedErrors: Record<string, string> = {};
 
-  error.errors.forEach((err) => {
+    error.issues.forEach((err) => {
     if (err.path && err.path.length > 0) {
       const fieldName = err.path[0] as string;
       
@@ -35,7 +35,7 @@ export function formatZodError(error: z.ZodError): Record<string, string> {
  * Extrai mensagem de erro para um campo específico
  */
 export function getFieldError(error: z.ZodError, fieldName: string): string | undefined {
-  const fieldError = error.errors.find(err => err.path[0] === fieldName);
+  const fieldError = error.issues.find(err => err.path[0] === fieldName);
   
   if (!fieldError) return undefined;
   
