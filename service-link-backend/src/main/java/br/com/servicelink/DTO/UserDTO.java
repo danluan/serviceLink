@@ -9,6 +9,7 @@ public class UserDTO {
     private String cpfCnpj;
     private String email;
     private String perfil;
+    private Long profileId;
 
     public UserDTO() {
     }
@@ -77,5 +78,13 @@ public class UserDTO {
 
     public void setCpfCnpj(String cpfCnpj) {
         this.cpfCnpj = cpfCnpj;
+    }
+
+    public Long getProfileId() {
+        return profileId;
+    }
+
+    public void setProfileId(Long profileId) {
+        this.profileId = profileId;
     }
 }

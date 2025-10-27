@@ -6,12 +6,15 @@ import java.util.Optional;
 import br.com.servicelink.DTO.AgendamentoDTO;
 import br.com.servicelink.DTO.AgendamentoListagemDTO;
 import br.com.servicelink.entity.Agendamento;
+import br.com.servicelink.entity.Avaliacao;
 
 public interface AgendamentoService {
     Agendamento salvarAgendamento(AgendamentoDTO agendamentoDTO);
     List<AgendamentoListagemDTO> listarAgendamentos();
-    Optional<AgendamentoListagemDTO> buscarAgendamentosPorId(Long id);
+    AgendamentoListagemDTO buscarAgendamentosPorId(Long id);
     void deletarAgendamento(Long id);
     List<AgendamentoListagemDTO> listarAgendamentosPorPrestador(Long prestadorId);
+    Avaliacao avaliacaoPorAgendamentoId(Long id);
+    void adicionarAvaliacaoAoAgendamento(Long id, Avaliacao avaliacao);
 }
 

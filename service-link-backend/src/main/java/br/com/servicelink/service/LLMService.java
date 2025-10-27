@@ -1,7 +1,7 @@
 package br.com.servicelink.service;
 
 import br.com.servicelink.entity.Agendamento;
-import br.com.servicelink.entity.Classificacao;
+import br.com.servicelink.enumerations.Classificacao;
 
 public interface LLMService {
     Classificacao classificarIntencao(String mensagemCliente);

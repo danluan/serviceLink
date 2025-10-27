@@ -25,6 +25,9 @@ public class Agendamento {
     @JoinColumn(name = "servico_id")
     private Servico servico;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    private Avaliacao avaliacao;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -72,5 +75,13 @@ public class Agendamento {
 
     public void setServico(Servico servico) {
         this.servico = servico;
+    }
+
+    public Avaliacao getAvaliacao() {
+        return avaliacao;
+    }
+
+    public void setAvaliacao(Avaliacao avaliacao) {
+        this.avaliacao = avaliacao;
     }
 }

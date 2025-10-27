@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import br.com.servicelink.DTO.AgendamentoDTO;
 import br.com.servicelink.DTO.AgendamentoListagemDTO;
+import br.com.servicelink.entity.Avaliacao;
 import br.com.servicelink.entity.Cliente;
 import br.com.servicelink.entity.Servico;
 import br.com.servicelink.enumerations.Status;
@@ -35,7 +36,6 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Autowired
     private ServicoRepository servicoRepository;
-
 
     @Transactional
     @Override
@@ -67,7 +67,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                         agendamento.getStatus().toString(),
                         agendamento.getObservacao(),
                         agendamento.getCliente().getId(),
-                        agendamento.getCliente().getNome(),
+                        agendamento.getCliente().getUser().getNome(),
                         agendamento.getServico().getId(),
                         agendamento.getServico().getNome()
                 )).collect(Collectors.toList());
@@ -86,7 +86,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                         agendamento.getStatus().toString(),
                         agendamento.getObservacao(),
                         agendamento.getCliente().getId(),
-                        agendamento.getCliente().getNome(),
+                        agendamento.getCliente().getUser().getNome(),
                         agendamento.getServico().getId(),
                         agendamento.getServico().getNome()
                 ))
@@ -94,22 +94,33 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     }
 
     @Override
-    public Optional<AgendamentoListagemDTO> buscarAgendamentosPorId(Long id) {
-        return agendamentoRepository.findById(id)
-                .map(agendamento -> new AgendamentoListagemDTO(
-                        agendamento.getId(),
-                        agendamento.getDataHora(),
-                        agendamento.getStatus().toString(),
-                        agendamento.getObservacao(),
-                        agendamento.getCliente().getId(),
-                        agendamento.getCliente().getNome(),
-                        agendamento.getServico().getId(),
-                        agendamento.getServico().getNome()
-                ));
+    public AgendamentoListagemDTO buscarAgendamentosPorId(Long id) {
+        var agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado: " + id));
+        AgendamentoListagemDTO dto = new AgendamentoListagemDTO(agendamento);
+
+        return new AgendamentoListagemDTO(agendamento);
     }
 
     @Override
     public void deletarAgendamento(Long id) {
         agendamentoRepository.deleteById(id);
+    }
+
+    @Override
+    public Avaliacao avaliacaoPorAgendamentoId(Long id) {
+        Agendamento agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
+
+        return agendamento.getAvaliacao();
+    }
+
+    @Override
+    public void adicionarAvaliacaoAoAgendamento(Long id, Avaliacao avaliacao) {
+        Agendamento agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
+
+        agendamento.setAvaliacao(avaliacao);
+        agendamentoRepository.save(agendamento);
     }
 }

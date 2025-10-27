@@ -1,4 +1,4 @@
-package br.com.servicelink.entity;
+package br.com.servicelink.enumerations;
 
 import java.util.Arrays;
 

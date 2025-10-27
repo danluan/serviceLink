@@ -1,6 +1,7 @@
 package br.com.servicelink.entity;
 
 import br.com.servicelink.enumerations.Perfis;
+import br.com.servicelink.exceptions.BusinessException;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,9 +32,6 @@ public class User implements UserDetails {
     @Column
     private String telefone;
 
-    @Column
-    private String descricao;
-
     @Column(unique = true)
     private String cpfCnpj;
 
@@ -62,7 +60,7 @@ public class User implements UserDetails {
             case ADMIN -> authorities.add(new SimpleGrantedAuthority("ADMIN"));
             case CLIENTE -> authorities.add(new SimpleGrantedAuthority("CLIENTE"));
             case PRESTADOR -> authorities.add(new SimpleGrantedAuthority("PRESTADOR"));
-            default -> throw new IllegalStateException("Unexpected value: " + this.perfil); //TODO Criação de Exception personalizada
+            default -> throw new BusinessException("Unexpected value: " + this.perfil); //TODO Criação de Exception personalizada
         }
         return authorities;
     }
@@ -146,14 +144,6 @@ public class User implements UserDetails {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
     }
 
     public String getCpfCnpj() {

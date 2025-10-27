@@ -3,6 +3,8 @@ package br.com.servicelink.controller;
 import br.com.servicelink.DTO.AgendamentoDTO;
 import br.com.servicelink.DTO.AgendamentoListagemDTO;
 import br.com.servicelink.entity.Agendamento;
+import br.com.servicelink.entity.Avaliacao;
+import br.com.servicelink.exceptions.BusinessException;
 import br.com.servicelink.service.AgendamentoService;
 import br.com.servicelink.service.ServicoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ public class AgendamentoController {
     }
 
     @GetMapping(value = "/{id}")
-    public Optional<AgendamentoListagemDTO> findById(@PathVariable Long id){
+    public AgendamentoListagemDTO findById(@PathVariable Long id){
         return agendamentoService.buscarAgendamentosPorId(id);
     }
 
@@ -41,4 +43,20 @@ public class AgendamentoController {
     public List<AgendamentoListagemDTO> listarAgendamentosDoPrestador(@PathVariable Long prestadorId) {
         return agendamentoService.listarAgendamentosPorPrestador(prestadorId);
     }
+
+    @GetMapping("/{id}/avaliacao")
+    public Avaliacao avaliacaoPorAgendamento(@PathVariable Long id) {
+        try {
+            Avaliacao avaliacao = agendamentoService.avaliacaoPorAgendamentoId(id);
+            return avaliacao;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @PostMapping("/{id}/avaliacao")
+    public void avaliacao(@PathVariable Long id, @RequestBody Avaliacao avaliacao) {
+        agendamentoService.adicionarAvaliacaoAoAgendamento(id, avaliacao);
+    }
+
 }

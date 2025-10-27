@@ -5,17 +5,19 @@ import br.com.servicelink.entity.Prestador;
 public class PrestadorCadastroDTO {
 
     private String nome;
-    private String telefone;
     private String email;
+    private String senha;
+    private String telefone;
     private String descricao;
     private String cpfCnpj;
 
     public PrestadorCadastroDTO() {}
 
-    public PrestadorCadastroDTO(String nome, String telefone, String email, String descricao, String cpfCnpj) {
+    public PrestadorCadastroDTO(String nome, String senha, String telefone, String email, String descricao, String cpfCnpj) {
         this.nome = nome;
         this.telefone = telefone;
         this.email = email;
+        this.senha = senha;
         this.descricao = descricao;
         this.cpfCnpj = cpfCnpj;
     }
@@ -58,5 +60,13 @@ public class PrestadorCadastroDTO {
 
     public void setCpfCnpj(String cpfCnpj) {
         this.cpfCnpj = cpfCnpj;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 }

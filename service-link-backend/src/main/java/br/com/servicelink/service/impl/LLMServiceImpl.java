@@ -1,7 +1,7 @@
 package br.com.servicelink.service.impl;
 
 import br.com.servicelink.entity.Agendamento;
-import br.com.servicelink.entity.Classificacao;
+import br.com.servicelink.enumerations.Classificacao;
 import br.com.servicelink.service.LLMService;
 
 import com.google.cloud.vertexai.VertexAI;
@@ -47,7 +47,7 @@ public class LLMServiceImpl implements LLMService {
                 "Gere uma mensagem de confirmação de agendamento amigável e concisa com os seguintes dados: " +
                 "Cliente: %s, Serviço: %s, Data: %s, Horário: %s, O valor será de R$%s. " +
                 "Não inclua saudações nem despedidas.",
-                agendamento.getCliente().getNome(),
+                agendamento.getCliente().getUser().getNome(),
                 agendamento.getServico().getNome(),
                 agendamento.getDataHora().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                 agendamento.getDataHora().toLocalTime().toString(),

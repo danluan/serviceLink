@@ -2,17 +2,14 @@ package br.com.servicelink.entity;
 
 import jakarta.persistence.*;
 
-import java.io.Serializable;
-
-@Entity
-public class Cliente {
-
+@Entity()
+public class PerfilPrestador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private User user;
+    @Column(length = 300, nullable = false)
+    private String biografia = "";
 
     public Long getId() {
         return id;
@@ -22,11 +19,11 @@ public class Cliente {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public String getBiografia() {
+        return biografia;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setBiografia(String biografia) {
+        this.biografia = biografia;
     }
 }

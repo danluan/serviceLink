@@ -1,5 +1,6 @@
 package br.com.servicelink.entity;
 
+import java.io.Serializable;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -10,11 +11,12 @@ public class Prestador {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
-    private String nome;
-    private String telefone;
-    private String email;
-    private String descricao;
-    private String cpfCnpj;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private User user;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private PerfilPrestador perfilPrestador;
 
     @OneToMany(mappedBy = "prestador", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
     private List<Servico> servicos;
@@ -29,51 +31,27 @@ public class Prestador {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public String getCpfCnpj() {
-        return cpfCnpj;
-    }
-
-    public void setCpfCnpj(String cpfCnpj) {
-        this.cpfCnpj = cpfCnpj;
-    }
-
     public List<Servico> getServicos() {
         return servicos;
     }
 
     public void setServicos(List<Servico> servicos) {
         this.servicos = servicos;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public PerfilPrestador getPerfilPrestador() {
+        return perfilPrestador;
+    }
+
+    public void setPerfilPrestador(PerfilPrestador perfilPrestador) {
+        this.perfilPrestador = perfilPrestador;
     }
 }

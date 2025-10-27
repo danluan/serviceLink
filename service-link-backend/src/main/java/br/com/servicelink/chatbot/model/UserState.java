@@ -1,7 +1,5 @@
 package br.com.servicelink.chatbot.model;
 
-import br.com.servicelink.entity.Classificacao;
-
 import java.time.LocalDateTime;
 
 public class UserState {

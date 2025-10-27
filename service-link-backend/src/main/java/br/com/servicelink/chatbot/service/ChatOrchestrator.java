@@ -3,13 +3,11 @@ package br.com.servicelink.chatbot.service;
 import br.com.servicelink.chatbot.handler.IntentionHandler;
 import br.com.servicelink.chatbot.model.EtapaConversa;
 import br.com.servicelink.chatbot.model.UserState;
-import br.com.servicelink.entity.Classificacao;
-import br.com.servicelink.service.ServicoService;
+import br.com.servicelink.enumerations.Classificacao;
 import br.com.servicelink.service.impl.LLMServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class ChatOrchestrator {

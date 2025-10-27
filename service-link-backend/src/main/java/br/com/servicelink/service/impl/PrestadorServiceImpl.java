@@ -4,7 +4,15 @@ import java.util.List;
 import java.util.Optional;
 
 import br.com.servicelink.DTO.PrestadorCadastroDTO;
+import br.com.servicelink.DTO.PrestadorDTO;
+import br.com.servicelink.entity.PerfilPrestador;
+import br.com.servicelink.entity.User;
+import br.com.servicelink.enumerations.Perfis;
+import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import br.com.servicelink.entity.Prestador;
@@ -14,6 +22,7 @@ import br.com.servicelink.service.PrestadorService;
 @Service
 public class PrestadorServiceImpl implements PrestadorService {
 
+    private static final Logger log = LoggerFactory.getLogger(PrestadorServiceImpl.class);
     private final PrestadorRepository prestadorRepository;
 
     @Autowired
@@ -23,13 +32,25 @@ public class PrestadorServiceImpl implements PrestadorService {
 
     @Override
     public Prestador salvarPrestador(PrestadorCadastroDTO prestadorDTO) {
+        User user = new User();
+        user.setNome(prestadorDTO.getNome());
+        user.setEmail(prestadorDTO.getEmail());
+        user.setSenha(prestadorDTO.getSenha());
+        user.setPerfil(Perfis.PRESTADOR);
+        user.setCpfCnpj(prestadorDTO.getCpfCnpj());
+
         Prestador prestador = new Prestador();
-        prestador.setNome(prestadorDTO.getNome());
-        prestador.setEmail(prestadorDTO.getEmail());
-        prestador.setTelefone(prestadorDTO.getTelefone());
-        prestador.setDescricao(prestadorDTO.getDescricao());
-        prestador.setDescricao(prestadorDTO.getDescricao());
-        prestador.setCpfCnpj(prestadorDTO.getCpfCnpj());
+
+        prestador.setUser(user);
+
+        return prestadorRepository.save(prestador);
+    }
+
+    @Override
+    public Prestador salvarPrestador(User user) {
+        Prestador prestador = new Prestador();
+        prestador.setPerfilPrestador(new PerfilPrestador());
+        prestador.setUser(user);
 
         return prestadorRepository.save(prestador);
     }
@@ -40,12 +61,30 @@ public class PrestadorServiceImpl implements PrestadorService {
     }
 
     @Override
-    public Optional<Prestador> buscarPrestadorPorId(Long id) {
-        return prestadorRepository.findById(id);
+    public PrestadorDTO buscarPrestadorPorId(Long id) {
+        Prestador prestador = prestadorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Prestador não encontrado com o ID: " + id));
+
+        System.out.println(prestador);
+
+        return new PrestadorDTO(prestador.getId(),
+                prestador.getUser().isActive(),
+                prestador.getUser().getId(),
+                prestador.getUser().getUsername(),
+                prestador.getUser().getEmail(),
+                prestador.getUser().getTelefone(),
+                prestador.getUser().getCpfCnpj(),
+                prestador.getPerfilPrestador().getBiografia());
     }
 
     @Override
     public void deletarPrestador(Long id) {
         prestadorRepository.deleteById(id);
+    }
+
+    public Long getPrestadorIdByUserId(Long id) {
+        Prestador prestador = prestadorRepository.findByUserId(id);
+
+        return prestador.getId();
     }
 }

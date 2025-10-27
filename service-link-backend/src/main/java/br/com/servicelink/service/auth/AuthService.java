@@ -2,8 +2,11 @@ package br.com.servicelink.service.auth;
 
 import br.com.servicelink.DTO.*;
 import br.com.servicelink.entity.User;
+import br.com.servicelink.enumerations.Perfis;
 import br.com.servicelink.repository.UserRepository;
 import br.com.servicelink.security.TokenService;
+import br.com.servicelink.service.impl.ClienteServiceImpl;
+import br.com.servicelink.service.impl.PrestadorServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,12 @@ public class AuthService {
     private UserRepository userRepository;
 
     @Autowired
+    private PrestadorServiceImpl prestadorService;
+
+    @Autowired
+    private ClienteServiceImpl clienteService;
+
+    @Autowired
     private TokenService tokenService;
 
     @Autowired
@@ -34,11 +43,18 @@ public class AuthService {
             User user = userRepository.findUserByEmail(authData.getEmail());
             UserDTO userDTO = new UserDTO(user);
 
-            AuthResponseDTO authResponseDTO = new AuthResponseDTO();
-            authResponseDTO.setToken(token);
-            authResponseDTO.setUser(userDTO);
+            if (user.getPerfil() == Perfis.PRESTADOR) {
+                Long prestadorId = prestadorService.getPrestadorIdByUserId(user.getId());
+                userDTO.setProfileId(prestadorId);
+            } else if (user.getPerfil() == Perfis.CLIENTE) {
+                Long clienteId = clienteService.getClienteIdByUserId(user.getId());
+                userDTO.setProfileId(clienteId);
+            }
 
-            return authResponseDTO;
+            return new AuthResponseDTO(
+                    userDTO,
+                    token
+            );
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou senha inválidos.");
         }
@@ -53,6 +69,13 @@ public class AuthService {
         }
         String encryptedPassword = new BCryptPasswordEncoder().encode(user.getSenha());
         user.setSenha(encryptedPassword);
+
+        if (user.getPerfil() == Perfis.PRESTADOR) {
+            prestadorService.salvarPrestador(user);
+        }
+        else if (user.getPerfil() == Perfis.CLIENTE) {
+            clienteService.salvarCliente(user);
+        }
 
         userRepository.save(user);
 

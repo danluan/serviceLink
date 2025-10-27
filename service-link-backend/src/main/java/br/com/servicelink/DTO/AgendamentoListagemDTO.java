@@ -1,5 +1,7 @@
 package br.com.servicelink.DTO;
 
+import br.com.servicelink.entity.Agendamento;
+
 import java.time.LocalDateTime;
 
 public class AgendamentoListagemDTO {
@@ -23,6 +25,17 @@ public class AgendamentoListagemDTO {
         this.nomeCliente = nomeCliente;
         this.servicoId = servicoId;
         this.nomeServico = nomeServico;
+    }
+
+    public AgendamentoListagemDTO(Agendamento agendamento) {
+        this.id = agendamento.getId();
+        this.dataHora = agendamento.getDataHora();
+        this.status = agendamento.getStatus().name();
+        this.observacao = agendamento.getObservacao();
+        this.clienteId = agendamento.getCliente().getId();
+        this.nomeCliente = agendamento.getCliente().getUser().getNome();
+        this.servicoId = agendamento.getServico().getId();
+        this.nomeServico = agendamento.getServico().getNome();
     }
 
     public Long getId() {

@@ -2,6 +2,8 @@ package br.com.servicelink.DTO;
 
 public class ClienteCadastroDTO {
     private String nome;
+    private String email;
+    private String senha;
     private String telefone;
     private String cpf;
     private String endereco;
@@ -45,5 +47,21 @@ public class ClienteCadastroDTO {
 
     public void setEndereco(String endereco) {
         this.endereco = endereco;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 }
