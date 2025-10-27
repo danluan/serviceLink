@@ -24,4 +24,6 @@ public interface ServicoRepository extends JpaRepository<Servico, Long> {
             "ORDER BY s.precoBase ASC " +
             "LIMIT 1")
     Optional<Servico> findTop1ByOrderByPrecoBaseAsc(@Param("categoria") String categoria, @Param("nome") String nome);
+
+    List<Servico> findByPrestadorId(Long prestadorId);
 }

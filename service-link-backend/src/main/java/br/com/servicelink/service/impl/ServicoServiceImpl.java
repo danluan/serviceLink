@@ -104,4 +104,10 @@ public class ServicoServiceImpl implements ServicoService {
 
         return servicosEncontrados;
     }
+
+    @Override
+    public List<Servico> buscarServicosPorPrestadorId(Long prestadorId) {
+        List<Servico> servicos = servicoRepository.findByPrestadorId(prestadorId);
+        return servicos;
+    }
 }

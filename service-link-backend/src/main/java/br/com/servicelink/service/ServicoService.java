@@ -14,4 +14,5 @@ public interface ServicoService {
     List<Servico> buscarServicoPorNome(String nome);
     List<ServicoDTO> buscarServicosPorCategoria(String categoria);
     List<Servico> buscarServicosPorPrecoBase(String categoria, String nome);
+    List<Servico> buscarServicosPorPrestadorId(Long prestadorId);
 }
