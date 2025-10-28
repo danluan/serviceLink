@@ -16,7 +16,7 @@ import br.com.servicelink.DTO.AgendamentoListagemDTO;
 import br.com.servicelink.entity.Avaliacao;
 import br.com.servicelink.entity.Cliente;
 import br.com.servicelink.entity.Servico;
-import br.com.servicelink.enumerations.Status;
+import br.com.servicelink.enumerations.AgendamentoStatus;
 import br.com.servicelink.repository.ClienteRepository;
 import br.com.servicelink.repository.ServicoRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -63,7 +63,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
         agendamento.setCliente(cliente);
         agendamento.setServico(servico);
-        agendamento.setStatus(Status.PENDENTE);
+        agendamento.setStatus(AgendamentoStatus.PENDENTE);
 
         return agendamentoRepository.save(agendamento);
     }
