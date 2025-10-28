@@ -2,7 +2,7 @@ package br.com.servicelink.entity;
 
 import java.time.LocalDateTime;
 
-import br.com.servicelink.enumerations.Status;
+import br.com.servicelink.enumerations.AgendamentoStatus;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,7 +14,7 @@ public class Agendamento {
     private LocalDateTime dataHora;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private AgendamentoStatus agendamentoStatus;
     private String observacao;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,12 +45,12 @@ public class Agendamento {
         this.dataHora = dataHora;
     }
 
-    public Status getStatus() {
-        return status;
+    public AgendamentoStatus getStatus() {
+        return agendamentoStatus;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setStatus(AgendamentoStatus agendamentoStatus) {
+        this.agendamentoStatus = agendamentoStatus;
     }
 
     public String getObservacao() {

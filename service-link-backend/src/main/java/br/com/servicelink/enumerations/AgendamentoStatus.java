@@ -1,6 +1,6 @@
 package br.com.servicelink.enumerations;
 
-public enum Status {
+public enum AgendamentoStatus {
     PENDENTE,
     CONFIRMADO,
     CANCELADO,
