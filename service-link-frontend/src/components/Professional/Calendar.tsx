@@ -1,219 +1,307 @@
 'use client';
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, CheckCircle, XCircle, Clock } from "lucide-react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { ChevronLeft, ChevronRight, CheckCircle, XCircle, Clock, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
-interface Appointment {
-  id: number;
-  time: string;
-  service: string;
-  client: string;
-  status: "pendente" | "confirmado" | "concluido";
+const API_BASE_URL = "http://localhost:8080";
+
+interface AppointmentDTO {
+    id: number;
+    dataHora: string;
+    status: string;
+    observacao: string;
+    clienteId: number;
+    nomeCliente: string;
+    servicoId: number;
+    nomeServico: string;
 }
 
-const mockAppointments: Record<number, Appointment[]> = {
-  5: [
-    { id: 1, time: "09:00", service: "Limpeza de Casa", client: "Maria Silva", status: "confirmado" },
-    { id: 2, time: "14:00", service: "Jardinagem", client: "João Santos", status: "pendente" },
-  ],
-  12: [
-    { id: 3, time: "10:00", service: "Pintura", client: "Ana Costa", status: "pendente" },
-  ],
-  18: [
-    { id: 4, time: "15:00", service: "Reparos Elétricos", client: "Carlos Souza", status: "confirmado" },
-    { id: 5, time: "16:30", service: "Encanamento", client: "Paula Oliveira", status: "pendente" },
-  ],
-  25: [
-    { id: 6, time: "11:00", service: "Limpeza de Escritório", client: "Tech Solutions", status: "confirmado" },
-  ],
-};
+type MonthlyAppointments = Record<string, AppointmentDTO[]>;
+
 
 const CalendarComponent = () => {
-  const [currentMonth] = useState(new Date(2025, 0, 1)); // Janeiro 2025
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [selectedDay, setSelectedDay] = useState<string | null>(null);
+    const [isSheetOpen, setIsSheetOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-  const daysInMonth = new Date(
-    currentMonth.getFullYear(),
-    currentMonth.getMonth() + 1,
-    0
-  ).getDate();
-  const firstDayOfMonth = new Date(
-    currentMonth.getFullYear(),
-    currentMonth.getMonth(),
-    1
-  ).getDay();
+    const [appointmentsData, setAppointmentsData] = useState<MonthlyAppointments>({});
 
-  const monthName = currentMonth.toLocaleDateString("pt-BR", {
-    month: "long",
-    year: "numeric",
-  });
 
-  const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+    const getAuthData = () => {
+        const authDataString = localStorage.getItem('@servicelink:auth');
+        const token = localStorage.getItem('@servicelink:token');
+        if (!authDataString || !token) return null;
+        try {
+            const authData = JSON.parse(authDataString);
+            return { prestadorId: authData.profileId, token };
+        } catch (e) {
+            return null;
+        }
+    };
 
-  const handleDayClick = (day: number) => {
-    if (mockAppointments[day]) {
-      setSelectedDay(day);
-      setIsSheetOpen(true);
-    }
-  };
+    const formatTime = (dataHora: string): string => {
+        try {
+            return new Date(dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        } catch {
+            return 'N/A';
+        }
+    };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "confirmado":
-        return "bg-success text-success-foreground";
-      case "pendente":
-        return "bg-warning text-warning-foreground";
-      case "concluido":
-        return "bg-muted text-muted-foreground";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
+    const getStatusColor = (status: string) => {
+        switch (status.toLowerCase()) {
+            case "confirmado":
+                return "bg-green-500/10 text-green-700 border-green-500/20";
+            case "pendente":
+                return "bg-yellow-500/10 text-yellow-700 border-yellow-500/20";
+            case "concluido":
+                return "bg-gray-500/10 text-gray-700 border-gray-500/20";
+            default:
+                return "bg-muted text-muted-foreground";
+        }
+    };
 
-  return (
-    <>
-      <Card className="shadow-card border-border">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle className="text-xl font-semibold">Agenda</CardTitle>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" className="h-8 w-8">
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-sm font-medium capitalize min-w-[150px] text-center">
+
+    const { year, month, daysInMonth, firstDayOfMonth, monthName } = useMemo(() => {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const monthName = currentDate.toLocaleDateString("pt-BR", {
+            month: "long",
+            year: "numeric",
+        });
+
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+
+        return { year, month, daysInMonth, firstDayOfMonth, monthName };
+    }, [currentDate]);
+
+    const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+    // --- BUSCA DE DADOS ---
+
+    const fetchAppointments = useCallback(async () => {
+        const auth = getAuthData();
+        if (!auth) {
+            toast.error("Sessão inválida. Faça login novamente.");
+            return;
+        }
+
+        const yearParam = year;
+        const monthParam = month + 1;
+
+        try {
+            setLoading(true);
+
+            const response = await fetch(`${API_BASE_URL}/api/agendamento/${auth.prestadorId}/agendamentos/mensal?ano=${yearParam}&mes=${monthParam}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${auth.token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro ao buscar agendamentos do mês.");
+            }
+
+            const data: MonthlyAppointments = await response.json();
+            setAppointmentsData(data); // Armazena a estrutura { "dia": [serviços] }
+
+        } catch (error) {
+            console.error("Erro ao buscar agendamentos:", error);
+            toast.error("Não foi possível carregar a agenda.");
+        } finally {
+            setLoading(false);
+        }
+    }, [year, month]); // Depende do mês e ano atualizados
+
+    useEffect(() => {
+        fetchAppointments();
+    }, [fetchAppointments]); // Rebusca sempre que o mês/ano mudar
+
+    // --- HANDLERS DE NAVEGAÇÃO ---
+
+    const handleMonthChange = (direction: 'prev' | 'next') => {
+        setCurrentDate(prevDate => {
+            const newDate = new Date(prevDate.getTime());
+            newDate.setMonth(prevDate.getMonth() + (direction === 'next' ? 1 : -1));
+            return newDate;
+        });
+        // O useEffect chamará fetchAppointments automaticamente
+    };
+
+    const handleDayClick = (day: number) => {
+        const dayKey = String(day);
+        if (appointmentsData[dayKey]) {
+            setSelectedDay(dayKey);
+            setIsSheetOpen(true);
+        }
+    };
+
+    // --- RENDERIZAÇÃO ---
+
+    const appointmentsForSelectedDay = selectedDay ? appointmentsData[selectedDay] : [];
+
+    return (
+        <>
+            <Card className="shadow-card border-border">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                    <CardTitle className="text-xl font-semibold">Agenda</CardTitle>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => handleMonthChange('prev')}>
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <span className="text-sm font-medium capitalize min-w-[150px] text-center">
               {monthName}
             </span>
-            <Button variant="outline" size="icon" className="h-8 w-8">
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-7 gap-2 mb-2">
-            {weekDays.map((day) => (
-              <div
-                key={day}
-                className="text-center text-sm font-medium text-muted-foreground py-2"
-              >
-                {day}
-              </div>
-            ))}
-          </div>
-          <div className="grid grid-cols-7 gap-2">
-            {Array.from({ length: firstDayOfMonth }).map((_, index) => (
-              <div key={`empty-${index}`} className="aspect-square" />
-            ))}
-            {Array.from({ length: daysInMonth }).map((_, index) => {
-              const day = index + 1;
-              const hasAppointments = mockAppointments[day];
-              const isToday = day === 5; // Simulando hoje como dia 5
-
-              return (
-                <button
-                  key={day}
-                  onClick={() => handleDayClick(day)}
-                  className={`
-                    aspect-square rounded-lg flex flex-col items-center justify-center
-                    transition-all relative
-                    ${hasAppointments ? "hover:shadow-hover cursor-pointer" : ""}
-                    ${isToday ? "bg-primary text-primary-foreground font-semibold" : "hover:bg-muted"}
-                  `}
-                >
-                  <span className="text-sm">{day}</span>
-                  {hasAppointments && (
-                    <div className="flex gap-0.5 mt-1">
-                      {hasAppointments.map((_, i) => (
-                        <div
-                          key={i}
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            isToday ? "bg-primary-foreground" : "bg-primary"
-                          }`}
-                        />
-                      ))}
+                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => handleMonthChange('next')}>
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
                     </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
+                </CardHeader>
+                <CardContent>
+                    {loading ? (
+                        <div className="flex justify-center py-10">
+                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                        </div>
+                    ) : (
+                        <>
+                            <div className="grid grid-cols-7 gap-2 mb-2">
+                                {weekDays.map((day) => (
+                                    <div
+                                        key={day}
+                                        className="text-center text-sm font-medium text-muted-foreground py-2"
+                                    >
+                                        {day}
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="grid grid-cols-7 gap-2">
+                                {Array.from({ length: firstDayOfMonth }).map((_, index) => (
+                                    <div key={`empty-${index}`} className="aspect-square" />
+                                ))}
+                                {Array.from({ length: daysInMonth }).map((_, index) => {
+                                    const day = index + 1;
+                                    const dayKey = String(day);
+                                    // 2. Usar o estado REAL da API para verificar agendamentos
+                                    const hasAppointments = appointmentsData[dayKey] && appointmentsData[dayKey].length > 0;
 
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent className="w-full sm:max-w-md bg-background">
-          <SheetHeader>
-            <SheetTitle>
-              Agendamentos - {selectedDay} de {monthName.split(" ")[0]}
-            </SheetTitle>
-            <SheetDescription>
-              Gerenciar os serviços agendados para este dia
-            </SheetDescription>
-          </SheetHeader>
-          <div className="mt-6 space-y-4">
-            {selectedDay &&
-              mockAppointments[selectedDay]?.map((appointment) => (
-                <Card key={appointment.id} className="border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-semibold text-foreground">
-                          {appointment.time}
+                                    // Simula hoje (para fins de estilo, ajustado para o mês atual)
+                                    const isToday = day === new Date().getDate() &&
+                                        month === new Date().getMonth() &&
+                                        year === new Date().getFullYear();
+
+                                    return (
+                                        <button
+                                            key={day}
+                                            onClick={() => handleDayClick(day)}
+                                            disabled={!hasAppointments} // Desabilita clique se não houver agendamentos
+                                            className={`
+                        aspect-square rounded-lg flex flex-col items-center justify-center
+                        transition-all relative text-sm
+                        ${hasAppointments
+                                                ? "hover:shadow-lg cursor-pointer border border-primary/20"
+                                                : "opacity-50"}
+                        ${isToday
+                                                ? "bg-primary text-primary-foreground font-semibold"
+                                                : "hover:bg-muted"}
+                      `}
+                                        >
+                                            <span>{day}</span>
+                                            {hasAppointments && (
+                                                <div className="flex gap-0.5 mt-1">
+                                                    {/* Renderiza um ponto para indicar agendamento */}
+                                                    <div
+                                                        className={`w-1.5 h-1.5 rounded-full ${
+                                                            isToday ? "bg-primary-foreground" : "bg-primary"
+                                                        }`}
+                                                    />
+                                                </div>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* Sheet de Detalhes dos Agendamentos */}
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+                <SheetContent className="w-full sm:max-w-md bg-background overflow-y-auto">
+                    <SheetHeader>
+                        <SheetTitle>
+                            Agendamentos - {selectedDay} de {monthName.split(" ")[0]}
+                        </SheetTitle>
+                        <SheetDescription>
+                            Gerenciar os serviços agendados para este dia
+                        </SheetDescription>
+                    </SheetHeader>
+                    <div className="mt-6 space-y-4">
+                        {/* 3. Renderiza os Agendamentos REAIS do dia selecionado */}
+                        {appointmentsForSelectedDay.map((appointment) => (
+                            <Card key={appointment.id} className="border-border">
+                                <CardContent className="p-4">
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <Clock className="h-4 w-4 text-muted-foreground" />
+                                            <span className="font-semibold text-foreground">
+                          {formatTime(appointment.dataHora)}
                         </span>
-                      </div>
-                      <Badge className={getStatusColor(appointment.status)}>
-                        {appointment.status}
-                      </Badge>
+                                        </div>
+                                        <Badge className={getStatusColor(appointment.status)}>
+                                            {appointment.status}
+                                        </Badge>
+                                    </div>
+                                    <h4 className="font-medium text-foreground mb-1">
+                                        {appointment.nomeServico}
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                        Cliente: {appointment.nomeCliente}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground italic mb-4">
+                                        Obs: {appointment.observacao || 'Nenhuma observação.'}
+                                    </p>
+
+                                    {/* Botões de Ação */}
+                                    <div className="flex gap-2">
+                                        {appointment.status.toLowerCase() === "pendente" && (
+                                            <Button size="sm" className="flex-1" variant="default">
+                                                <CheckCircle className="h-4 w-4 mr-1" />
+                                                Confirmar
+                                            </Button>
+                                        )}
+                                        {appointment.status.toLowerCase() !== "concluido" && (
+                                            <Button size="sm" variant="outline" className="flex-1">
+                                                Concluir
+                                            </Button>
+                                        )}
+                                        <Button size="sm" variant="destructive" className="flex-1">
+                                            <XCircle className="h-4 w-4 mr-1" />
+                                            Cancelar
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
                     </div>
-                    <h4 className="font-medium text-foreground mb-1">
-                      {appointment.service}
-                    </h4>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Cliente: {appointment.client}
-                    </p>
-                    <div className="flex gap-2">
-                      {appointment.status === "pendente" && (
-                        <Button size="sm" className="flex-1"
-                        variant="default">
-                          <CheckCircle className="h-4 w-4 mr-1" />
-                          Confirmar
-                        </Button>
-                      )}
-                      {appointment.status !== "concluido" && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="flex-1"
-                        >
-                          Concluir
-                        </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="flex-1"
-                      >
-                        <XCircle className="h-4 w-4 mr-1" />
-                        Cancelar
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-          </div>
-        </SheetContent>
-      </Sheet>
-    </>
-  );
+                </SheetContent>
+            </Sheet>
+        </>
+    );
 };
 
 export default CalendarComponent;

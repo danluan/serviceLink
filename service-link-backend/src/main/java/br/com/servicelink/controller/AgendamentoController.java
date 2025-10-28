@@ -10,7 +10,9 @@ import br.com.servicelink.service.ServicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -57,6 +59,33 @@ public class AgendamentoController {
     @PostMapping("/{id}/avaliacao")
     public void avaliacao(@PathVariable Long id, @RequestBody Avaliacao avaliacao) {
         agendamentoService.adicionarAvaliacaoAoAgendamento(id, avaliacao);
+    }
+
+    @GetMapping("/{prestadorId}/agendamentos-hoje")
+    public List<AgendamentoListagemDTO> listarAgendamentosDeHoje(@PathVariable Long prestadorId) {
+        return agendamentoService.listarAgendamentosDoDia(prestadorId);
+    }
+
+    @GetMapping("/{prestadorId}/prox-agendamentos")
+    public List<AgendamentoListagemDTO> listarAgendamentosFuturos(@PathVariable Long prestadorId) {
+        return agendamentoService.listarProximos5Agendamentos(prestadorId);
+    }
+
+    @GetMapping("/{prestadorId}/faturamento")
+    public BigDecimal listarFaturamentoMensal(
+            @PathVariable Long prestadorId,
+            @RequestParam Integer ano,
+            @RequestParam Integer mes
+    ) {
+        return agendamentoService.calcularFaturamentoMensal(prestadorId, ano, mes);
+    }
+
+    @GetMapping("/{prestadorId}/agendamentos/mensal")
+    public Map<Integer, List<AgendamentoListagemDTO>> listarAgendamentosPorMes(
+            @PathVariable Long prestadorId,
+            @RequestParam Integer ano,
+            @RequestParam Integer mes) {
+        return agendamentoService.buscarAgendamentosPorMes(prestadorId, ano, mes);
     }
 
 }

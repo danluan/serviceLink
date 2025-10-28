@@ -1,6 +1,8 @@
 package br.com.servicelink.service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import br.com.servicelink.DTO.AgendamentoDTO;
@@ -16,5 +18,9 @@ public interface AgendamentoService {
     List<AgendamentoListagemDTO> listarAgendamentosPorPrestador(Long prestadorId);
     Avaliacao avaliacaoPorAgendamentoId(Long id);
     void adicionarAvaliacaoAoAgendamento(Long id, Avaliacao avaliacao);
+    List<AgendamentoListagemDTO> listarAgendamentosDoDia(Long prestadorId);
+    List<AgendamentoListagemDTO> listarProximos5Agendamentos(Long prestadorId);
+    BigDecimal calcularFaturamentoMensal(Long prestadorId, int ano, int mes);
+    Map<Integer, List<AgendamentoListagemDTO>> buscarAgendamentosPorMes(Long prestadorId, int ano, int mes);
 }
 
