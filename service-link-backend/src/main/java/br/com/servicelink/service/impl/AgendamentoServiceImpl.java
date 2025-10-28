@@ -50,7 +50,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Transactional
     @Override
-    public Agendamento salvarAgendamento(AgendamentoDTO agendamentoDTO) {
+    public AgendamentoDTO salvarAgendamento(AgendamentoDTO agendamentoDTO) {
         Cliente cliente = clienteRepository.findById(agendamentoDTO.clienteId())
                 .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com o ID: " + agendamentoDTO.clienteId()));
 
@@ -65,7 +65,14 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         agendamento.setServico(servico);
         agendamento.setStatus(AgendamentoStatus.PENDENTE);
 
-        return agendamentoRepository.save(agendamento);
+        agendamentoRepository.save(agendamento);
+
+        return new AgendamentoDTO(
+                agendamento.getDataHora(),
+                agendamento.getObservacao(),
+                agendamento.getId(),
+                agendamento.getServico().getId()
+        );
     }
 
     @Transactional

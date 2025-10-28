@@ -32,7 +32,7 @@ public class AgendamentoController {
     }
 
     @PostMapping
-    public Agendamento save(@RequestBody AgendamentoDTO agendamentoDTO){
+    public AgendamentoDTO save(@RequestBody AgendamentoDTO agendamentoDTO){
         return agendamentoService.salvarAgendamento(agendamentoDTO);
     }
 
