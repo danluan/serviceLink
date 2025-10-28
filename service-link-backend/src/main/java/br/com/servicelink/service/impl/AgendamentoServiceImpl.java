@@ -28,14 +28,14 @@ import br.com.servicelink.repository.AgendamentoRepository;
 import br.com.servicelink.service.AgendamentoService;
 import org.springframework.stereotype.Service;
 
-import static br.com.servicelink.enumerations.Status.CONCLUIDO;
+import static br.com.servicelink.enumerations.AgendamentoStatus.CONCLUIDO;
 
 @Service
 public class AgendamentoServiceImpl implements AgendamentoService {
 
     private final AgendamentoRepository agendamentoRepository;
 
-    private static final Status STATUS = CONCLUIDO;
+    private static final AgendamentoStatus STATUS = CONCLUIDO;
 
     @Autowired
     public AgendamentoServiceImpl(AgendamentoRepository agendamentoRepository) {
@@ -51,15 +51,15 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     @Transactional
     @Override
     public Agendamento salvarAgendamento(AgendamentoDTO agendamentoDTO) {
-        Cliente cliente = clienteRepository.findById(agendamentoDTO.getClienteId())
-                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com o ID: " + agendamentoDTO.getClienteId()));
+        Cliente cliente = clienteRepository.findById(agendamentoDTO.clienteId())
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com o ID: " + agendamentoDTO.clienteId()));
 
-        Servico servico = servicoRepository.findById(agendamentoDTO.getServicoId())
-                .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado com o ID: " + agendamentoDTO.getServicoId()));
+        Servico servico = servicoRepository.findById(agendamentoDTO.servicoId())
+                .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado com o ID: " + agendamentoDTO.servicoId()));
 
         Agendamento agendamento = new Agendamento();
-        agendamento.setDataHora(agendamentoDTO.getDataHora());
-        agendamento.setObservacao(agendamentoDTO.getObservacao());
+        agendamento.setDataHora(agendamentoDTO.dataHora());
+        agendamento.setObservacao(agendamentoDTO.observacao());
 
         agendamento.setCliente(cliente);
         agendamento.setServico(servico);
@@ -204,7 +204,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                 prestadorId,
                 dataInicio,
                 dataFim,
-                STATUS
+                CONCLUIDO
         );
 
         return faturamento != null ? faturamento : BigDecimal.ZERO;

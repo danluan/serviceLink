@@ -25,10 +25,10 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public Cliente salvarCliente(ClienteCadastroDTO clienteDTO) {
         User user = new User();
-        user.setNome(clienteDTO.getNome());
-        user.setEmail(clienteDTO.getEmail());
-        user.setSenha(clienteDTO.getSenha());
-        user.setCpfCnpj(clienteDTO.getCpf());
+        user.setNome(clienteDTO.nome());
+        user.setEmail(clienteDTO.email());
+        user.setSenha(clienteDTO.senha());
+        user.setCpfCnpj(clienteDTO.cpf());
         user.setPerfil(Perfis.PRESTADOR);
 
         Cliente cliente = new Cliente();

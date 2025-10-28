@@ -1,6 +1,8 @@
 package br.com.servicelink.service.auth;
 
 import br.com.servicelink.DTO.*;
+import br.com.servicelink.entity.Cliente;
+import br.com.servicelink.entity.Prestador;
 import br.com.servicelink.entity.User;
 import br.com.servicelink.enumerations.Perfis;
 import br.com.servicelink.repository.UserRepository;
@@ -36,11 +38,11 @@ public class AuthService {
 
     public AuthResponseDTO login(AuthDTO authData) {
         try {
-            var usernamePassword = new UsernamePasswordAuthenticationToken(authData.getEmail(), authData.getSenha());
+            var usernamePassword = new UsernamePasswordAuthenticationToken(authData.email(), authData.senha());
             var auth = authenticationManager.authenticate(usernamePassword);
             var token = tokenService.generateToken((User) auth.getPrincipal());
 
-            User user = userRepository.findUserByEmail(authData.getEmail());
+            User user = userRepository.findUserByEmail(authData.email());
             UserDTO userDTO = new UserDTO(user);
 
             if (user.getPerfil() == Perfis.PRESTADOR) {
@@ -70,16 +72,19 @@ public class AuthService {
         String encryptedPassword = new BCryptPasswordEncoder().encode(user.getSenha());
         user.setSenha(encryptedPassword);
 
+        userRepository.save(user);
+        UserDTO userDTO = new UserDTO(user);
+
         if (user.getPerfil() == Perfis.PRESTADOR) {
-            prestadorService.salvarPrestador(user);
+            Prestador prestador = prestadorService.salvarPrestador(user);
+            userDTO.setProfileId(prestador.getId());
         }
         else if (user.getPerfil() == Perfis.CLIENTE) {
-            clienteService.salvarCliente(user);
+            Cliente cliente = clienteService.salvarCliente(user);
+            userDTO.setProfileId(cliente.getId());
         }
 
-        userRepository.save(user);
-
-        return new UserDTO(user);
+        return userDTO;
     }
 
     private User validateUser(User user) {

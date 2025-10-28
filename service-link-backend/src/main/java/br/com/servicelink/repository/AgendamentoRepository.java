@@ -1,7 +1,7 @@
 package br.com.servicelink.repository;
 
 import br.com.servicelink.entity.Agendamento;
-import br.com.servicelink.enumerations.Status;
+import br.com.servicelink.enumerations.AgendamentoStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -54,11 +54,11 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             "JOIN a.servico s " +
             "WHERE s.prestador.id = :prestadorId " +
             "AND a.dataHora BETWEEN :dataInicio AND :dataFim " +
-            "AND a.status = :statusConcluido")
+            "AND a.agendamentoStatus = :statusConcluido")
     BigDecimal calcularFaturamentoPorPeriodo(
             @Param("prestadorId") Long prestadorId,
             @Param("dataInicio") LocalDateTime dataInicio,
             @Param("dataFim") LocalDateTime dataFim,
-            @Param("statusConcluido") Status statusConcluido
+            @Param("statusConcluido") AgendamentoStatus statusConcluido
     );
 }

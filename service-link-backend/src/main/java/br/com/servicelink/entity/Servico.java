@@ -12,10 +12,20 @@ public class Servico {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
+
+    @Column
     private String nome;
+
+    @Column(length = 300)
     private String descricao;
+
+    @Column
     private BigDecimal precoBase;
+
+    @Column
     private String categoria;
+
+    @Column
     private String imagemUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)

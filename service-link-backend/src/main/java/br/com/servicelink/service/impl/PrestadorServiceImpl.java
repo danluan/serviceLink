@@ -33,11 +33,11 @@ public class PrestadorServiceImpl implements PrestadorService {
     @Override
     public Prestador salvarPrestador(PrestadorCadastroDTO prestadorDTO) {
         User user = new User();
-        user.setNome(prestadorDTO.getNome());
-        user.setEmail(prestadorDTO.getEmail());
-        user.setSenha(prestadorDTO.getSenha());
+        user.setNome(prestadorDTO.nome());
+        user.setEmail(prestadorDTO.email());
+        user.setSenha(prestadorDTO.senha());
         user.setPerfil(Perfis.PRESTADOR);
-        user.setCpfCnpj(prestadorDTO.getCpfCnpj());
+        user.setCpfCnpj(prestadorDTO.cpfCnpj());
 
         Prestador prestador = new Prestador();
 

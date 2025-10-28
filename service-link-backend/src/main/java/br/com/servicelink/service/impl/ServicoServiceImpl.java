@@ -10,6 +10,7 @@ import br.com.servicelink.entity.Prestador;
 import br.com.servicelink.repository.PrestadorRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,27 +33,93 @@ public class ServicoServiceImpl implements ServicoService {
 
     @Override
     @Transactional
-    public List<Servico> adicionarServicos(Long prestadorId, List<ServicoDTO> servicosDTO) {
+    public List<Servico> adicionarServicos(Long prestadorId, List<ServicoDTO> servicosDTO) throws BadRequestException {
+
+        validarListaServicos(servicosDTO);
+        validarPrestadorId(prestadorId);
 
         Prestador prestador = prestadorRepository.findById(prestadorId)
                 .orElseThrow(() -> new EntityNotFoundException("Prestador não encontrado com o ID: " + prestadorId));
 
-        List<Servico> novosServicos = servicosDTO.stream()
-                .map(dto -> {
-                    Servico servico = new Servico();
-                    servico.setNome(dto.getNome());
-                    servico.setDescricao(dto.getDescricao());
-                    servico.setPrecoBase(dto.getPrecoBase());
-                    servico.setCategoria(dto.getCategoria());
-                    servico.setImagemUrl(dto.getImagemUrl());
+        for (ServicoDTO dto : servicosDTO) {
+            validarServicoDTO(dto);
+        }
 
-                    servico.setPrestador(prestador);
-                    return servico;
-                })
+        List<Servico> novosServicos = servicosDTO.stream()
+                .map(dto -> criarServicoFromDTO(dto, prestador))
                 .collect(Collectors.toList());
 
-
         return servicoRepository.saveAll(novosServicos);
+
+    }
+
+    @Override
+    public Servico editarServico(Long servicoId, ServicoDTO newServicoDTO) throws BadRequestException {
+        validarServicoDTO(newServicoDTO);
+
+        Servico servicoAtual = servicoRepository.findById(servicoId)
+                .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado com o ID: " + servicoId));
+
+        servicoAtual.setNome(newServicoDTO.nome().trim());
+        servicoAtual.setDescricao(newServicoDTO.descricao().trim());
+        servicoAtual.setPrecoBase(newServicoDTO.precoBase());
+        servicoAtual.setCategoria(newServicoDTO.categoria().trim());
+        servicoAtual.setImagemUrl(newServicoDTO.imagemUrl());
+
+        return servicoRepository.save(servicoAtual);
+    }
+
+    private void validarListaServicos(List<ServicoDTO> servicosDTO) throws BadRequestException {
+        if (servicosDTO == null || servicosDTO.isEmpty()) {
+            throw new BadRequestException("A lista de serviços não pode estar vazia.");
+        }
+    }
+
+    private void validarPrestadorId(Long prestadorId) throws BadRequestException {
+        if (prestadorId == null || prestadorId <= 0) {
+            throw new BadRequestException("ID do prestador inválido.");
+        }
+    }
+
+    private void validarServicoDTO(ServicoDTO dto) throws BadRequestException {
+        if (dto == null) {
+            throw new BadRequestException("Serviço não pode ser nulo.");
+        }
+
+        if (dto.nome() == null || dto.nome().trim().isEmpty()) {
+            throw new BadRequestException("Nome do serviço é obrigatório.");
+        }
+
+        if (dto.descricao() == null || dto.descricao().trim().isEmpty()) {
+            throw new BadRequestException("Descrição do serviço é obrigatória.");
+        }
+
+        if (dto.descricao().length() > 300) {
+            throw new BadRequestException("Descrição do serviço não pode exceder 300 caracteres.");
+        }
+
+        if (dto.precoBase() == null) {
+            throw new BadRequestException("Preço base do serviço é obrigatório.");
+        }
+
+        if (dto.precoBase().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+            throw new BadRequestException("Preço base deve ser maior que zero.");
+        }
+
+        if (dto.categoria() == null || dto.categoria().trim().isEmpty()) {
+            throw new BadRequestException("Categoria do serviço é obrigatória.");
+        }
+    }
+
+    private Servico criarServicoFromDTO(ServicoDTO dto, Prestador prestador) {
+        Servico servico = new Servico();
+        servico.setNome(dto.nome().trim());
+        servico.setDescricao(dto.descricao().trim());
+        servico.setPrecoBase(dto.precoBase());
+        servico.setCategoria(dto.categoria().trim());
+        servico.setImagemUrl(dto.imagemUrl());
+        servico.setPrestador(prestador);
+        return servico;
     }
 
     public List<ServicoDTO> buscarServicosPorCategoria(String categoria) {
@@ -61,15 +128,14 @@ public class ServicoServiceImpl implements ServicoService {
 
         // Mapeia a lista de entidades para a lista de DTOs
         return servicos.stream()
-                .map(servico -> {
-                    ServicoDTO dto = new ServicoDTO();
-                    dto.setNome(servico.getNome());
-                    dto.setDescricao(servico.getDescricao());
-                    dto.setPrecoBase(servico.getPrecoBase());
-                    dto.setCategoria(servico.getCategoria());
-                    dto.setImagemUrl(servico.getImagemUrl());
-                    return dto;
-                })
+                .map(servico -> new ServicoDTO(
+                        servico.getId(),
+                        servico.getNome(),
+                        servico.getDescricao(),
+                        servico.getPrecoBase(),
+                        servico.getCategoria(),
+                        servico.getImagemUrl()
+                ))
                 .collect(Collectors.toList());
     }
 
@@ -79,8 +145,9 @@ public class ServicoServiceImpl implements ServicoService {
     }
 
     @Override
-    public Optional<Servico> buscarServicoPorId(Long id) {
-        return servicoRepository.findById(id);
+    public Servico buscarServicoPorId(Long id) {
+        return servicoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado com o ID: " + id));
     }
 
     @Override

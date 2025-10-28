@@ -15,6 +15,8 @@ public class Agendamento {
 
     @Enumerated(EnumType.STRING)
     private AgendamentoStatus agendamentoStatus;
+
+    @Column
     private String observacao;
 
     @ManyToOne(fetch = FetchType.LAZY)
