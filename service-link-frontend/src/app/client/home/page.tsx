@@ -55,7 +55,9 @@ const HomePage = () => {
             <CardContent>
                 <Link href="/search-services">
               <Button className="w-full">
-                Explorar Serviços
+               <Link href="/search-services">
+                      Explorar Serviços
+               </Link>
               </Button>
                 </Link>
             </CardContent>
@@ -70,7 +72,9 @@ const HomePage = () => {
             </CardHeader>
             <CardContent>
               <Button variant="outline" className="w-full">
-                Ver Solicitações
+                <Link href="/client/appointments">
+                  Ver Agendamentos
+                </Link>
               </Button>
             </CardContent>
           </Card>
@@ -84,7 +88,9 @@ const HomePage = () => {
             </CardHeader>
             <CardContent>
               <Button variant="outline" className="w-full">
-                Editar Perfil
+                  <Link href="/client/my-profile/edit">
+                      Editar Perfil
+                  </Link>
               </Button>
             </CardContent>
           </Card>
