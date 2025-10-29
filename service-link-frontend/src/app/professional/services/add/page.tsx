@@ -41,14 +41,13 @@ const servicoSchema = z.object({
 type ServicoDTO = z.infer<typeof servicoSchema>;
 
 const categorias = [
-  "Limpeza",
-  "Jardinagem",
-  "Elétrica",
-  "Encanamento",
-  "Babá",
-  "Manutenção",
-  "Pintura",
-  "Outros"
+    "LIMPEZA",
+    "HIDRAULICA",
+    "ELETRICA",
+    "PINTURA",
+    "JARDINAGEM",
+    "COZINHA",
+    "OUTRAS"
 ];
 
 const Page = () => {

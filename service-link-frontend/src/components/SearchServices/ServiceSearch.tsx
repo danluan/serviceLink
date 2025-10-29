@@ -69,11 +69,13 @@ const ServiceSearch = ({ onFilter }: ServiceSearchProps) => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas</SelectItem>
-                <SelectItem value="Limpeza">Limpeza</SelectItem>
-                <SelectItem value="Jardinagem">Jardinagem</SelectItem>
-                <SelectItem value="Elétrica">Elétrica</SelectItem>
-                <SelectItem value="Encanamento">Encanamento</SelectItem>
-                <SelectItem value="Babá">Babá</SelectItem>
+                <SelectItem value="LIMPEZA">Limpeza</SelectItem>
+                <SelectItem value="HIDRAULICA">Hidráulica</SelectItem>
+                <SelectItem value="ELETRICA">Elétrica</SelectItem>
+                <SelectItem value="PINTURA">Pintura</SelectItem>
+                <SelectItem value="JARDINAGEM">Jardinagem</SelectItem>
+                  <SelectItem value="COZINHA">Cozinha</SelectItem>
+                  <SelectItem value="OUTRAS">Outras</SelectItem>
               </SelectContent>
             </Select>
           </div>
