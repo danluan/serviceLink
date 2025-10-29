@@ -23,6 +23,6 @@ public interface AgendamentoService {
     List<AgendamentoListagemDTO> listarProximos5Agendamentos(Long prestadorId);
     BigDecimal calcularFaturamentoMensal(Long prestadorId, int ano, int mes);
     Map<Integer, List<AgendamentoListagemDTO>> buscarAgendamentosPorMes(Long prestadorId, int ano, int mes);
-    Agendamento editarStatusAgendamento(Long agendamentoId, AgendamentoStatus status);
+    AgendamentoDTO editarStatusAgendamento(Long agendamentoId, AgendamentoStatus status);
 }
 

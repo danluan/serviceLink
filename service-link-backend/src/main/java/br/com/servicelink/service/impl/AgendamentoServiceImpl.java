@@ -5,7 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import br.com.servicelink.DTO.AgendamentoDTO;
@@ -18,7 +20,6 @@ import br.com.servicelink.repository.ClienteRepository;
 import br.com.servicelink.repository.ServicoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.servicelink.entity.Agendamento;
@@ -49,8 +50,13 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     @Transactional
     @Override
     public AgendamentoDTO salvarAgendamento(AgendamentoDTO agendamentoDTO) {
-        Cliente cliente = clienteRepository.findById(agendamentoDTO.clienteId())
-                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com o ID: " + agendamentoDTO.clienteId()));
+        Long usuarioId = agendamentoDTO.clienteId();
+
+        Cliente cliente = clienteRepository.findByUserId(usuarioId);
+
+        if (cliente == null) {
+            throw new EntityNotFoundException("Cliente não encontrado para o Usuário com ID: " + usuarioId);
+        }
 
         Servico servico = servicoRepository.findById(agendamentoDTO.servicoId())
                 .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado com o ID: " + agendamentoDTO.servicoId()));
@@ -63,13 +69,12 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         agendamento.setServico(servico);
         agendamento.setStatus(AgendamentoStatus.PENDENTE);
 
-        agendamentoRepository.save(agendamento);
-
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
         return new AgendamentoDTO(
-                agendamento.getDataHora(),
-                agendamento.getObservacao(),
-                agendamento.getId(),
-                agendamento.getServico().getId()
+                agendamentoSalvo.getDataHora(),
+                agendamentoSalvo.getObservacao(),
+                agendamentoSalvo.getCliente().getUser().getId(),
+                agendamentoSalvo.getServico().getId()
         );
     }
 
@@ -248,16 +253,21 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                 ));
     }
 
+    @Transactional
     @Override
-    public Agendamento editarStatusAgendamento(Long agendamentoId, AgendamentoStatus status){
-
-        Agendamento agendamento = agendamentoRepository.findById(agendamentoId).orElseThrow(
-                () -> new EntityNotFoundException("Agendamento não foi encontrado")
-        );
+    public AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatus status) {
+        Agendamento agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
 
         agendamento.setStatus(status);
-        agendamentoRepository.save(agendamento);
-        return agendamento;
-    }
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
 
+        // Converte a entidade salva para o DTO que a interface agora espera
+        return new AgendamentoDTO(
+                agendamentoSalvo.getDataHora(),
+                agendamentoSalvo.getObservacao(),
+                agendamentoSalvo.getCliente().getUser().getId(),
+                agendamentoSalvo.getServico().getId()
+        );
+    }
 }
