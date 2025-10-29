@@ -4,11 +4,17 @@ import br.com.servicelink.DTO.AgendamentoDTO;
 import br.com.servicelink.DTO.AgendamentoListagemDTO;
 import br.com.servicelink.entity.Agendamento;
 import br.com.servicelink.entity.Avaliacao;
+import br.com.servicelink.enumerations.AgendamentoStatus;
 import br.com.servicelink.exceptions.BusinessException;
 import br.com.servicelink.service.AgendamentoService;
 import br.com.servicelink.service.ServicoService;
+import jakarta.persistence.EntityNotFoundException;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -86,6 +92,16 @@ public class AgendamentoController {
             @RequestParam Integer ano,
             @RequestParam Integer mes) {
         return agendamentoService.buscarAgendamentosPorMes(prestadorId, ano, mes);
+    }
+
+    @PutMapping("/{agendamentoId}/status/{status}")
+    public ResponseEntity<Void> updateStatus(
+            @PathVariable Long agendamentoId,
+            @PathVariable AgendamentoStatus status
+    ) {
+        agendamentoService.editarStatusAgendamento(agendamentoId, status);
+
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -1,8 +1,6 @@
 package br.com.servicelink.security;
 
-import br.com.servicelink.security.SecurityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +37,8 @@ public class SecurityConfigurations {
                                 "/api/auth/login",
                                 "/api/auth/register",
                                 "/api/prestador",
-                                "/api/cliente").permitAll()
+                                "/api/cliente",
+                                "/api/whatsapp/webhook").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/user").hasRole("ADMIN")

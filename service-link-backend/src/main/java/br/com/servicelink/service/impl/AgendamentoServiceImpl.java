@@ -5,10 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import br.com.servicelink.DTO.AgendamentoDTO;
@@ -21,6 +18,7 @@ import br.com.servicelink.repository.ClienteRepository;
 import br.com.servicelink.repository.ServicoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.servicelink.entity.Agendamento;
@@ -249,4 +247,17 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                         Collectors.toList()
                 ));
     }
+
+    @Override
+    public Agendamento editarStatusAgendamento(Long agendamentoId, AgendamentoStatus status){
+
+        Agendamento agendamento = agendamentoRepository.findById(agendamentoId).orElseThrow(
+                () -> new EntityNotFoundException("Agendamento não foi encontrado")
+        );
+
+        agendamento.setStatus(status);
+        agendamentoRepository.save(agendamento);
+        return agendamento;
+    }
+
 }

@@ -9,6 +9,7 @@ import br.com.servicelink.DTO.AgendamentoDTO;
 import br.com.servicelink.DTO.AgendamentoListagemDTO;
 import br.com.servicelink.entity.Agendamento;
 import br.com.servicelink.entity.Avaliacao;
+import br.com.servicelink.enumerations.AgendamentoStatus;
 
 public interface AgendamentoService {
     AgendamentoDTO salvarAgendamento(AgendamentoDTO agendamentoDTO);
@@ -22,5 +23,6 @@ public interface AgendamentoService {
     List<AgendamentoListagemDTO> listarProximos5Agendamentos(Long prestadorId);
     BigDecimal calcularFaturamentoMensal(Long prestadorId, int ano, int mes);
     Map<Integer, List<AgendamentoListagemDTO>> buscarAgendamentosPorMes(Long prestadorId, int ano, int mes);
+    Agendamento editarStatusAgendamento(Long agendamentoId, AgendamentoStatus status);
 }
 

@@ -94,8 +94,14 @@ public class LLMServiceImpl implements LLMService {
         String prompt = String.format(
                 "Você é um extrator de informações de serviços domésticos. Sua única tarefa é analisar a mensagem do usuário e retornar APENAS a categoria do serviço e o nome do serviço, separados por um ponto e vírgula (;). " +
                         "Se a categoria não for encontrada, retorne 'OUTRA'.\n" +
-                        "Categorias de serviço: [HIDRÁULICA, ELÉTRICA, JARDINAGEM, LIMPEZA, OUTRA].\n" +
-                        "Exemplo de Retorno: 'HIDRÁULICA;conserto de torneira'.\n\n" +
+                        "Categorias de serviço: [LIMPEZA,\n" +
+                        "HIDRAULICA,\n" +
+                        "ELETRICA,\n" +
+                        "PINTURA,\n" +
+                        "JARDINAGEM,\n" +
+                        "COZINHA,\n" +
+                        "OUTRAS]." +
+                        "Exemplo de Retorno: 'HIDRAULICA;conserto de torneira'.\n\n" +
                         "Mensagem: \"%s\"",
                 mensagemCliente
         );
