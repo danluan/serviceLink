@@ -23,5 +23,5 @@ export interface AgendamentoRequest {
     clienteId: string;
     servicoId: string;
     dataHora: string;
-    descricaoCliente?: string;
+    observacao?: string;
 }

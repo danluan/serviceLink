@@ -14,6 +14,18 @@ public class AuthorizationService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findUserDetailsByEmail(email);
+        UserDetails user = userRepository.findUserDetailsByEmail(email);
+
+        System.out.println("\n--- DEBUG INÍCIO ---");
+        System.out.println("Buscando usuário pelo email: " + email);
+        String senhaHash = (user != null) ? user.getPassword() : "USUÁRIO NÃO ENCONTRADO";
+        System.out.println("SENHA HASH RETORNADA DO BANCO: " + senhaHash);
+        System.out.println("--- DEBUG FIM ---\n");
+
+        if (user == null) {
+            throw new UsernameNotFoundException("Usuário não encontrado " + email);
+        }
+
+        return user;
     }
 }

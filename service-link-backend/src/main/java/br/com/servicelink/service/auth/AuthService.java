@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,6 +36,9 @@ public class AuthService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public AuthResponseDTO login(AuthDTO authData) {
         try {
@@ -69,7 +73,8 @@ public class AuthService {
         if(userRepository.findUserDetailsByEmail(user.getEmail()) != null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já está em uso.");
         }
-        String encryptedPassword = new BCryptPasswordEncoder().encode(user.getSenha());
+        //String encryptedPassword = new BCryptPasswordEncoder().encode(user.getSenha());
+        String encryptedPassword = passwordEncoder.encode(user.getSenha());
         user.setSenha(encryptedPassword);
 
         userRepository.save(user);

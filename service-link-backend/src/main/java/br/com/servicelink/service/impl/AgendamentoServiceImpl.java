@@ -51,8 +51,13 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     @Transactional
     @Override
     public Agendamento salvarAgendamento(AgendamentoDTO agendamentoDTO) {
-        Cliente cliente = clienteRepository.findById(agendamentoDTO.clienteId())
-                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com o ID: " + agendamentoDTO.clienteId()));
+        Long usuarioId = agendamentoDTO.clienteId();
+
+        Cliente cliente = clienteRepository.findByUserId(usuarioId);
+
+        if (cliente == null) {
+            throw new EntityNotFoundException("Cliente não encontrado para o Usuário com ID: " + usuarioId);
+        }
 
         Servico servico = servicoRepository.findById(agendamentoDTO.servicoId())
                 .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado com o ID: " + agendamentoDTO.servicoId()));

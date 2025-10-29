@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 interface Service {
     id: number;
@@ -34,7 +35,9 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
       </CardContent>
       <CardFooter>
         <Button className="w-full">
-          Contrate Já
+            <Link href={`/client/appointments/new?serviceId=${service.id}`}>
+                Contrate Já
+            </Link>
         </Button>
       </CardFooter>
     </Card>

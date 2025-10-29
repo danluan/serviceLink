@@ -1,10 +1,8 @@
-// src/app/agendamentos/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AgendamentoRequest, Servico } from '@/types/agendamento';
-import { MOCK_SERVICOS } from '@/lib/mocks/services.mock';
-import { User } from '@/types/auth';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -17,57 +15,141 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
-// No mundo real, buscaríamos isso de uma API
-const servicos: Servico[] = MOCK_SERVICOS;
+type NewAppointmentFormData = Omit<AgendamentoRequest, 'clienteId'>;
 
 export default function AgendamentoPage() {
-    // --- Lógica de Autenticação (igual a Home) ---
-    const { user, logout } = useAuth();
+    const { user, logout, token } = useAuth(); // Pega user e token
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const initialServiceId = searchParams.get('serviceId');
 
-    const [formData, setFormData] = useState<Omit<AgendamentoRequest, 'clienteId'>>({
-        servicoId: '',
+    const [formData, setFormData] = useState<NewAppointmentFormData>({
+        servicoId: initialServiceId || '',
         dataHora: '',
-        descricaoCliente: '',
+        observacao: '',
     });
-    const [isLoading, setIsLoading] = useState(false);
-    const [formMessage, setFormMessage] = useState<string | null>(null);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Estados para os dados da página
+    const [listaServicos, setListaServicos] = useState<Servico[]>([]);
+    const [isLoadingServicos, setIsLoadingServicos] = useState(true); // Loading do <Select>
+
+    const [isLoading, setIsLoading] = useState(false); // Loading do botão Submit
+    const [formMessage, setFormMessage] = useState<string | null>(null); // Mensagens de feedback
+
+    useEffect(() => {
+        const fetchServicos = async () => {
+            setIsLoadingServicos(true);
+
+            if (!token) {
+                console.warn("Fetch de serviços em espera: token ainda não disponível.");
+                return; // Aborta a função se não houver token
+            }
+
+            console.log("Iniciando fetch de serviços com o token:", token);
+
+            try {
+                const response = await fetch('http://localhost:8080/api/servico', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        throw new Error('Você não tem permissão para ver esta lista.');
+                    }
+                    throw new Error('Falha ao carregar a lista de serviços.');
+                }
+
+                const data: Servico[] = await response.json();
+                console.log("Serviços carregados do backend:", data);
+                setListaServicos(data);
+
+            } catch (error: unknown) {
+                console.error('Erro ao buscar serviços:', error);
+                let errorMessage = 'Não foi possível carregar os serviços.';
+                if (error instanceof Error) { errorMessage = error.message; }
+                setFormMessage(`Erro: ${errorMessage}`);
+            } finally {
+                setIsLoadingServicos(false);
+            }
+        };
+        fetchServicos();
+    }, [token]);
+
+    // Pré-seleciona o serviço se veio da URL
+    useEffect(() => {
+        if (initialServiceId) {
+            setFormData(prev => ({ ...prev, servicoId: initialServiceId }));
+        }
+    }, [initialServiceId]);
+
+    // Handlers para os campos
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => { // Aceita Input e Textarea
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
-
     const handleSelectChange = (value: string) => {
         setFormData((prev) => ({ ...prev, servicoId: value }));
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    // Função de SUBMIT (INTEGRADA COM BACKEND)
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (!token || !user?.id) { // Precisa do token E do ID do usuário
+            setFormMessage("Erro: Autenticação inválida.");
+            return;
+        }
+        if (!formData.servicoId || !formData.dataHora) {
+            setFormMessage("Erro: Serviço e Data/Hora são obrigatórios.");
+            return;
+        }
+
+
         setIsLoading(true);
         setFormMessage(null);
 
-        // --- MUDANÇA IMPORTANTE ---
-        // Agora usamos o ID do usuário logado (do useAuth)
-        const dadosParaEnviar: AgendamentoRequest = {
-            ...formData,
-            clienteId: user?.id || '', // Usando o ID do usuário do contexto!
+        // Monta o DTO EXATO que o backend espera (AgendamentoDTO)
+        const dadosParaEnviar = {
+            clienteId: user.id, // ID do usuário logado
+            servicoId: formData.servicoId,
+            // Formata a data/hora local para ISO string UTC (padrão)
+            dataHora: new Date(formData.dataHora).toISOString(),
+            observacao: formData.observacao || null // Usa 'observacao'
         };
 
         try {
-            const response = await fetch('/api/agendamentos', {
+            console.log("Enviando POST /api/agendamento:", dadosParaEnviar);
+            // --- CHAMADA AO BACKEND REAL ---
+            const response = await fetch('http://localhost:8080/api/agendamento', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Envia o Token
+                },
                 body: JSON.stringify(dadosParaEnviar),
             });
-            // ... (resto da lógica de submit continua igual) ...
+
             const result = await response.json();
-            if (!response.ok) throw new Error(result.message || 'Erro ao agendar');
-            setFormMessage('Agendamento criado com sucesso! ✅');
-            setFormData({ servicoId: '', dataHora: '' });
-        } catch (error: any) {
+            if (!response.ok) {
+                throw new Error(result.message || `Erro ${response.status}`);
+            }
+
+            console.log("Agendamento criado:", result);
+            setFormMessage('Agendamento criado com sucesso! ✅ Redirecionando...');
+            setFormData({ servicoId: '', dataHora: '', observacao: '' }); // Limpa o form
+
+            setTimeout(() => { router.push('/client/appointments'); }, 2000);
+
+        } catch (error: unknown) {
             console.error('Erro no formulário:', error);
-            setFormMessage(`Erro: ${error.message}`);
+            let errorMessage = 'Erro ao criar agendamento.';
+            if (error instanceof Error) { errorMessage = error.message; }
+            setFormMessage(`Erro: ${errorMessage}`);
         } finally {
             setIsLoading(false);
         }
@@ -76,107 +158,56 @@ export default function AgendamentoPage() {
     return (
         <ProtectedRoute requiredRole="CLIENTE">
             <div className="min-h-screen bg-gray-50">
-                {/* Header (Copiado da Home) */}
+                {/* Header */}
                 <header className="bg-white shadow">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900">ServiceLink</h1>
-                            <p className="text-sm text-gray-600">Área do Cliente</p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="text-right">
-                                <p className="text-sm font-medium text-gray-900">{user?.nome || 'Usuário'}</p>
-                                <p className="text-xs text-gray-600">{user?.email}</p>
-                            </div>
-                            <Button variant="outline" onClick={logout}>
-                                Sair
-                            </Button>
-                        </div>
-                    </div>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center"><div><h1 className="text-2xl font-bold text-gray-900">ServiceLink</h1><p className="text-sm text-gray-600">Área do Cliente</p></div><div className="flex items-center gap-4"><div className="text-right"><p className="text-sm font-medium text-gray-900">{user?.nome || 'Usuário'}</p><p className="text-xs text-gray-600">{user?.email}</p></div><Button variant="outline" onClick={logout}>Sair</Button></div></div>
                 </header>
 
-                {/* Conteúdo Principal (Nosso formulário) */}
                 <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <Card className="max-w-lg mx-auto">
                         <CardHeader>
                             <CardTitle className="text-2xl">Novo Agendamento</CardTitle>
-                            <CardDescription>
-                                Preencha os dados abaixo para criar um novo agendamento.
-                            </CardDescription>
+                            <CardDescription>Preencha os dados.</CardDescription>
                         </CardHeader>
                         <CardContent>
+                            {/* Mensagem de Erro/Sucesso */}
+                            {formMessage && (
+                                <Alert variant={formMessage.includes('Erro') ? 'destructive' : 'default'} className={`mb-4 ${formMessage.includes('sucesso') ? 'bg-green-100 text-green-800 border-green-300' : ''}`}>
+                                    <AlertDescription>{formMessage}</AlertDescription>
+                                </Alert>
+                            )}
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                {/* Campo Cliente (Agora usa o nome do user logado) */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="cliente">Cliente</Label>
-                                    <Input id="cliente" value={user?.nome || 'Carregando...'} disabled />
-                                </div>
+                                {/* Campos Cliente, Serviço, Data/Hora, Observações */}
+                                <div className="space-y-2"> <Label htmlFor="cliente">Cliente</Label> <Input id="cliente" value={user?.nome || '...'} disabled /> </div>
 
-                                {/* --- O resto do formulário continua igual --- */}
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="servicoId">Serviço</Label>
+                                {/* --- CORREÇÃO 3: Desabilitar enquanto carrega serviços E no submit --- */}
+                                <div className="space-y-2"> <Label htmlFor="servicoId">Serviço *</Label>
                                     <Select
                                         name="servicoId"
                                         value={formData.servicoId}
                                         onValueChange={handleSelectChange}
+                                        required
+                                        disabled={isLoading || isLoadingServicos} // <-- CORRIGIDO
                                     >
-                                        <SelectTrigger id="servicoId">
-                                            <SelectValue placeholder="Selecione um serviço..." />
-                                        </SelectTrigger>
+                                        <SelectTrigger id="servicoId"> <SelectValue placeholder="Selecione..." /> </SelectTrigger>
+
+                                        {/* --- CORREÇÃO 4: Usar listaServicos e tratar o Loading --- */}
                                         <SelectContent>
-                                            {servicos.map((servico) => (
-                                                <SelectItem key={servico.id} value={servico.id}>
-                                                    {servico.nome} (R$ {servico.precoBase})
-                                                </SelectItem>
-                                            ))}
+                                            {isLoadingServicos ? (
+                                                <SelectItem value="loading" disabled>Carregando...</SelectItem>
+                                            ) : (
+                                                listaServicos.map((s) => ( // <-- CORRIGIDO (era 'servicos')
+                                                    <SelectItem key={s.id} value={String(s.id)}>
+                                                        {s.nome} (R$ {s.precoBase})
+                                                    </SelectItem>
+                                                ))
+                                            )}
                                         </SelectContent>
-                                    </Select>
-                                </div>
+                                    </Select> </div>
+                                <div className="space-y-2"> <Label htmlFor="dataHora">Data e Hora *</Label> <Input id="dataHora" name="dataHora" type="datetime-local" value={formData.dataHora} onChange={handleChange} required disabled={isLoading} /> </div>
+                                <div className="space-y-2"> <Label htmlFor="observacao">Observações (Opcional)</Label> <Textarea id="observacao" name="observacao" placeholder="Instruções..." value={formData.observacao} onChange={handleChange} disabled={isLoading} rows={3} /> </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="dataHora">Data e Hora</Label>
-                                    <Input
-                                        id="dataHora"
-                                        name="dataHora"
-                                        type="datetime-local"
-                                        value={formData.dataHora}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="descricaoCliente">Observações (Opcional)</Label>
-                                    <Textarea
-                                        id="descricaoCliente"
-                                        name="descricaoCliente" // Deve ser igual ao nome no useState
-                                        placeholder="Alguma instrução especial para o prestador? (Ex: Chave na portaria, Cuidado com o cachorro, etc.)"
-                                        value={formData.descricaoCliente}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, descricaoCliente: e.target.value }))} // Atualiza o estado
-                                        disabled={isLoading}
-                                        rows={3} // Define a altura inicial
-                                    />
-                                </div>
-
-                                <Button type="submit" className="w-full" disabled={isLoading}>
-                                    {isLoading ? (
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    ) : (
-                                        'Confirmar Agendamento'
-                                    )}
-                                </Button>
-
-                                {formMessage && (
-                                    <div
-                                        className={`p-3 rounded-md text-sm ${
-                                            formMessage.includes('Erro')
-                                                ? 'bg-red-100 text-red-800'
-                                                : 'bg-green-100 text-green-800'
-                                        }`}
-                                    >
-                                        {formMessage}
-                                    </div>
-                                )}
+                                <Button type="submit" className="w-full" disabled={isLoading}> {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Confirmar Agendamento'} </Button>
                             </form>
                         </CardContent>
                     </Card>
