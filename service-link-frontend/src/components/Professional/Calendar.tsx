@@ -33,7 +33,12 @@ const CalendarComponent = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDay, setSelectedDay] = useState<string | null>(null);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+    // Loading para a BUSCA do calendário
     const [loading, setLoading] = useState(false);
+
+    // Loading para a ATUALIZAÇÃO de status (guarda o ID do agendamento sendo atualizado)
+    const [updatingId, setUpdatingId] = useState<number | null>(null);
 
     const [appointmentsData, setAppointmentsData] = useState<MonthlyAppointments>({});
 
@@ -44,12 +49,14 @@ const CalendarComponent = () => {
         if (!authDataString || !token) return null;
         try {
             const authData = JSON.parse(authDataString);
+            // Corrigido: Assegura que profileId é usado para prestadorId se a API espera isso
             return { prestadorId: authData.profileId, token };
         } catch (e) {
             return null;
         }
     };
 
+    // ... (formatTime e getStatusColor mantidos) ...
     const formatTime = (dataHora: string): string => {
         try {
             return new Date(dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -104,6 +111,7 @@ const CalendarComponent = () => {
         try {
             setLoading(true);
 
+            // Corrigido o endpoint para usar API_BASE_URL
             const response = await fetch(`${API_BASE_URL}/api/agendamento/${auth.prestadorId}/agendamentos/mensal?ano=${yearParam}&mes=${monthParam}`, {
                 method: 'GET',
                 headers: {
@@ -113,25 +121,100 @@ const CalendarComponent = () => {
             });
 
             if (!response.ok) {
-                throw new Error("Erro ao buscar agendamentos do mês.");
+                // Tenta ler o erro do corpo, se houver
+                const errorData = await response.json().catch(() => ({ message: "Erro desconhecido" }));
+                throw new Error(errorData.message || "Erro ao buscar agendamentos do mês.");
             }
 
             const data: MonthlyAppointments = await response.json();
-            setAppointmentsData(data); // Armazena a estrutura { "dia": [serviços] }
+            setAppointmentsData(data);
 
         } catch (error) {
             console.error("Erro ao buscar agendamentos:", error);
-            toast.error("Não foi possível carregar a agenda.");
+            toast.error((error as Error).message || "Não foi possível carregar a agenda.");
         } finally {
             setLoading(false);
         }
     }, [year, month]); // Depende do mês e ano atualizados
 
+    const handleUpdateStatus = useCallback(async (appointment: AppointmentDTO, newStatus: string) => {
+        const auth = getAuthData();
+        if (!auth) {
+            toast.error("Sessão inválida. Faça login novamente.");
+            return;
+        }
+
+        setUpdatingId(appointment.id); // Inicia o loading para ESTE agendamento
+
+        try {
+            const url = `${API_BASE_URL}/api/agendamento/${appointment.id}/status/${newStatus}`;
+
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            });
+
+            // 1. TRATAMENTO DE ERRO (Códigos 4xx e 5xx)
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: response.statusText }));
+                // Lança o erro para o bloco 'catch'
+                throw new Error(errorData.message || `Erro ao atualizar o status: ${response.statusText}`);
+            }
+
+            let updatedAppointment: AppointmentDTO;
+
+            // 2. TRATAMENTO DE SUCESSO (Códigos 2xx)
+
+            // Verifica se a resposta tem corpo (ex: 200 OK)
+            if (response.status !== 204 && response.headers.get('content-length') !== '0') {
+                // Tenta ler o JSON se houver corpo
+                updatedAppointment = await response.json().catch(() => ({
+                    ...appointment,
+                    status: newStatus.toUpperCase() // Fallback
+                }));
+            } else {
+                // Se for 204 No Content ou sem corpo, cria o objeto atualizado localmente
+                updatedAppointment = {
+                    ...appointment,
+                    status: newStatus.toUpperCase()
+                };
+            }
+
+            // 3. ATUALIZAÇÃO DO ESTADO LOCAL:
+            setAppointmentsData(prevData => {
+                const dayKey = String(new Date(appointment.dataHora).getDate());
+
+                // Mapeia a lista de agendamentos para o dia e substitui o item atualizado
+                const updatedDayAppointments = (prevData[dayKey] || []).map(item =>
+                    item.id === appointment.id
+                        ? updatedAppointment // Usa o objeto final, seja da API ou local
+                        : item
+                );
+
+                return {
+                    ...prevData,
+                    [dayKey]: updatedDayAppointments,
+                };
+            });
+
+            toast.success(`Status de ${appointment.nomeServico} alterado para ${newStatus.toUpperCase()} com sucesso!`);
+
+        } catch (error) {
+            console.error("Falha ao atualizar o status:", error);
+            toast.error((error as Error).message || "Falha ao atualizar o status.");
+        } finally {
+            setUpdatingId(null); // Finaliza o loading
+        }
+    }, []);
+
+    // ... (useEffect e Handlers de navegação mantidos) ...
+
     useEffect(() => {
         fetchAppointments();
     }, [fetchAppointments]); // Rebusca sempre que o mês/ano mudar
-
-    // --- HANDLERS DE NAVEGAÇÃO ---
 
     const handleMonthChange = (direction: 'prev' | 'next') => {
         setCurrentDate(prevDate => {
@@ -139,12 +222,11 @@ const CalendarComponent = () => {
             newDate.setMonth(prevDate.getMonth() + (direction === 'next' ? 1 : -1));
             return newDate;
         });
-        // O useEffect chamará fetchAppointments automaticamente
     };
 
     const handleDayClick = (day: number) => {
         const dayKey = String(day);
-        if (appointmentsData[dayKey]) {
+        if (appointmentsData[dayKey] && appointmentsData[dayKey].length > 0) {
             setSelectedDay(dayKey);
             setIsSheetOpen(true);
         }
@@ -156,6 +238,7 @@ const CalendarComponent = () => {
 
     return (
         <>
+            {/* ... (Renderização do Calendário e Sheet) ... */}
             <Card className="shadow-card border-border">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                     <CardTitle className="text-xl font-semibold">Agenda</CardTitle>
@@ -251,52 +334,74 @@ const CalendarComponent = () => {
                         </SheetDescription>
                     </SheetHeader>
                     <div className="mt-6 space-y-4">
-                        {/* 3. Renderiza os Agendamentos REAIS do dia selecionado */}
-                        {appointmentsForSelectedDay.map((appointment) => (
-                            <Card key={appointment.id} className="border-border">
-                                <CardContent className="p-4">
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="flex items-center gap-2">
-                                            <Clock className="h-4 w-4 text-muted-foreground" />
-                                            <span className="font-semibold text-foreground">
-                          {formatTime(appointment.dataHora)}
-                        </span>
-                                        </div>
-                                        <Badge className={getStatusColor(appointment.status)}>
-                                            {appointment.status}
-                                        </Badge>
-                                    </div>
-                                    <h4 className="font-medium text-foreground mb-1">
-                                        {appointment.nomeServico}
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground mb-4">
-                                        Cliente: {appointment.nomeCliente}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground italic mb-4">
-                                        Obs: {appointment.observacao || 'Nenhuma observação.'}
-                                    </p>
+                        {appointmentsForSelectedDay.map((appointment) => {
+                            // Define o estado de loading para este item
+                            const isUpdating = updatingId === appointment.id;
 
-                                    {/* Botões de Ação */}
-                                    <div className="flex gap-2">
-                                        {appointment.status.toLowerCase() === "pendente" && (
-                                            <Button size="sm" className="flex-1" variant="default">
-                                                <CheckCircle className="h-4 w-4 mr-1" />
-                                                Confirmar
+                            return (
+                                <Card key={appointment.id} className="border-border">
+                                    <CardContent className="p-4">
+                                        <div className="flex items-start justify-between mb-3">
+                                            <div className="flex items-center gap-2">
+                                                <Clock className="h-4 w-4 text-muted-foreground" />
+                                                <span className="font-semibold text-foreground">
+                              {formatTime(appointment.dataHora)}
+                            </span>
+                                            </div>
+                                            <Badge className={getStatusColor(appointment.status)}>
+                                                {appointment.status}
+                                            </Badge>
+                                        </div>
+                                        <h4 className="font-medium text-foreground mb-1">
+                                            {appointment.nomeServico}
+                                        </h4>
+                                        <p className="text-sm text-muted-foreground mb-4">
+                                            Cliente: {appointment.nomeCliente}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground italic mb-4">
+                                            Obs: {appointment.observacao || 'Nenhuma observação.'}
+                                        </p>
+
+                                        {/* Botões de Ação */}
+                                        <div className="flex gap-2">
+                                            {appointment.status.toLowerCase() === "pendente" && (
+                                                <Button
+                                                    size="sm"
+                                                    className="flex-1"
+                                                    variant="default"
+                                                    onClick={() => handleUpdateStatus(appointment, "CONFIRMADO")}
+                                                    disabled={isUpdating} // Usa o loading específico
+                                                >
+                                                    {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-1" />}
+                                                    {isUpdating ? 'Confirmando...' : 'Confirmar'}
+                                                </Button>
+                                            )}
+                                            {appointment.status.toLowerCase() !== "concluido" && (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="flex-1"
+                                                    onClick={() => handleUpdateStatus(appointment, "CONCLUIDO")}
+                                                    disabled={isUpdating}
+                                                >
+                                                    {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Concluir'}
+                                                </Button>
+                                            )}
+                                            <Button
+                                                size="sm"
+                                                variant="destructive"
+                                                className="flex-1"
+                                                onClick={() => handleUpdateStatus(appointment, "CANCELADO")}
+                                                disabled={isUpdating}
+                                            >
+                                                {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4 mr-1" />}
+                                                {isUpdating ? 'Cancelando...' : 'Cancelar'}
                                             </Button>
-                                        )}
-                                        {appointment.status.toLowerCase() !== "concluido" && (
-                                            <Button size="sm" variant="outline" className="flex-1">
-                                                Concluir
-                                            </Button>
-                                        )}
-                                        <Button size="sm" variant="destructive" className="flex-1">
-                                            <XCircle className="h-4 w-4 mr-1" />
-                                            Cancelar
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        )}
                     </div>
                 </SheetContent>
             </Sheet>
