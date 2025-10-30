@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Link from 'next/link';
+import LogadoNavbar from "@/components/Professional/LogadoNavbar";
 
 const HomePage = () => {
   const { user, logout } = useAuth();
@@ -13,24 +14,7 @@ const HomePage = () => {
   return (
     <ProtectedRoute requiredRole="CLIENTE">
       <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <header className="bg-white shadow">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">ServiceLink</h1>
-              <p className="text-sm text-gray-600">Área do Cliente</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{user?.nome || 'Usuário'}</p>
-                <p className="text-xs text-gray-600">{user?.email}</p>
-              </div>
-              <Button variant="outline" onClick={logout}>
-                Sair
-              </Button>
-            </div>
-          </div>
-        </header>
+          <LogadoNavbar/>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -55,7 +39,9 @@ const HomePage = () => {
             <CardContent>
                 <Link href="/search-services">
               <Button className="w-full">
-                Explorar Serviços
+               <Link href="/search-services">
+                      Explorar Serviços
+               </Link>
               </Button>
                 </Link>
             </CardContent>
@@ -70,7 +56,9 @@ const HomePage = () => {
             </CardHeader>
             <CardContent>
               <Button variant="outline" className="w-full">
-                Ver Solicitações
+                <Link href="/client/appointments">
+                  Ver Agendamentos
+                </Link>
               </Button>
             </CardContent>
           </Card>
@@ -84,7 +72,9 @@ const HomePage = () => {
             </CardHeader>
             <CardContent>
               <Button variant="outline" className="w-full">
-                Editar Perfil
+                  <Link href="/client/my-profile/edit">
+                      Editar Perfil
+                  </Link>
               </Button>
             </CardContent>
           </Card>

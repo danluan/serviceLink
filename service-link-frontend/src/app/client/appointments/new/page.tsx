@@ -6,8 +6,6 @@ import { AgendamentoRequest, Servico } from '@/types/agendamento';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import WhatsAppButton from "@/components/WhatsAppButton";
-
-// --- Componentes SHADCN/UI ---
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -16,11 +14,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2 } from 'lucide-react';
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import LogadoNavbar from "@/components/Client/LogHeader";
 
 type NewAppointmentFormData = Omit<AgendamentoRequest, 'clienteId'>;
 
 export default function AgendamentoPage() {
-    const { user, logout, token } = useAuth(); // Pega user e token
+    const { user, token } = useAuth(); // Pega user e token
     const router = useRouter();
     const searchParams = useSearchParams();
     const initialServiceId = searchParams.get('serviceId');
@@ -96,7 +95,6 @@ export default function AgendamentoPage() {
         setFormData((prev) => ({ ...prev, servicoId: value }));
     };
 
-    // Função de SUBMIT (INTEGRADA COM BACKEND)
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -113,7 +111,6 @@ export default function AgendamentoPage() {
         setIsLoading(true);
         setFormMessage(null);
 
-        // Monta o DTO EXATO que o backend espera (AgendamentoDTO)
         const dadosParaEnviar = {
             clienteId: user.id, // ID do usuário logado
             servicoId: formData.servicoId,
@@ -158,10 +155,7 @@ export default function AgendamentoPage() {
     return (
         <ProtectedRoute requiredRole="CLIENTE">
             <div className="min-h-screen bg-gray-50">
-                {/* Header */}
-                <header className="bg-white shadow">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center"><div><h1 className="text-2xl font-bold text-gray-900">ServiceLink</h1><p className="text-sm text-gray-600">Área do Cliente</p></div><div className="flex items-center gap-4"><div className="text-right"><p className="text-sm font-medium text-gray-900">{user?.nome || 'Usuário'}</p><p className="text-xs text-gray-600">{user?.email}</p></div><Button variant="outline" onClick={logout}>Sair</Button></div></div>
-                </header>
+                <LogadoNavbar/>
 
                 <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <Card className="max-w-lg mx-auto">

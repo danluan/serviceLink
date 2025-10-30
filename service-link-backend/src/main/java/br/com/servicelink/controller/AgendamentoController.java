@@ -94,14 +94,9 @@ public class AgendamentoController {
         return agendamentoService.buscarAgendamentosPorMes(prestadorId, ano, mes);
     }
 
-    @PutMapping("/{agendamentoId}/status/{status}")
-    public ResponseEntity<Void> updateStatus(
-            @PathVariable Long agendamentoId,
-            @PathVariable AgendamentoStatus status
-    ) {
-        agendamentoService.editarStatusAgendamento(agendamentoId, status);
-
-        return ResponseEntity.noContent().build();
+    @GetMapping("/cliente/{clienteId}/agendamentos")
+    public List<AgendamentoListagemDTO> listarAgendamentosDoCliente(@PathVariable Long clienteId) {
+        return agendamentoService.listarAgendamentosPorCliente(clienteId);
     }
 
 }

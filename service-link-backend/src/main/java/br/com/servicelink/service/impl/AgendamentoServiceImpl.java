@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -253,21 +254,10 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                 ));
     }
 
-    @Transactional
-    @Override
-    public AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatus status) {
-        Agendamento agendamento = agendamentoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
-
-        agendamento.setStatus(status);
-        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
-
-        // Converte a entidade salva para o DTO que a interface agora espera
-        return new AgendamentoDTO(
-                agendamentoSalvo.getDataHora(),
-                agendamentoSalvo.getObservacao(),
-                agendamentoSalvo.getCliente().getUser().getId(),
-                agendamentoSalvo.getServico().getId()
-        );
+    public List<AgendamentoListagemDTO> listarAgendamentosPorCliente(Long clienteId) {
+        return agendamentoRepository.findByClienteId(clienteId)
+                .stream()
+                .map(AgendamentoListagemDTO::new)
+                .toList();
     }
 }
