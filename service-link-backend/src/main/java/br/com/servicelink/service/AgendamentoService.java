@@ -25,5 +25,6 @@ public interface AgendamentoService {
     BigDecimal calcularFaturamentoMensal(Long prestadorId, int ano, int mes);
     Map<Integer, List<AgendamentoListagemDTO>> buscarAgendamentosPorMes(Long prestadorId, int ano, int mes);
     public List<AgendamentoListagemDTO> listarAgendamentosPorCliente(Long clienteId);
+    AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatus status);
 }
 

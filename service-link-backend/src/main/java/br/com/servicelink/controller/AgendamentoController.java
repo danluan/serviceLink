@@ -101,4 +101,13 @@ public class AgendamentoController {
         return agendamentoService.listarAgendamentosPorCliente(clienteId);
     }
 
+    @PutMapping("/{agendamentoId}/status/{status}")
+    public ResponseEntity<Void> updateStatus(
+            @PathVariable Long agendamentoId,
+            @PathVariable AgendamentoStatus status
+    ) {
+        agendamentoService.editarStatusAgendamento(agendamentoId, status);
+        return ResponseEntity.noContent().build();
+    }
+
 }

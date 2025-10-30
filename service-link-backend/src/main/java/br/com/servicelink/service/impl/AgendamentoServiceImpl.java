@@ -288,4 +288,25 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                 .map(AgendamentoListagemDTO::new)
                 .toList();
     }
+
+
+    @Transactional
+    @Override
+    public AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatus status) {
+        Agendamento agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
+        agendamento.setStatus(status);
+
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+
+        return new AgendamentoDTO(
+                agendamentoSalvo.getId(),
+                agendamentoSalvo.getDataHora(),
+                agendamentoSalvo.getObservacao(),
+                agendamentoSalvo.getStatus().toString(),
+                agendamentoSalvo.getCliente().getUser().getId(),
+                agendamentoSalvo.getServico().getId(),
+                null
+        );
+    }
 }
