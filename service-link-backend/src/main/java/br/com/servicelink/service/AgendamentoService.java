@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import br.com.servicelink.DTO.AgendamentoDTO;
 import br.com.servicelink.DTO.AgendamentoListagemDTO;
+import br.com.servicelink.DTO.AvaliacaoDTO;
 import br.com.servicelink.entity.Agendamento;
 import br.com.servicelink.entity.Avaliacao;
 import br.com.servicelink.enumerations.AgendamentoStatus;
@@ -17,8 +18,8 @@ public interface AgendamentoService {
     AgendamentoListagemDTO buscarAgendamentosPorId(Long id);
     void deletarAgendamento(Long id);
     List<AgendamentoListagemDTO> listarAgendamentosPorPrestador(Long prestadorId);
-    Avaliacao avaliacaoPorAgendamentoId(Long id);
-    void adicionarAvaliacaoAoAgendamento(Long id, Avaliacao avaliacao);
+    AvaliacaoDTO avaliacaoPorAgendamentoId(Long id);
+    AgendamentoDTO adicionarAvaliacaoAoAgendamento(Long id, AvaliacaoDTO avaliacaoDTO);
     List<AgendamentoListagemDTO> listarAgendamentosDoDia(Long prestadorId);
     List<AgendamentoListagemDTO> listarProximos5Agendamentos(Long prestadorId);
     BigDecimal calcularFaturamentoMensal(Long prestadorId, int ano, int mes);

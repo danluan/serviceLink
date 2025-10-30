@@ -52,7 +52,6 @@ public class User implements UserDetails {
 
     }
 
-    // métodos UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
@@ -60,7 +59,7 @@ public class User implements UserDetails {
             case ADMIN -> authorities.add(new SimpleGrantedAuthority("ADMIN"));
             case CLIENTE -> authorities.add(new SimpleGrantedAuthority("CLIENTE"));
             case PRESTADOR -> authorities.add(new SimpleGrantedAuthority("PRESTADOR"));
-            default -> throw new BusinessException("Unexpected value: " + this.perfil); //TODO Criação de Exception personalizada
+            default -> throw new BusinessException("Unexpected value: " + this.perfil);
         }
         return authorities;
     }

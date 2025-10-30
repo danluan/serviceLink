@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import br.com.servicelink.DTO.AgendamentoDTO;
 import br.com.servicelink.DTO.AgendamentoListagemDTO;
+import br.com.servicelink.DTO.AvaliacaoDTO;
 import br.com.servicelink.entity.Avaliacao;
 import br.com.servicelink.entity.Cliente;
 import br.com.servicelink.entity.Servico;
@@ -51,8 +52,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     @Transactional
     @Override
     public AgendamentoDTO salvarAgendamento(AgendamentoDTO agendamentoDTO) {
-        Long usuarioId = agendamentoDTO.clienteId();
 
+        Long usuarioId = agendamentoDTO.clienteId();
         Cliente cliente = clienteRepository.findByUserId(usuarioId);
 
         if (cliente == null) {
@@ -71,12 +72,16 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         agendamento.setStatus(AgendamentoStatus.PENDENTE);
 
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
-        return new AgendamentoDTO(
+        AgendamentoDTO dto = new AgendamentoDTO(
+                agendamentoSalvo.getId(),
                 agendamentoSalvo.getDataHora(),
                 agendamentoSalvo.getObservacao(),
+                agendamentoSalvo.getStatus().toString(),
                 agendamentoSalvo.getCliente().getUser().getId(),
-                agendamentoSalvo.getServico().getId()
+                agendamentoSalvo.getServico().getId(),
+                null
         );
+        return dto;
     }
 
     @Transactional
@@ -130,20 +135,43 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     }
 
     @Override
-    public Avaliacao avaliacaoPorAgendamentoId(Long id) {
+    public AvaliacaoDTO avaliacaoPorAgendamentoId(Long id) {
         Agendamento agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
 
-        return agendamento.getAvaliacao();
+        try {
+            Avaliacao avaliacao = agendamento.getAvaliacao();
+            AvaliacaoDTO avaliacaoDTO = new AvaliacaoDTO(
+                    avaliacao.getId(),
+                    avaliacao.getEstrelas(),
+                    avaliacao.getComentario());
+            return avaliacaoDTO;
+        } catch (Exception e) {
+            throw new EntityNotFoundException("Avaliação não encontrada para o Agendamento com o ID: " + id);
+        }
     }
 
     @Override
-    public void adicionarAvaliacaoAoAgendamento(Long id, Avaliacao avaliacao) {
-        Agendamento agendamento = agendamentoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
+    public AgendamentoDTO adicionarAvaliacaoAoAgendamento(Long agendamentoId, AvaliacaoDTO avaliacaoDTO) {
+        Agendamento agendamento = agendamentoRepository.findById(agendamentoId)
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + agendamentoId));
+
+        Avaliacao avaliacao = new Avaliacao();
+        avaliacao.setEstrelas(avaliacaoDTO.estrelas());
+        avaliacao.setComentario(avaliacaoDTO.comentario());
 
         agendamento.setAvaliacao(avaliacao);
         agendamentoRepository.save(agendamento);
+
+        return new AgendamentoDTO(
+                agendamento.getId(),
+                agendamento.getDataHora(),
+                agendamento.getObservacao(),
+                agendamento.getStatus().toString(),
+                agendamento.getCliente().getId(),
+                agendamento.getServico().getId(),
+                avaliacaoDTO
+        );
     }
 
     @Transactional

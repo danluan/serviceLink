@@ -2,6 +2,7 @@ package br.com.servicelink.controller;
 
 import br.com.servicelink.DTO.AgendamentoDTO;
 import br.com.servicelink.DTO.AgendamentoListagemDTO;
+import br.com.servicelink.DTO.AvaliacaoDTO;
 import br.com.servicelink.entity.Agendamento;
 import br.com.servicelink.entity.Avaliacao;
 import br.com.servicelink.enumerations.AgendamentoStatus;
@@ -39,7 +40,8 @@ public class AgendamentoController {
 
     @PostMapping
     public AgendamentoDTO save(@RequestBody AgendamentoDTO agendamentoDTO){
-        return agendamentoService.salvarAgendamento(agendamentoDTO);
+        AgendamentoDTO newAgendamento = agendamentoService.salvarAgendamento(agendamentoDTO);
+        return newAgendamento;
     }
 
     @DeleteMapping(value = "/{id}")
@@ -53,18 +55,18 @@ public class AgendamentoController {
     }
 
     @GetMapping("/{id}/avaliacao")
-    public Avaliacao avaliacaoPorAgendamento(@PathVariable Long id) {
+    public AvaliacaoDTO avaliacaoPorAgendamento(@PathVariable Long id) {
         try {
-            Avaliacao avaliacao = agendamentoService.avaliacaoPorAgendamentoId(id);
+            AvaliacaoDTO avaliacao = agendamentoService.avaliacaoPorAgendamentoId(id);
             return avaliacao;
         } catch (Exception e) {
-            return null;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Avaliação não encontrada para o agendamento ID: " + id, e);
         }
     }
 
     @PostMapping("/{id}/avaliacao")
-    public void avaliacao(@PathVariable Long id, @RequestBody Avaliacao avaliacao) {
-        agendamentoService.adicionarAvaliacaoAoAgendamento(id, avaliacao);
+    public void avaliacao(@PathVariable Long id, @RequestBody AvaliacaoDTO avaliacaoDTO) {
+        agendamentoService.adicionarAvaliacaoAoAgendamento(id, avaliacaoDTO);
     }
 
     @GetMapping("/{prestadorId}/agendamentos-hoje")
