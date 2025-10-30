@@ -88,4 +88,9 @@ public class AgendamentoController {
         return agendamentoService.buscarAgendamentosPorMes(prestadorId, ano, mes);
     }
 
+    @GetMapping("/cliente/{clienteId}/agendamentos")
+    public List<AgendamentoListagemDTO> listarAgendamentosDoCliente(@PathVariable Long clienteId) {
+        return agendamentoService.listarAgendamentosPorCliente(clienteId);
+    }
+
 }

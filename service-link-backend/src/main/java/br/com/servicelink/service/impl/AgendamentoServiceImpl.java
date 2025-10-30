@@ -247,4 +247,11 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                         Collectors.toList()
                 ));
     }
+
+    public List<AgendamentoListagemDTO> listarAgendamentosPorCliente(Long clienteId) {
+        return agendamentoRepository.findByClienteId(clienteId)
+                .stream()
+                .map(AgendamentoListagemDTO::new)
+                .toList();
+    }
 }

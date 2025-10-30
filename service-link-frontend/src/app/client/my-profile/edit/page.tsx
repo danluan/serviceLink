@@ -1,4 +1,3 @@
-// src/app/meu-perfil/editar/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,12 +7,11 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Button } from '@/components/ui/button';
-
-// --- Componentes SHADCN/UI ---
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
+import LogHeader from "@/components/Client/LogHeader";
 
 type ProfileFormData = Pick<User, 'nome' | 'email' | 'telefone' | 'cpfCnpj'>;
 
@@ -41,8 +39,8 @@ export default function EditarPerfilPage() {
             });
             setIsLoading(false);
         }
-        // Se user for null, o isLoading continua true até o user carregar
-    }, [user]); // Roda quando o 'user' do AuthContext mudar
+
+    }, [user]);
 
     // Função para atualizar o estado do formulário
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,14 +95,7 @@ export default function EditarPerfilPage() {
     return (
         <ProtectedRoute requiredRole="CLIENTE">
             <div className="min-h-screen bg-gray-50">
-                {/* --- CABEÇALHO (Use o AppHeader ou cole o código aqui) --- */}
-                <header className="bg-white shadow">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                        <div> <h1 className="text-2xl font-bold text-gray-900">ServiceLink</h1> <p className="text-sm text-gray-600">Área do Cliente</p> </div>
-                        <div className="flex items-center gap-4"> <div className="text-right"> <p className="text-sm font-medium text-gray-900">{user?.nome || 'Usuário'}</p> <p className="text-xs text-gray-600">{user?.email}</p> </div> <Button variant="outline" onClick={logout}> Sair </Button> </div>
-                    </div>
-                </header>
-                {/* --- FIM DO CABEÇALHO --- */}
+                <LogHeader/>
 
                 <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {isLoading ? (
