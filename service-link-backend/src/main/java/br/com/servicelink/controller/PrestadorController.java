@@ -19,11 +19,22 @@ public class PrestadorController {
     @Autowired
     private PrestadorService prestadorService;
 
+    /**
+     * Lista todos os prestadores cadastrados.
+     *
+     * @return Lista de prestadores
+     */
     @GetMapping
     public List<PrestadorDTO> findAll(){
         return prestadorService.listarPrestadores();
     }
 
+    /**
+     * Busca um prestador específico por ID.
+     *
+     * @param id ID do prestador
+     * @return Dados do prestador
+     */
     @GetMapping(value = "/{id}")
     public PrestadorDTO findById(@PathVariable Long id){
         try {
@@ -37,6 +48,11 @@ public class PrestadorController {
         }
     }
 
+    /**
+     * Desativa um prestador.
+     *
+     * @param id ID do prestador a ser desativado
+     */
     @DeleteMapping(value = "/{id}")
     public void delete(@PathVariable Long id){
         prestadorService.deletarPrestador(id);

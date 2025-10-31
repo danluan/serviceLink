@@ -18,6 +18,11 @@ public class WahaController {
     @Autowired
     ChatOrchestrator chatOrchestrator;
 
+    /**
+     * Processa mensagens recebidas do WhatsApp via webhook.
+     *
+     * @param payload Dados da mensagem recebida do WhatsApp
+     */
     @PostMapping("/webhook")
     public void handleIncomingMessage(@RequestBody JsonNode payload) {
         String sessionId = payload.get("session").asText();

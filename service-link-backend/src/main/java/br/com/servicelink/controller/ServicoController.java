@@ -6,7 +6,6 @@ import br.com.servicelink.entity.Servico;
 import br.com.servicelink.service.ServicoService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/servico")
@@ -23,7 +21,17 @@ public class ServicoController {
     @Autowired
     private ServicoService servicoService;
 
-    //TODO: Talvez implementar busca com parametros para não precisa de um endpoint específico
+    /**
+     * Busca serviços com filtros opcionais. Se nenhum filtro for fornecido, retorna todos os serviços.
+     *
+     * @param id ID do serviço
+     * @param nome Nome do serviço
+     * @param descricao Descrição do serviço
+     * @param precoMin Preço mínimo
+     * @param precoMax Preço máximo
+     * @param categoria Categoria do serviço
+     * @return Lista de serviços que atendem aos filtros
+     */
     @GetMapping()
     public List<Servico> findServico(
             @RequestParam(required = false) Long id,
@@ -47,11 +55,23 @@ public class ServicoController {
         }
     }
 
+    /**
+     * Remove um serviço.
+     *
+     * @param id ID do serviço a ser removido
+     */
     @DeleteMapping(value = "/{id}")
     public void delete(@PathVariable Long id){
         servicoService.deletarServico(id);
     }
 
+    /**
+     * Adiciona uma lista de serviços a um prestador.
+     *
+     * @param prestadorId ID do prestador
+     * @param servicosDTO Lista de serviços a serem adicionados
+     * @return Lista de serviços criados
+     */
     @PostMapping("/prestador/{prestadorId}")
     public List<Servico> addServicos(@PathVariable Long prestadorId, @RequestBody @Valid List<ServicoDTO> servicosDTO) {
         try {
@@ -67,6 +87,13 @@ public class ServicoController {
         }
     }
 
+    /**
+     * Atualiza um serviço existente.
+     *
+     * @param servicoDTO Dados do serviço a ser atualizado
+     * @param servicoId ID do serviço
+     * @return Serviço atualizado
+     */
     @PutMapping("/{servicoId}")
     public Servico atualizarServicos(@RequestBody ServicoDTO servicoDTO, @PathVariable Long servicoId) {
         try {
@@ -82,8 +109,15 @@ public class ServicoController {
         }
     }
 
+    /**
+     * Lista todos os serviços oferecidos por um prestador específico.
+     *
+     * @param prestadorId ID do prestador
+     * @return Lista de serviços do prestador
+     */
     @GetMapping("/prestador/{prestadorId}")
     public List<Servico> getServicosPrestador(@PathVariable Long prestadorId) {
         return servicoService.buscarServicosPorPrestadorId(prestadorId);
     }
 }
+
