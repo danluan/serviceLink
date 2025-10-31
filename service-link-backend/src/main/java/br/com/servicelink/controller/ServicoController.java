@@ -40,7 +40,11 @@ public class ServicoController {
         }
 
         BuscaServicosDTO filtro = new BuscaServicosDTO(id, nome, descricao, precoMin, precoMax, categoria);
-        return servicoService.buscarServico(filtro);
+        try{
+            return servicoService.buscarServico(filtro);
+        } catch (BadRequestException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @DeleteMapping(value = "/{id}")
