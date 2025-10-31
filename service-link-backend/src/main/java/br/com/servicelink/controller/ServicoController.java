@@ -78,11 +78,6 @@ public class ServicoController {
         }
     }
 
-    @GetMapping("/categoria")
-    public List<ServicoDTO> buscarPorCategoria(@RequestParam String categoria) {
-        return servicoService.buscarServicosPorCategoria(categoria);
-    }
-
     @GetMapping("/prestador/{prestadorId}")
     public List<Servico> getServicosPrestador(@PathVariable Long prestadorId) {
         return servicoService.buscarServicosPorPrestadorId(prestadorId);

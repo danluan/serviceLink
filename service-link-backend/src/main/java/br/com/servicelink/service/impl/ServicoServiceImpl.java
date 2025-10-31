@@ -56,6 +56,8 @@ public class ServicoServiceImpl implements ServicoService {
 
     @Override
     public Servico editarServico(Long servicoId, ServicoDTO newServicoDTO) throws BadRequestException {
+        validarServicoId(servicoId);
+
         validarServicoDTO(newServicoDTO);
 
         Servico servicoAtual = servicoRepository.findById(servicoId)
@@ -112,6 +114,23 @@ public class ServicoServiceImpl implements ServicoService {
         }
     }
 
+    private void validarBuscaServicoDTO(BuscaServicosDTO dto) throws BadRequestException {
+        if (dto == null) {
+            throw new BadRequestException("Serviço não pode ser nulo.");
+        }
+
+        if (dto.precoMax().compareTo(dto.precoMin()) < 1) {
+            throw new BadRequestException("Preço max deve ser maior que preço min");
+        }
+
+        if (
+                dto.precoMax().compareTo(java.math.BigDecimal.ZERO) <= 0
+                &&  dto.precoMin().compareTo(java.math.BigDecimal.ZERO) <= 0
+        ) {
+            throw new BadRequestException("Preço deve ser maior que zero.");
+        }
+    }
+
     private Servico criarServicoFromDTO(ServicoDTO dto, Prestador prestador) {
         Servico servico = new Servico();
         servico.setNome(dto.nome().trim());
@@ -123,43 +142,17 @@ public class ServicoServiceImpl implements ServicoService {
         return servico;
     }
 
-    public List<ServicoDTO> buscarServicosPorCategoria(String categoria) {
-
-        List<Servico> servicos = servicoRepository.findByCategoria(categoria);
-
-        // Mapeia a lista de entidades para a lista de DTOs
-        return servicos.stream()
-                .map(servico -> new ServicoDTO(
-                        servico.getId(),
-                        servico.getNome(),
-                        servico.getDescricao(),
-                        servico.getPrecoBase(),
-                        servico.getCategoria(),
-                        servico.getImagemUrl()
-                ))
-                .collect(Collectors.toList());
-    }
-
     @Override
     public List<Servico> listarServicos() {
         return servicoRepository.findAll();
     }
 
-    @Override
-    public Servico buscarServicoPorId(Long id) {
-        return servicoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado com o ID: " + id));
-    }
 
     @Override
     public void deletarServico(Long id) {
         servicoRepository.deleteById(id);
     }
 
-    @Override
-    public List<Servico> buscarServicoPorNome(String nome) {
-        return servicoRepository.findByNomeContainingIgnoreCase(nome);
-    }
 
     @Override
     public List<Servico> buscarServicosPorPrecoBase(String categoria, String nome) {
@@ -179,7 +172,10 @@ public class ServicoServiceImpl implements ServicoService {
         return servicos;
     }
 
-    public List<Servico> buscarServico(BuscaServicosDTO servicoDTO) {
+    @Override
+    public List<Servico> buscarServico(BuscaServicosDTO servicoDTO) throws BadRequestException {
+
+        validarBuscaServicoDTO(servicoDTO);
 
         List<Servico> servicos = servicoRepository.buscarServicos(
                 servicoDTO.id(),
@@ -191,5 +187,11 @@ public class ServicoServiceImpl implements ServicoService {
         );
 
         return servicos;
+    }
+
+    private void validarServicoId(Long servicoId) throws BadRequestException {
+        if (servicoId == null || servicoId <= 0) {
+            throw new BadRequestException("Id do Serviço inválido");
+        }
     }
 }
