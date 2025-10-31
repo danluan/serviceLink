@@ -3,24 +3,17 @@ package br.com.servicelink.controller;
 import br.com.servicelink.DTO.AgendamentoDTO;
 import br.com.servicelink.DTO.AgendamentoListagemDTO;
 import br.com.servicelink.DTO.AvaliacaoDTO;
-import br.com.servicelink.entity.Agendamento;
-import br.com.servicelink.entity.Avaliacao;
-import br.com.servicelink.enumerations.AgendamentoStatus;
-import br.com.servicelink.exceptions.BusinessException;
-import br.com.servicelink.service.AgendamentoService;
-import br.com.servicelink.service.ServicoService;
-import jakarta.persistence.EntityNotFoundException;
-import org.apache.coyote.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import br.com.servicelink.enumerations.AgendamentoStatus;
+import br.com.servicelink.service.AgendamentoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/agendamento")

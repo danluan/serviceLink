@@ -5,6 +5,7 @@ export interface User {
   telefone?: string;
   cpfCnpj?: string;
   perfil: 'CLIENTE' | 'PRESTADOR';
+  profileId: number;
   createdAt?: string;
   updatedAt?: string;
 }

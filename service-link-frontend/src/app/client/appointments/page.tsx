@@ -27,17 +27,17 @@ export default function AppointmentsPage() {
         const apiUrl = 'http://localhost:8080';
         console.log('=== DEBUG AGENDAMENTOS ===');
         console.log('1. User:', user);
-        console.log('2. User ID:', user?.id);
+        console.log('2. User ID:', user?.profileId);
         console.log('3. Token:', token ? 'EXISTE' : 'NÃO EXISTE');
         console.log('4. API URL:', apiUrl);
 
-        if (!token || !user?.id) {
+        if (!token || !user?.profileId) {
             setErrorMsg("Erro: autenticação inválida.");
             setLoading(false);
             return;
         }
 
-        const urlCompleta = `${apiUrl}/api/agendamento/cliente/${user?.id}/agendamentos`;
+        const urlCompleta = `${apiUrl}/api/agendamento/cliente/${user?.profileId}/agendamentos`;
         console.log('5. URL COMPLETA:', urlCompleta);
         console.log('======================');
 
@@ -79,12 +79,12 @@ export default function AppointmentsPage() {
     };
 
     useEffect(() => {
-        if (token && user?.id) {
+        if (token && user?.profileId) {
             fetchAppointments();
         } else {
             setLoading(false);
         }
-    }, [token, user?.id]);
+    }, [token, user?.profileId]);
 
     // formata data/hora estilo BR
     const formatDate = (iso: string) =>

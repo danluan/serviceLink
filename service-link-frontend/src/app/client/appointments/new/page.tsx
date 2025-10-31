@@ -164,28 +164,24 @@ export default function AgendamentoPage() {
                             <CardDescription>Preencha os dados.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {/* Mensagem de Erro/Sucesso */}
                             {formMessage && (
                                 <Alert variant={formMessage.includes('Erro') ? 'destructive' : 'default'} className={`mb-4 ${formMessage.includes('sucesso') ? 'bg-green-100 text-green-800 border-green-300' : ''}`}>
                                     <AlertDescription>{formMessage}</AlertDescription>
                                 </Alert>
                             )}
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                {/* Campos Cliente, Serviço, Data/Hora, Observações */}
                                 <div className="space-y-2"> <Label htmlFor="cliente">Cliente</Label> <Input id="cliente" value={user?.nome || '...'} disabled /> </div>
 
-                                {/* --- CORREÇÃO 3: Desabilitar enquanto carrega serviços E no submit --- */}
                                 <div className="space-y-2"> <Label htmlFor="servicoId">Serviço *</Label>
                                     <Select
                                         name="servicoId"
                                         value={formData.servicoId}
                                         onValueChange={handleSelectChange}
                                         required
-                                        disabled={isLoading || isLoadingServicos} // <-- CORRIGIDO
+                                        disabled={isLoading || isLoadingServicos}
                                     >
                                         <SelectTrigger id="servicoId"> <SelectValue placeholder="Selecione..." /> </SelectTrigger>
 
-                                        {/* --- CORREÇÃO 4: Usar listaServicos e tratar o Loading --- */}
                                         <SelectContent>
                                             {isLoadingServicos ? (
                                                 <SelectItem value="loading" disabled>Carregando...</SelectItem>
