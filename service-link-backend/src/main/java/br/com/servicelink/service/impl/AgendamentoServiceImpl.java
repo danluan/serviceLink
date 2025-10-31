@@ -7,28 +7,25 @@ import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import br.com.servicelink.DTO.*;
+import br.com.servicelink.entity.Agendamento;
 import br.com.servicelink.entity.Avaliacao;
 import br.com.servicelink.entity.Cliente;
 import br.com.servicelink.entity.Servico;
 import br.com.servicelink.enumerations.AgendamentoStatus;
+import br.com.servicelink.repository.AgendamentoRepository;
 import br.com.servicelink.repository.ClienteRepository;
 import br.com.servicelink.repository.ServicoRepository;
+import br.com.servicelink.service.AgendamentoService;
+import br.com.servicelink.service.validator.AgendamentoValidator;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import br.com.servicelink.entity.Agendamento;
-import br.com.servicelink.repository.AgendamentoRepository;
-import br.com.servicelink.service.AgendamentoService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import static br.com.servicelink.enumerations.AgendamentoStatus.*;
 
@@ -36,19 +33,23 @@ import static br.com.servicelink.enumerations.AgendamentoStatus.*;
 public class AgendamentoServiceImpl implements AgendamentoService {
 
     private final AgendamentoRepository agendamentoRepository;
+    private final ClienteRepository clienteRepository;
+    private final ServicoRepository servicoRepository;
+    private final AgendamentoValidator agendamentoValidator;
 
     private static final AgendamentoStatus STATUS = CONCLUIDO;
 
     @Autowired
-    public AgendamentoServiceImpl(AgendamentoRepository agendamentoRepository) {
+    public AgendamentoServiceImpl(
+            AgendamentoRepository agendamentoRepository,
+            ClienteRepository clienteRepository,
+            ServicoRepository servicoRepository,
+            AgendamentoValidator agendamentoValidator) {
         this.agendamentoRepository = agendamentoRepository;
+        this.clienteRepository = clienteRepository;
+        this.servicoRepository = servicoRepository;
+        this.agendamentoValidator = agendamentoValidator;
     }
-
-    @Autowired
-    private ClienteRepository clienteRepository;
-
-    @Autowired
-    private ServicoRepository servicoRepository;
 
     @Transactional
     @Override
@@ -65,6 +66,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         Servico servico = servicoRepository.findById(agendamentoDTO.servicoId())
                 .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado com o ID: " + agendamentoDTO.servicoId()));
 
+        agendamentoValidator.validarNovoAgendamento(agendamentoDTO, servico);
+
         Agendamento agendamento = new Agendamento();
         agendamento.setDataHora(agendamentoDTO.dataHora());
         agendamento.setObservacao(agendamentoDTO.observacao());
@@ -74,6 +77,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         agendamento.setStatus(AgendamentoStatus.PENDENTE);
 
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+
         AgendamentoDTO dto = new AgendamentoDTO(
                 agendamentoSalvo.getId(),
                 agendamentoSalvo.getDataHora(),
