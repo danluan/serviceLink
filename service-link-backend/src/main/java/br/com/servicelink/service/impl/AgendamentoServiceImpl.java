@@ -17,6 +17,7 @@ import br.com.servicelink.entity.Cliente;
 import br.com.servicelink.entity.Servico;
 import br.com.servicelink.enumerations.AgendamentoStatus;
 import br.com.servicelink.repository.AgendamentoRepository;
+import br.com.servicelink.repository.AvaliacaoRepository;
 import br.com.servicelink.repository.ClienteRepository;
 import br.com.servicelink.repository.ServicoRepository;
 import br.com.servicelink.service.AgendamentoService;
@@ -33,6 +34,7 @@ import static br.com.servicelink.enumerations.AgendamentoStatus.*;
 public class AgendamentoServiceImpl implements AgendamentoService {
 
     private final AgendamentoRepository agendamentoRepository;
+    private final AvaliacaoRepository avaliacaoRepository;
     private final ClienteRepository clienteRepository;
     private final ServicoRepository servicoRepository;
     private final AgendamentoValidator agendamentoValidator;
@@ -42,10 +44,12 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     @Autowired
     public AgendamentoServiceImpl(
             AgendamentoRepository agendamentoRepository,
+            AvaliacaoRepository avaliacaoRepository,
             ClienteRepository clienteRepository,
             ServicoRepository servicoRepository,
             AgendamentoValidator agendamentoValidator) {
         this.agendamentoRepository = agendamentoRepository;
+        this.avaliacaoRepository = avaliacaoRepository;
         this.clienteRepository = clienteRepository;
         this.servicoRepository = servicoRepository;
         this.agendamentoValidator = agendamentoValidator;
@@ -91,9 +95,9 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     }
 
     @Override
-    public AgendamentoDTO editarAgendamento(AgendamentoDTO agendamentoDTO) {
-        Agendamento agendamento = agendamentoRepository.findById(agendamentoDTO.id())
-                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + agendamentoDTO.id()));
+    public AgendamentoDTO editarAgendamento(AgendamentoDTO agendamentoDTO, Long id) throws BadRequestException {
+        Agendamento agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
 
         agendamento.setStatus(AgendamentoStatus.valueOf(agendamentoDTO.status()));
         agendamento.setDataHora(agendamentoDTO.dataHora());
@@ -191,6 +195,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         avaliacao.setEstrelas(avaliacaoDTO.estrelas());
         avaliacao.setComentario(avaliacaoDTO.comentario());
 
+        avaliacao = avaliacaoRepository.save(avaliacao);
+
         agendamento.setAvaliacao(avaliacao);
         agendamentoRepository.save(agendamento);
 
@@ -201,7 +207,11 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                 agendamento.getStatus().toString(),
                 agendamento.getCliente().getId(),
                 agendamento.getServico().getId(),
-                avaliacaoDTO
+                new AvaliacaoDTO(
+                        agendamento.getAvaliacao().getId(),
+                        agendamento.getAvaliacao().getEstrelas(),
+                        agendamento.getAvaliacao().getComentario()
+                )
         );
     }
 

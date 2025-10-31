@@ -61,9 +61,9 @@ public class AgendamentoController {
      * @param agendamentoDTO Dados do agendamento a ser atualizado
      * @return Agendamento atualizado
      */
-    @PutMapping
-    public AgendamentoDTO update(@RequestBody AgendamentoDTO agendamentoDTO){
-        AgendamentoDTO updatedAgendamento = agendamentoService.salvarAgendamento(agendamentoDTO);
+    @PutMapping("/{agendamentoId}")
+    public AgendamentoDTO update(@RequestBody AgendamentoDTO agendamentoDTO, @PathVariable Long agendamentoId) throws BadRequestException {
+        AgendamentoDTO updatedAgendamento = agendamentoService.editarAgendamento(agendamentoDTO, agendamentoId);
         return updatedAgendamento;
     }
 
