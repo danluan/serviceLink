@@ -332,7 +332,9 @@ public class AgendamentoServiceImpl implements AgendamentoService {
             agendamento.setStatus(CANCELADO);
         }
         else if (agendamento.getStatus().equals(CONFIRMADO) && status.equals(CONCLUIDO)) {
-            agendamento.setStatus(CONCLUIDO);
+            if(agendamento.getDataHora().isBefore(LocalDateTime.now())) {
+                agendamento.setStatus(CONCLUIDO);
+            }else throw new BadRequestException("Não é possivel concluir um agendamento que ainda não aconteceu");
         }
         else {
             throw new BadRequestException(
