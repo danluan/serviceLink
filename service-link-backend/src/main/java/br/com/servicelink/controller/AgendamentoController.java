@@ -3,6 +3,7 @@ package br.com.servicelink.controller;
 import br.com.servicelink.DTO.AgendamentoDTO;
 import br.com.servicelink.DTO.AgendamentoListagemDTO;
 import br.com.servicelink.DTO.AvaliacaoDTO;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
@@ -99,7 +100,11 @@ public class AgendamentoController {
             @PathVariable Long agendamentoId,
             @PathVariable AgendamentoStatus status
     ) {
-        agendamentoService.editarStatusAgendamento(agendamentoId, status);
+        try{
+            agendamentoService.editarStatusAgendamento(agendamentoId, status);
+        } catch (BadRequestException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.noContent().build();
     }
 

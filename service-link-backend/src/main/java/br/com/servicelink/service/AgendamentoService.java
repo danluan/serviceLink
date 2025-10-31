@@ -11,6 +11,7 @@ import br.com.servicelink.DTO.AvaliacaoDTO;
 import br.com.servicelink.entity.Agendamento;
 import br.com.servicelink.entity.Avaliacao;
 import br.com.servicelink.enumerations.AgendamentoStatus;
+import org.apache.coyote.BadRequestException;
 
 public interface AgendamentoService {
     AgendamentoDTO salvarAgendamento(AgendamentoDTO agendamentoDTO);
@@ -25,6 +26,6 @@ public interface AgendamentoService {
     BigDecimal calcularFaturamentoMensal(Long prestadorId, int ano, int mes);
     Map<Integer, List<AgendamentoListagemDTO>> buscarAgendamentosPorMes(Long prestadorId, int ano, int mes);
     public List<AgendamentoListagemDTO> listarAgendamentosPorCliente(Long clienteId);
-    AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatus status);
+    AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatus status) throws BadRequestException;
 }
 

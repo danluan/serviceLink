@@ -22,6 +22,7 @@ import br.com.servicelink.repository.ClienteRepository;
 import br.com.servicelink.repository.ServicoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.servicelink.entity.Agendamento;
@@ -29,7 +30,7 @@ import br.com.servicelink.repository.AgendamentoRepository;
 import br.com.servicelink.service.AgendamentoService;
 import org.springframework.stereotype.Service;
 
-import static br.com.servicelink.enumerations.AgendamentoStatus.CONCLUIDO;
+import static br.com.servicelink.enumerations.AgendamentoStatus.*;
 
 @Service
 public class AgendamentoServiceImpl implements AgendamentoService {
@@ -292,10 +293,11 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Transactional
     @Override
-    public AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatus status) {
+    public AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatus status) throws BadRequestException {
         Agendamento agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
-        agendamento.setStatus(status);
+
+        validarTransicaoStatus(status, agendamento);
 
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
 
@@ -308,5 +310,34 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                 agendamentoSalvo.getServico().getId(),
                 null
         );
+    }
+
+    private static void validarTransicaoStatus(AgendamentoStatus status, Agendamento agendamento) throws BadRequestException {
+        if (agendamento.getStatus().equals(CONCLUIDO) || agendamento.getStatus().equals(CANCELADO)) {
+            throw new BadRequestException(
+                    "Não é possível alterar o status de um agendamento que já está '" + agendamento.getStatus() + "' (finalizado)."
+            );
+        }
+
+        if (agendamento.getStatus().equals(status)) {
+            throw new BadRequestException(
+                    "O status da requisição ('" + status + "') é o mesmo do status atual do agendamento."
+            );
+        }
+
+        if (agendamento.getStatus().equals(PENDENTE) && status.equals(CONFIRMADO)) {
+            agendamento.setStatus(CONFIRMADO);
+        }
+        else if (agendamento.getStatus().equals(PENDENTE) && status.equals(CANCELADO)) {
+            agendamento.setStatus(CANCELADO);
+        }
+        else if (agendamento.getStatus().equals(CONFIRMADO) && status.equals(CONCLUIDO)) {
+            agendamento.setStatus(CONCLUIDO);
+        }
+        else {
+            throw new BadRequestException(
+                    "Transição de status inválida: De '" + agendamento.getStatus() + "' para '" + status + "' não é permitida."
+            );
+        }
     }
 }
