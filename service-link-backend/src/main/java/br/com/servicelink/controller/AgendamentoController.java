@@ -3,6 +3,7 @@ package br.com.servicelink.controller;
 import br.com.servicelink.DTO.AgendamentoDTO;
 import br.com.servicelink.DTO.AgendamentoListagemDTO;
 import br.com.servicelink.DTO.AvaliacaoDTO;
+import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -111,7 +112,7 @@ public class AgendamentoController {
      * @param avaliacaoDTO Dados da avaliação
      */
     @PostMapping("/{id}/avaliacao")
-    public void avaliacao(@PathVariable Long id, @RequestBody AvaliacaoDTO avaliacaoDTO) {
+    public void avaliacao(@PathVariable Long id, @RequestBody @Valid AvaliacaoDTO avaliacaoDTO) {
         agendamentoService.adicionarAvaliacaoAoAgendamento(id, avaliacaoDTO);
     }
 

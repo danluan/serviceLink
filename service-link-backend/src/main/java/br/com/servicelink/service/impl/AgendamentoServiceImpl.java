@@ -11,16 +11,14 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import br.com.servicelink.DTO.*;
-import br.com.servicelink.entity.Agendamento;
-import br.com.servicelink.entity.Avaliacao;
-import br.com.servicelink.entity.Cliente;
-import br.com.servicelink.entity.Servico;
+import br.com.servicelink.entity.*;
 import br.com.servicelink.enumerations.AgendamentoStatus;
 import br.com.servicelink.repository.AgendamentoRepository;
 import br.com.servicelink.repository.AvaliacaoRepository;
 import br.com.servicelink.repository.ClienteRepository;
 import br.com.servicelink.repository.ServicoRepository;
 import br.com.servicelink.service.AgendamentoService;
+import br.com.servicelink.service.auth.AuthService;
 import br.com.servicelink.service.validator.AgendamentoValidator;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -40,6 +38,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     private final AgendamentoValidator agendamentoValidator;
 
     private static final AgendamentoStatus STATUS = CONCLUIDO;
+    private final AuthService authService;
 
     @Autowired
     public AgendamentoServiceImpl(
@@ -47,12 +46,13 @@ public class AgendamentoServiceImpl implements AgendamentoService {
             AvaliacaoRepository avaliacaoRepository,
             ClienteRepository clienteRepository,
             ServicoRepository servicoRepository,
-            AgendamentoValidator agendamentoValidator) {
+            AgendamentoValidator agendamentoValidator, AuthService authService) {
         this.agendamentoRepository = agendamentoRepository;
         this.avaliacaoRepository = avaliacaoRepository;
         this.clienteRepository = clienteRepository;
         this.servicoRepository = servicoRepository;
         this.agendamentoValidator = agendamentoValidator;
+        this.authService = authService;
     }
 
     @Transactional
@@ -190,6 +190,14 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     public AgendamentoDTO adicionarAvaliacaoAoAgendamento(Long agendamentoId, AvaliacaoDTO avaliacaoDTO) {
         Agendamento agendamento = agendamentoRepository.findById(agendamentoId)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + agendamentoId));
+
+        if (agendamento.getAvaliacao() == null) {
+            throw new RuntimeException("Este agendamento já foi avaliado.");
+        }
+
+        if (agendamento.getStatus() != CONCLUIDO) {
+            throw new RuntimeException("Só é possível avaliar agendamentos concluídos.");
+        }
 
         Avaliacao avaliacao = new Avaliacao();
         avaliacao.setEstrelas(avaliacaoDTO.estrelas());
