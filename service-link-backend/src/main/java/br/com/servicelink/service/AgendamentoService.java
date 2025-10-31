@@ -15,6 +15,7 @@ import org.apache.coyote.BadRequestException;
 
 public interface AgendamentoService {
     AgendamentoDTO salvarAgendamento(AgendamentoDTO agendamentoDTO);
+    AgendamentoDTO editarAgendamento(AgendamentoDTO agendamentoDTO);
     List<AgendamentoListagemDTO> listarAgendamentos();
     AgendamentoListagemDTO buscarAgendamentosPorId(Long id);
     void deletarAgendamento(Long id);

@@ -20,7 +20,7 @@ public class PrestadorController {
     private PrestadorService prestadorService;
 
     @GetMapping
-    public List<Prestador> findAll(){
+    public List<PrestadorDTO> findAll(){
         return prestadorService.listarPrestadores();
     }
 
@@ -35,11 +35,6 @@ public class PrestadorController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
             }
         }
-    }
-
-    @PostMapping
-    public Prestador save(@RequestBody PrestadorCadastroDTO prestador){
-        return prestadorService.salvarPrestador(prestador);
     }
 
     @DeleteMapping(value = "/{id}")

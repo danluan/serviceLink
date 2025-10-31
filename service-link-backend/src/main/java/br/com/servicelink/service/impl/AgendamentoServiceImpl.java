@@ -11,9 +11,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import br.com.servicelink.DTO.AgendamentoDTO;
-import br.com.servicelink.DTO.AgendamentoListagemDTO;
-import br.com.servicelink.DTO.AvaliacaoDTO;
+import br.com.servicelink.DTO.*;
 import br.com.servicelink.entity.Avaliacao;
 import br.com.servicelink.entity.Cliente;
 import br.com.servicelink.entity.Servico;
@@ -29,6 +27,8 @@ import br.com.servicelink.entity.Agendamento;
 import br.com.servicelink.repository.AgendamentoRepository;
 import br.com.servicelink.service.AgendamentoService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import static br.com.servicelink.enumerations.AgendamentoStatus.*;
 
@@ -55,6 +55,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     public AgendamentoDTO salvarAgendamento(AgendamentoDTO agendamentoDTO) {
 
         Long usuarioId = agendamentoDTO.clienteId();
+
         Cliente cliente = clienteRepository.findByUserId(usuarioId);
 
         if (cliente == null) {
@@ -83,6 +84,28 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                 null
         );
         return dto;
+    }
+
+    @Override
+    public AgendamentoDTO editarAgendamento(AgendamentoDTO agendamentoDTO) {
+        Agendamento agendamento = agendamentoRepository.findById(agendamentoDTO.id())
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + agendamentoDTO.id()));
+
+        agendamento.setStatus(AgendamentoStatus.valueOf(agendamentoDTO.status()));
+        agendamento.setDataHora(agendamentoDTO.dataHora());
+        agendamento.setObservacao(agendamentoDTO.observacao());
+
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+
+        return new AgendamentoDTO(
+                agendamentoSalvo.getId(),
+                agendamentoSalvo.getDataHora(),
+                agendamentoSalvo.getObservacao(),
+                agendamentoSalvo.getStatus().toString(),
+                agendamentoSalvo.getCliente().getUser().getId(),
+                agendamentoSalvo.getServico().getId(),
+                null
+        );
     }
 
     @Transactional
@@ -121,6 +144,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                         agendamento.getServico().getPrestador().getUser().getNome()
                 ))
                 .collect(Collectors.toList());
+
     }
 
     @Override

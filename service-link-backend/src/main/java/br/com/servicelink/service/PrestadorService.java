@@ -9,9 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PrestadorService {
-    Prestador salvarPrestador(PrestadorCadastroDTO prestador);
     Prestador salvarPrestador(User user);
-    List<Prestador> listarPrestadores();
+    List<PrestadorDTO> listarPrestadores();
     PrestadorDTO buscarPrestadorPorId(Long id);
     void deletarPrestador(Long id);
 }

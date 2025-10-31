@@ -1,6 +1,7 @@
 package br.com.servicelink.controller;
 
 import br.com.servicelink.DTO.ClienteCadastroDTO;
+import br.com.servicelink.DTO.ClienteDTO;
 import br.com.servicelink.entity.Cliente;
 import br.com.servicelink.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,18 +17,13 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @GetMapping
-    public List<Cliente> findAll(){
+    public List<ClienteDTO> findAll(){
         return clienteService.listarClientes();
     }
 
     @GetMapping(value = "/{id}")
-    public Optional<Cliente> findById(@PathVariable Long id){
+    public ClienteDTO findById(@PathVariable Long id){
         return clienteService.buscarClientePorId(id);
-    }
-
-    @PostMapping
-    public Cliente save(@RequestBody ClienteCadastroDTO cliente){
-        return clienteService.salvarCliente(cliente);
     }
 
     @DeleteMapping(value = "/{id}")

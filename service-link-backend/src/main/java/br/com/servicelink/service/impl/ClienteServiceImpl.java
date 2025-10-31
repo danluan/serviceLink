@@ -4,9 +4,14 @@ import java.util.List;
 import java.util.Optional;
 
 import br.com.servicelink.DTO.ClienteCadastroDTO;
+import br.com.servicelink.DTO.ClienteDTO;
+import br.com.servicelink.DTO.UserDTO;
+import br.com.servicelink.DTO.UserRegisterDTO;
 import br.com.servicelink.entity.Prestador;
 import br.com.servicelink.entity.User;
 import br.com.servicelink.enumerations.Perfis;
+import br.com.servicelink.repository.UserRepository;
+import br.com.servicelink.service.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,26 +22,13 @@ import br.com.servicelink.entity.Cliente;
 @Service
 public class ClienteServiceImpl implements ClienteService {
 
-    private final ClienteRepository clienteRepository;
+    @Autowired
+    private ClienteRepository clienteRepository;
 
     @Autowired
-    public ClienteServiceImpl(ClienteRepository clienteRepository) {    this.clienteRepository = clienteRepository;}
+    UserRepository userRepository;
 
-    @Override
-    public Cliente salvarCliente(ClienteCadastroDTO clienteDTO) {
-        User user = new User();
-        user.setNome(clienteDTO.nome());
-        user.setEmail(clienteDTO.email());
-        user.setSenha(clienteDTO.senha());
-        user.setCpfCnpj(clienteDTO.cpf());
-        user.setPerfil(Perfis.PRESTADOR);
-
-        Cliente cliente = new Cliente();
-
-        cliente.setUser(user);
-
-        return clienteRepository.save(cliente);
-    }
+    private AuthService authService;
 
     @Override
     public Cliente salvarCliente(User user) {
@@ -48,18 +40,46 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public List<Cliente> listarClientes() {
-        return clienteRepository.findAll();
+    public List<ClienteDTO> listarClientes() {
+        List<Cliente> clientes = clienteRepository.findAll();
+
+        return clientes.stream().map(cliente -> new ClienteDTO(
+                cliente.getId(),
+                cliente.getUser().getId(),
+                cliente.getUser().getNome(),
+                cliente.getUser().getEmail(),
+                cliente.getUser().getTelefone(),
+                cliente.getUser().getCpfCnpj()
+        )).toList();
     }
 
     @Override
-    public Optional<Cliente> buscarClientePorId(Long id) {
-        return clienteRepository.findById(id);
+    public ClienteDTO buscarClientePorId(Long id) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado com o ID: " + id));
+
+        return new ClienteDTO(
+                cliente.getId(),
+                cliente.getUser().getId(),
+                cliente.getUser().getNome(),
+                cliente.getUser().getEmail(),
+                cliente.getUser().getTelefone(),
+                cliente.getUser().getCpfCnpj()
+        );
     }
 
     @Override
     public void deletarCliente(Long id) {
-        clienteRepository.deleteById(id);
+        // ClienteRepository.deleteById(id);
+
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado com o ID: " + id));
+
+        User user = cliente.getUser();
+        user.setActive(false);
+        userRepository.save(user);
+
+        clienteRepository.save(cliente);
     }
 
     public Long getClienteIdByUserId(Long id) {

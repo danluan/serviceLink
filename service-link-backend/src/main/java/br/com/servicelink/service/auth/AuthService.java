@@ -66,14 +66,13 @@ public class AuthService {
         }
     }
 
-
     public UserDTO registerUser(UserRegisterDTO registerData) {
         User user = registerData.toEntity();
         user = this.validateUser(user);
         if(userRepository.findUserDetailsByEmail(user.getEmail()) != null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já está em uso.");
         }
-        //String encryptedPassword = new BCryptPasswordEncoder().encode(user.getSenha());
+
         String encryptedPassword = passwordEncoder.encode(user.getSenha());
         user.setSenha(encryptedPassword);
 
@@ -87,6 +86,26 @@ public class AuthService {
         else if (user.getPerfil() == Perfis.CLIENTE) {
             Cliente cliente = clienteService.salvarCliente(user);
             userDTO.setProfileId(cliente.getId());
+        }
+
+        return userDTO;
+    }
+
+    public UserDTO updateUser(User user) {
+        user = this.validateUser(user);
+
+        String encryptedPassword = passwordEncoder.encode(user.getSenha());
+        user.setSenha(encryptedPassword);
+
+        userRepository.save(user);
+        UserDTO userDTO = new UserDTO(user);
+
+        if (user.getPerfil() == Perfis.PRESTADOR) {
+            Long prestadorId = prestadorService.getPrestadorIdByUserId(user.getId());
+            userDTO.setProfileId(prestadorId);
+        } else if (user.getPerfil() == Perfis.CLIENTE) {
+            Long clienteId = clienteService.getClienteIdByUserId(user.getId());
+            userDTO.setProfileId(clienteId);
         }
 
         return userDTO;

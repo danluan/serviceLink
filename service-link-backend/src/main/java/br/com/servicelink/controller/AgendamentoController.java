@@ -38,6 +38,12 @@ public class AgendamentoController {
         return newAgendamento;
     }
 
+    @PutMapping
+    public AgendamentoDTO update(@RequestBody AgendamentoDTO agendamentoDTO){
+        AgendamentoDTO updatedAgendamento = agendamentoService.salvarAgendamento(agendamentoDTO);
+        return updatedAgendamento;
+    }
+
     @DeleteMapping(value = "/{id}")
     public void delete(@PathVariable Long id){
         agendamentoService.deletarAgendamento(id);
