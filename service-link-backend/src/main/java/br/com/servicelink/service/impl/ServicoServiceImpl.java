@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import br.com.servicelink.DTO.BuscaServicosDTO;
 import br.com.servicelink.DTO.ServicoDTO;
 import br.com.servicelink.entity.Prestador;
 import br.com.servicelink.repository.PrestadorRepository;
@@ -175,6 +176,20 @@ public class ServicoServiceImpl implements ServicoService {
     @Override
     public List<Servico> buscarServicosPorPrestadorId(Long prestadorId) {
         List<Servico> servicos = servicoRepository.findByPrestadorId(prestadorId);
+        return servicos;
+    }
+
+    public List<Servico> buscarServico(BuscaServicosDTO servicoDTO) {
+
+        List<Servico> servicos = servicoRepository.buscarServicos(
+                servicoDTO.id(),
+                servicoDTO.nome(),
+                servicoDTO.descricao(),
+                servicoDTO.precoMin(),
+                servicoDTO.precoMax(),
+                servicoDTO.categoria()
+        );
+
         return servicos;
     }
 }

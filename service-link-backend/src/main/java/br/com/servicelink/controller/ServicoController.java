@@ -1,16 +1,19 @@
 package br.com.servicelink.controller;
 
+import br.com.servicelink.DTO.BuscaServicosDTO;
 import br.com.servicelink.DTO.ServicoDTO;
 import br.com.servicelink.entity.Servico;
 import br.com.servicelink.service.ServicoService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,15 +23,24 @@ public class ServicoController {
     @Autowired
     private ServicoService servicoService;
 
-    @GetMapping
-    public List<Servico> findAll(){
-        return servicoService.listarServicos();
-    }
-
     //TODO: Talvez implementar busca com parametros para não precisa de um endpoint específico
-    @GetMapping(value = "/{id}")
-    public Servico findById(@PathVariable Long id){
-        return servicoService.buscarServicoPorId(id);
+    @GetMapping()
+    public List<Servico> findServico(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String descricao,
+            @RequestParam(required = false) BigDecimal precoMin,
+            @RequestParam(required = false) BigDecimal precoMax,
+            @RequestParam(required = false) String categoria
+            ){
+        boolean semFiltro = id == null && nome == null && descricao == null && precoMin == null && precoMax == null && categoria == null;
+
+        if (semFiltro) {
+            return servicoService.listarServicos();
+        }
+
+        BuscaServicosDTO filtro = new BuscaServicosDTO(id, nome, descricao, precoMin, precoMax, categoria);
+        return servicoService.buscarServico(filtro);
     }
 
     @DeleteMapping(value = "/{id}")

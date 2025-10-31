@@ -2,6 +2,7 @@ package br.com.servicelink.service;
 
 import java.util.List;
 
+import br.com.servicelink.DTO.BuscaServicosDTO;
 import br.com.servicelink.DTO.ServicoDTO;
 import br.com.servicelink.entity.Servico;
 import org.apache.coyote.BadRequestException;
@@ -16,4 +17,6 @@ public interface ServicoService {
     List<ServicoDTO> buscarServicosPorCategoria(String categoria);
     List<Servico> buscarServicosPorPrecoBase(String categoria, String nome);
     List<Servico> buscarServicosPorPrestadorId(Long prestadorId);
+
+    List<Servico> buscarServico(BuscaServicosDTO servicoDTO);
 }

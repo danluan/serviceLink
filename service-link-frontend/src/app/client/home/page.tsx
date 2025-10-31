@@ -39,9 +39,7 @@ const HomePage = () => {
             <CardContent>
                 <Link href="/search-services">
               <Button className="w-full">
-               <Link href="/search-services">
                       Explorar Serviços
-               </Link>
               </Button>
                 </Link>
             </CardContent>

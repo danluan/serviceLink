@@ -9,7 +9,6 @@ interface Service {
     descricao: string;
     precoBase: number;
     categoria: string;
-    imagemUrl: string;
 }
 
 interface ServiceCardProps {
@@ -30,7 +29,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
       </CardHeader>
       <CardContent className="flex-grow">
         <div className="text-2xl font-bold text-primary">
-          {service.precoBase}
+          R${service.precoBase}
         </div>
       </CardContent>
       <CardFooter>
