@@ -33,11 +33,13 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
         </div>
       </CardContent>
       <CardFooter>
+          <Link href={`/client/appointments/new?serviceId=${service.id}`}>
         <Button className="w-full">
-            <Link href={`/client/appointments/new?serviceId=${service.id}`}>
+
                 Contrate Já
-            </Link>
+
         </Button>
+          </Link>
       </CardFooter>
     </Card>
   );
