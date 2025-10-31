@@ -119,15 +119,20 @@ public class ServicoServiceImpl implements ServicoService {
             throw new BadRequestException("Serviço não pode ser nulo.");
         }
 
-        if (dto.precoMax().compareTo(dto.precoMin()) < 1) {
-            throw new BadRequestException("Preço max deve ser maior que preço min");
+        if(dto.precoMax() != null && dto.precoMin() != null){
+            if (dto.precoMax().compareTo(dto.precoMin()) < 1) {
+                throw new BadRequestException("Preço max deve ser maior que preço min");
+            }
         }
-
-        if (
-                dto.precoMax().compareTo(java.math.BigDecimal.ZERO) <= 0
-                &&  dto.precoMin().compareTo(java.math.BigDecimal.ZERO) <= 0
-        ) {
-            throw new BadRequestException("Preço deve ser maior que zero.");
+        if(dto.precoMax() !=null){
+            if(dto.precoMax().compareTo(java.math.BigDecimal.ZERO) <= 0){
+                throw new BadRequestException("Preco max deve ser maior que zero");
+            }
+        }
+        if(dto.precoMin() !=null){
+            if(dto.precoMin().compareTo(java.math.BigDecimal.ZERO) <= 0){
+                throw new BadRequestException("Preco min deve ser maior que zero");
+            }
         }
     }
 
