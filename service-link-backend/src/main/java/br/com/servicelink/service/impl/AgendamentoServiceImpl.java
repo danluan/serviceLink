@@ -97,7 +97,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                         agendamento.getCliente().getId(),
                         agendamento.getCliente().getUser().getNome(),
                         agendamento.getServico().getId(),
-                        agendamento.getServico().getNome()
+                        agendamento.getServico().getNome(),
+                        agendamento.getServico().getPrestador().getUser().getNome()
                 )).collect(Collectors.toList());
     }
 
@@ -116,7 +117,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                         agendamento.getCliente().getId(),
                         agendamento.getCliente().getUser().getNome(),
                         agendamento.getServico().getId(),
-                        agendamento.getServico().getNome()
+                        agendamento.getServico().getNome(),
+                        agendamento.getServico().getPrestador().getUser().getNome()
                 ))
                 .collect(Collectors.toList());
     }
@@ -199,7 +201,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                         agendamento.getCliente().getId(),
                         agendamento.getCliente().getUser().getNome(),
                         agendamento.getServico().getId(),
-                        agendamento.getServico().getNome()
+                        agendamento.getServico().getNome(),
+                        agendamento.getServico().getPrestador().getUser().getNome()
                 ))
                 .collect(Collectors.toList());
     }
@@ -224,7 +227,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                         agendamento.getCliente().getId(),
                         agendamento.getCliente().getUser().getNome(),
                         agendamento.getServico().getId(),
-                        agendamento.getServico().getNome()
+                        agendamento.getServico().getNome(),
+                        agendamento.getServico().getPrestador().getUser().getNome()
                 ))
                 .collect(Collectors.toList());
     }
@@ -274,7 +278,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                         agendamento.getCliente().getId(),
                         agendamento.getCliente().getUser().getNome(),
                         agendamento.getServico().getId(),
-                        agendamento.getServico().getNome()
+                        agendamento.getServico().getNome(),
+                        agendamento.getServico().getPrestador().getUser().getNome()
                 ))
                 .collect(Collectors.groupingBy(
                         dto -> dto.getDataHora().getDayOfMonth(),

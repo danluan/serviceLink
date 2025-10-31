@@ -13,10 +13,11 @@ public class AgendamentoListagemDTO {
     private String nomeCliente;
     private Long servicoId;
     private String nomeServico;
+    private String nomePrestador;
 
     public AgendamentoListagemDTO() {}
 
-    public AgendamentoListagemDTO(Long id, LocalDateTime dataHora, String status, String observacao, Long clienteId, String nomeCliente, Long servicoId, String nomeServico) {
+    public AgendamentoListagemDTO(Long id, LocalDateTime dataHora, String status, String observacao, Long clienteId, String nomeCliente, Long servicoId, String nomeServico, String nomePrestador) {
         this.id = id;
         this.dataHora = dataHora;
         this.status = status;
@@ -25,6 +26,7 @@ public class AgendamentoListagemDTO {
         this.nomeCliente = nomeCliente;
         this.servicoId = servicoId;
         this.nomeServico = nomeServico;
+        this.nomePrestador = nomePrestador;
     }
 
     public AgendamentoListagemDTO(Agendamento agendamento) {
@@ -36,6 +38,7 @@ public class AgendamentoListagemDTO {
         this.nomeCliente = agendamento.getCliente().getUser().getNome();
         this.servicoId = agendamento.getServico().getId();
         this.nomeServico = agendamento.getServico().getNome();
+        this.nomePrestador = agendamento.getServico().getPrestador().getUser().getNome();
     }
 
     public Long getId() {
@@ -101,4 +104,8 @@ public class AgendamentoListagemDTO {
     public void setNomeServico(String nomeServico) {
         this.nomeServico = nomeServico;
     }
+
+    public String getNomePrestador() { return nomePrestador; }
+
+    public void setNomePrestador(String nomePrestador) { this.nomePrestador = nomePrestador; }
 }

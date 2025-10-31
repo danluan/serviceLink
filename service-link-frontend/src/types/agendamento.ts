@@ -16,6 +16,7 @@ export interface Agendamento {
     nomeCliente: string;
     servicoId: number;
     nomeServico: string;
+    nomePrestador: string;
 }
 
 export interface AgendamentoRequest {

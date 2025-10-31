@@ -141,7 +141,7 @@ export default function AppointmentsPage() {
                                         </p>
 
                                         <p className="flex items-center gap-2">
-                                            <User className="h-4 w-4" /> {ag.nomeCliente}
+                                            <User className="h-4 w-4" /> {ag.nomePrestador}
                                         </p>
 
                                         <p className="flex items-center gap-2">
