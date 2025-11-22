@@ -17,8 +17,8 @@ import br.com.serviceframework.framework.domain.entity.Agendamento;
 import br.com.serviceframework.framework.domain.entity.Avaliacao;
 import br.com.serviceframework.framework.domain.entity.Cliente;
 import br.com.serviceframework.framework.domain.entity.Servico;
-import br.com.serviceframework.framework.domain.enumerations.AgendamentoStatus;
-import br.com.serviceframework.framework.repository.AgendamentoRepository;
+import br.com.serviceframework.serviceLink.enumerations.AgendamentoStatusServiceLink;
+import br.com.serviceframework.serviceLink.repository.AgendamentoServiceLinkRepository;
 import br.com.serviceframework.framework.repository.AvaliacaoRepository;
 import br.com.serviceframework.framework.repository.ClienteRepository;
 import br.com.serviceframework.framework.repository.ServicoRepository;
@@ -30,11 +30,12 @@ import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import br.com.serviceframework.serviceLink.domain.AgendamentoServiceLink;
 
 @Service
 public class AgendamentoServiceImpl implements AgendamentoService {
 
-    private final AgendamentoRepository agendamentoRepository;
+    private final AgendamentoServiceLinkRepository agendamentoRepository;
     private final AvaliacaoRepository avaliacaoRepository;
     private final ClienteRepository clienteRepository;
     private final ServicoRepository servicoRepository;
@@ -44,7 +45,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Autowired
     public AgendamentoServiceImpl(
-            AgendamentoRepository agendamentoRepository,
+            AgendamentoServiceLinkRepository agendamentoRepository,
             AvaliacaoRepository avaliacaoRepository,
             ClienteRepository clienteRepository,
             ServicoRepository servicoRepository,
@@ -74,13 +75,13 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
         agendamentoValidator.validarNovoAgendamento(agendamentoDTO, servico);
 
-        Agendamento agendamento = new Agendamento();
+        AgendamentoServiceLink agendamento = new AgendamentoServiceLink();
         agendamento.setDataHora(agendamentoDTO.dataHora());
         agendamento.setObservacao(agendamentoDTO.observacao());
 
         agendamento.setCliente(cliente);
         agendamento.setServico(servico);
-        agendamento.setStatus(AgendamentoStatus.PENDENTE);
+        agendamento.setStatus(AgendamentoStatusServiceLink.PENDENTE);
 
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
 
@@ -98,10 +99,10 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Override
     public AgendamentoDTO editarAgendamento(AgendamentoDTO agendamentoDTO, Long id) throws BadRequestException {
-        Agendamento agendamento = agendamentoRepository.findById(id)
+        AgendamentoServiceLink agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
 
-        agendamento.setStatus(AgendamentoStatus.valueOf(agendamentoDTO.status()));
+        agendamento.setStatus(AgendamentoStatusServiceLink.valueOf(agendamentoDTO.status()));
         agendamento.setDataHora(agendamentoDTO.dataHora());
         agendamento.setObservacao(agendamentoDTO.observacao());
 
@@ -190,14 +191,14 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Override
     public AgendamentoDTO adicionarAvaliacaoAoAgendamento(Long agendamentoId, AvaliacaoDTO avaliacaoDTO) {
-        Agendamento agendamento = agendamentoRepository.findById(agendamentoId)
+        AgendamentoServiceLink agendamento = agendamentoRepository.findById(agendamentoId)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + agendamentoId));
 
         if (agendamento.getAvaliacao() == null) {
             throw new RuntimeException("Este agendamento já foi avaliado.");
         }
 
-        if (agendamento.getStatus() != AgendamentoStatus.CONCLUIDO) {
+        if (agendamento.getStatus() != AgendamentoStatusServiceLink.CONCLUIDO) {
             throw new RuntimeException("Só é possível avaliar agendamentos concluídos.");
         }
 
@@ -296,7 +297,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                 prestadorId,
                 dataInicio,
                 dataFim,
-                AgendamentoStatus.CONCLUIDO
+                AgendamentoStatusServiceLink.CONCLUIDO.getCodigoStatus()
         );
 
         return faturamento != null ? faturamento : BigDecimal.ZERO;
@@ -346,8 +347,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Transactional
     @Override
-    public AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatus status) throws BadRequestException {
-        Agendamento agendamento = agendamentoRepository.findById(id)
+    public AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatusServiceLink status) throws BadRequestException {
+        AgendamentoServiceLink agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
 
         validarTransicaoStatus(status, agendamento);
@@ -365,8 +366,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         );
     }
 
-    private static void validarTransicaoStatus(AgendamentoStatus status, Agendamento agendamento) throws BadRequestException {
-        if (agendamento.getStatus().equals(AgendamentoStatus.CONCLUIDO) || agendamento.getStatus().equals(AgendamentoStatus.CANCELADO)) {
+    private static void validarTransicaoStatus(AgendamentoStatusServiceLink status, Agendamento agendamento) throws BadRequestException {
+        if (agendamento.getStatus().equals(AgendamentoStatusServiceLink.CONCLUIDO) || agendamento.getStatus().equals(AgendamentoStatusServiceLink.CANCELADO)) {
             throw new BadRequestException(
                     "Não é possível alterar o status de um agendamento que já está '" + agendamento.getStatus() + "' (finalizado)."
             );
@@ -378,15 +379,15 @@ public class AgendamentoServiceImpl implements AgendamentoService {
             );
         }
 
-        if (agendamento.getStatus().equals(AgendamentoStatus.PENDENTE) && status.equals(AgendamentoStatus.CONFIRMADO)) {
-            agendamento.setStatus(AgendamentoStatus.CONFIRMADO);
+        if (agendamento.getStatus().equals(AgendamentoStatusServiceLink.PENDENTE) && status.equals(AgendamentoStatusServiceLink.CONFIRMADO)) {
+            agendamento.setStatus(AgendamentoStatusServiceLink.CONFIRMADO);
         }
-        else if (agendamento.getStatus().equals(AgendamentoStatus.PENDENTE) && status.equals(AgendamentoStatus.CANCELADO)) {
-            agendamento.setStatus(AgendamentoStatus.CANCELADO);
+        else if (agendamento.getStatus().equals(AgendamentoStatusServiceLink.PENDENTE) && status.equals(AgendamentoStatusServiceLink.CANCELADO)) {
+            agendamento.setStatus(AgendamentoStatusServiceLink.CANCELADO);
         }
-        else if (agendamento.getStatus().equals(AgendamentoStatus.CONFIRMADO) && status.equals(AgendamentoStatus.CONCLUIDO)) {
+        else if (agendamento.getStatus().equals(AgendamentoStatusServiceLink.CONFIRMADO) && status.equals(AgendamentoStatusServiceLink.CONCLUIDO)) {
             if(agendamento.getDataHora().isBefore(LocalDateTime.now())) {
-                agendamento.setStatus(AgendamentoStatus.CONCLUIDO);
+                agendamento.setStatus(AgendamentoStatusServiceLink.CONCLUIDO);
             }else throw new BadRequestException("Não é possivel concluir um agendamento que ainda não aconteceu");
         }
         else {

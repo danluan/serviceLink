@@ -3,11 +3,10 @@ package br.com.serviceframework.framework.service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
 import br.com.serviceframework.framework.domain.DTO.AgendamentoDTO;
 import br.com.serviceframework.framework.domain.DTO.AgendamentoListagemDTO;
 import br.com.serviceframework.framework.domain.DTO.AvaliacaoDTO;
-import br.com.serviceframework.framework.domain.enumerations.AgendamentoStatus;
+import br.com.serviceframework.serviceLink.enumerations.AgendamentoStatusServiceLink;
 import org.apache.coyote.BadRequestException;
 
 public interface AgendamentoService {
@@ -24,6 +23,6 @@ public interface AgendamentoService {
     BigDecimal calcularFaturamentoMensal(Long prestadorId, int ano, int mes);
     Map<Integer, List<AgendamentoListagemDTO>> buscarAgendamentosPorMes(Long prestadorId, int ano, int mes);
     public List<AgendamentoListagemDTO> listarAgendamentosPorCliente(Long clienteId);
-    AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatus status) throws BadRequestException;
+    AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatusServiceLink status) throws BadRequestException;
 }
 

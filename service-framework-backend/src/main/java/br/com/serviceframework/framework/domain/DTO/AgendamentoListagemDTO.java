@@ -32,7 +32,7 @@ public class AgendamentoListagemDTO {
     public AgendamentoListagemDTO(Agendamento agendamento) {
         this.id = agendamento.getId();
         this.dataHora = agendamento.getDataHora();
-        this.status = agendamento.getStatus().name();
+        this.status = agendamento.getStatus().getNomeStatus();
         this.observacao = agendamento.getObservacao();
         this.clienteId = agendamento.getCliente().getId();
         this.nomeCliente = agendamento.getCliente().getUser().getNome();

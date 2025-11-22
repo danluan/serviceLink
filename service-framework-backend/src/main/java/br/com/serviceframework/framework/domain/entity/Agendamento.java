@@ -1,20 +1,20 @@
 package br.com.serviceframework.framework.domain.entity;
 
 import java.time.LocalDateTime;
-
-import br.com.serviceframework.framework.domain.enumerations.AgendamentoStatus;
 import jakarta.persistence.*;
+import br.com.serviceframework.framework.domain.interfaces.AgendamentoStatus;
 
-@Entity
-public class Agendamento {
+@MappedSuperclass
+public abstract class Agendamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private LocalDateTime dataHora;
 
-    @Enumerated(EnumType.STRING)
-    private AgendamentoStatus agendamentoStatus;
+    @Column(name = "status")
+    private Integer statusCode;
 
     @Column
     private String observacao;
@@ -31,6 +31,10 @@ public class Agendamento {
     private Avaliacao avaliacao;
 
     // Getters and Setters
+    protected Integer getCodigoStatus() { return statusCode; }
+
+    protected void setCodigoStatus(Integer codigoStatus) { this.statusCode = codigoStatus; }
+
     public Long getId() {
         return id;
     }
@@ -45,14 +49,6 @@ public class Agendamento {
 
     public void setDataHora(LocalDateTime dataHora) {
         this.dataHora = dataHora;
-    }
-
-    public AgendamentoStatus getStatus() {
-        return agendamentoStatus;
-    }
-
-    public void setStatus(AgendamentoStatus agendamentoStatus) {
-        this.agendamentoStatus = agendamentoStatus;
     }
 
     public String getObservacao() {
@@ -86,4 +82,14 @@ public class Agendamento {
     public void setAvaliacao(Avaliacao avaliacao) {
         this.avaliacao = avaliacao;
     }
+
+    public void setStatus(AgendamentoStatus status) {
+        if (status != null) {
+            this.statusCode = status.getCodigoStatus();
+        } else {
+            this.statusCode = null;
+        }
+    }
+
+    public abstract AgendamentoStatus getStatus();
 }

@@ -4,7 +4,7 @@ import br.com.serviceframework.framework.domain.DTO.AgendamentoDTO;
 import br.com.serviceframework.framework.domain.entity.Agendamento;
 import br.com.serviceframework.framework.domain.entity.Servico;
 import br.com.serviceframework.framework.exceptions.BusinessException;
-import br.com.serviceframework.framework.repository.AgendamentoRepository;
+import br.com.serviceframework.serviceLink.repository.AgendamentoServiceLinkRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -13,9 +13,9 @@ import java.util.List;
 @Component
 public class AgendamentoValidator {
 
-    private final AgendamentoRepository agendamentoRepository;
+    private final AgendamentoServiceLinkRepository agendamentoRepository;
 
-    public AgendamentoValidator(AgendamentoRepository agendamentoRepository) {
+    public AgendamentoValidator(AgendamentoServiceLinkRepository agendamentoRepository) {
         this.agendamentoRepository = agendamentoRepository;
     }
 

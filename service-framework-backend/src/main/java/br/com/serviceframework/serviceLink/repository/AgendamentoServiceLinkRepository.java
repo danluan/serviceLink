@@ -1,20 +1,19 @@
-package br.com.serviceframework.framework.repository;
+package br.com.serviceframework.serviceLink.repository;
 
 import br.com.serviceframework.framework.domain.entity.Agendamento;
-import br.com.serviceframework.framework.domain.enumerations.AgendamentoStatus;
+import br.com.serviceframework.serviceLink.domain.AgendamentoServiceLink;
+import br.com.serviceframework.serviceLink.enumerations.AgendamentoStatusServiceLink;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> {
-    List<Agendamento> findByDataHora(LocalDate data);
+public interface AgendamentoServiceLinkRepository extends JpaRepository<AgendamentoServiceLink, Long> {
+    List<Agendamento> findByDataHora(LocalDateTime data);
     List<Agendamento> findByServico_Prestador_Id(Long prestadorId);
     List<Agendamento> findByClienteId(Long clienteId);
 
@@ -51,15 +50,15 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
      * @param statusConcluido O status que indica que o serviço foi concluído/pago (ex: Status.CONCLUIDO).
      * @return O valor total faturado no período.
      */
-    @Query("SELECT SUM(s.precoBase) FROM Agendamento a " +
+    @Query("SELECT SUM(s.precoBase) FROM AgendamentoServiceLink a " +
             "JOIN a.servico s " +
             "WHERE s.prestador.id = :prestadorId " +
             "AND a.dataHora BETWEEN :dataInicio AND :dataFim " +
-            "AND a.agendamentoStatus = :statusConcluido")
+            "AND a.statusCode = :statusConcluido")
     BigDecimal calcularFaturamentoPorPeriodo(
             @Param("prestadorId") Long prestadorId,
             @Param("dataInicio") LocalDateTime dataInicio,
             @Param("dataFim") LocalDateTime dataFim,
-            @Param("statusConcluido") AgendamentoStatus statusConcluido
+            @Param("statusConcluido") Integer statusConcluido
     );
 }

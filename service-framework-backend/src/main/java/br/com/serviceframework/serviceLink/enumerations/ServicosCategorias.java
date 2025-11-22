@@ -1,4 +1,4 @@
-package br.com.serviceframework.framework.domain.enumerations;
+package br.com.serviceframework.serviceLink.enumerations;
 
 import java.util.Arrays;
 

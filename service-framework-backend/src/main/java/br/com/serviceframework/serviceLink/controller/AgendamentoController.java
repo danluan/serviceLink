@@ -8,7 +8,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
-import br.com.serviceframework.framework.domain.enumerations.AgendamentoStatus;
+import br.com.serviceframework.serviceLink.enumerations.AgendamentoStatusServiceLink;
 import br.com.serviceframework.framework.service.AgendamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -192,7 +192,7 @@ public class AgendamentoController {
     @PutMapping("/{agendamentoId}/status/{status}")
     public ResponseEntity<Void> updateStatus(
             @PathVariable Long agendamentoId,
-            @PathVariable AgendamentoStatus status
+            @PathVariable AgendamentoStatusServiceLink status
     ) {
         try{
             agendamentoService.editarStatusAgendamento(agendamentoId, status);
