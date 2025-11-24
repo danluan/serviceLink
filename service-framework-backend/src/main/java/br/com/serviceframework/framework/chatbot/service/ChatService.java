@@ -1,11 +1,12 @@
-package br.com.serviceframework.framework.chatbot.service;
+package main.java.br.com.serviceframework.framework.chatbot.service;
 
-import br.com.serviceframework.framework.chatbot.model.EtapaConversa;
-import br.com.serviceframework.framework.chatbot.model.UserState;
+import main.java.br.com.serviceframework.framework.chatbot.model.EtapaConversa;
+import main.java.br.com.serviceframework.framework.chatbot.model.UserState;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.time.LocalDateTime;
 
 @Service
 public class ChatService {

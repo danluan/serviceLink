@@ -1,4 +1,4 @@
-package br.com.serviceframework.framework.chatbot.service;
+package main.java.br.com.serviceframework.framework.chatbot.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

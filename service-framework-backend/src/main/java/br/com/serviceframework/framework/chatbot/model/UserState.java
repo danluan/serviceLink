@@ -1,4 +1,4 @@
-package br.com.serviceframework.framework.chatbot.model;
+package main.java.br.com.serviceframework.framework.chatbot.model;
 
 import java.time.LocalDateTime;
 

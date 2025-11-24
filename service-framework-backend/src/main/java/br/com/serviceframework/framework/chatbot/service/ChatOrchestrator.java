@@ -1,17 +1,16 @@
-package br.com.serviceframework.framework.chatbot.service;
+package main.java.br.com.serviceframework.framework.chatbot.service;
 
-import br.com.serviceframework.framework.chatbot.handler.IntentionHandler;
-import br.com.serviceframework.framework.chatbot.model.EtapaConversa;
-import br.com.serviceframework.framework.chatbot.model.UserState;
 import br.com.serviceframework.framework.domain.enumerations.Classificacao;
-import br.com.serviceframework.serviceLink.service.LLMServiceImpl;
+import main.java.br.com.serviceframework.framework.chatbot.handler.IntentionHandler;
+import main.java.br.com.serviceframework.framework.chatbot.model.EtapaConversa;
 import org.springframework.stereotype.Service;
+import br.com.serviceframework.framework.service.LLMService;
 
 import java.util.Map;
 
 @Service
-public class ChatOrchestrator {
-    private final LLMServiceImpl llmService;
+public abstract class ChatOrchestrator {
+    private final LLMService llmService;
     private final ChatService chatService;
     private final Map<String, IntentionHandler> handlers;
 
@@ -26,7 +25,7 @@ public class ChatOrchestrator {
             Classificacao.GERAL, EtapaConversa.GERAL
     );
 
-    public ChatOrchestrator(LLMServiceImpl llmService,
+    public ChatOrchestrator(LLMService llmService,
                        ChatService chatService,
                        Map<String, IntentionHandler> handlers
     ) {
@@ -36,49 +35,6 @@ public class ChatOrchestrator {
     }
 
     public String processarMensagem(String mensagemUsuario, String chatId) {
-        UserState userState = chatService.getUserState(chatId);
-
-        if (userState == null || userState.getEtapaAtual() == EtapaConversa.INICIO) {
-            Classificacao classificacao = llmService.classificarIntencao(mensagemUsuario);
-            System.out.println("Classificacao: " + classificacao);
-
-            EtapaConversa etapaAtual = classificacaoParaEstado.getOrDefault(classificacao, EtapaConversa.INICIO);
-            System.out.println("Etapa atual: " + etapaAtual);
-            userState = new UserState(etapaAtual);
-            chatService.createState(chatId, userState);
-        }
-
-        String handlerName = userState.getEtapaAtual().name().toLowerCase() + "Handler";
-        IntentionHandler handler = handlers.get(handlerName);
-
-        if (handler == null) {
-            handler = handlers.get("defaultHandler");
-        }
-
-        String respostaBot = handler.handle(mensagemUsuario, chatId, userState);
-
-        if (userState.getEtapaAtual() == EtapaConversa.ORCAMENTO_SOLICITADO) {
-            userState.setEtapaAtual(EtapaConversa.ORCAMENTO_DESCRITO);
-            chatService.updateState(chatId, EtapaConversa.ORCAMENTO_DESCRITO);
-        } else if (userState.getEtapaAtual() == EtapaConversa.ORCAMENTO_DESCRITO) {
-            chatService.clearUserState(chatId);
-        }
-
-        if (userState.getEtapaAtual() == EtapaConversa.RECOMENDACAO_SOLICITADA) {
-            userState.setEtapaAtual(EtapaConversa.RECOMENDACAO_DESCRITA);
-            chatService.updateState(chatId, EtapaConversa.RECOMENDACAO_DESCRITA);
-        } else if (userState.getEtapaAtual() == EtapaConversa.RECOMENDACAO_DESCRITA) {
-            chatService.clearUserState(chatId);
-        }
-
-        if (userState.getEtapaAtual() == EtapaConversa.INICIO ||
-                userState.getEtapaAtual() == EtapaConversa.ELOGIO ||
-                userState.getEtapaAtual() == EtapaConversa.RECLAMACAO ||
-                userState.getEtapaAtual() == EtapaConversa.DUVIDAS) {
-
-            chatService.clearUserState(chatId);
-        }
-
-        return respostaBot;
+        return mensagemUsuario;
     }
 }

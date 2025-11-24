@@ -10,7 +10,7 @@ import br.com.serviceframework.framework.domain.entity.Prestador;
 import br.com.serviceframework.framework.domain.entity.User;
 import br.com.serviceframework.framework.domain.enumerations.Perfis;
 import br.com.serviceframework.framework.repository.UserRepository;
-import br.com.serviceframework.framework.security.TokenService;
+import main.java.br.com.servicelink.security.TokenService;
 import br.com.serviceframework.serviceLink.service.ClienteServiceImpl;
 import br.com.serviceframework.serviceLink.service.PrestadorServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
