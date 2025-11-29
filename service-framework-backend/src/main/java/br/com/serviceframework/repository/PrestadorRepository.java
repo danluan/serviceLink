@@ -1,6 +1,6 @@
-package br.com.serviceframework.framework.repository;
+package br.com.serviceframework.repository;
 
-import br.com.serviceframework.framework.domain.entity.Prestador;
+import br.com.serviceframework.domain.entity.Prestador;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

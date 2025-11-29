@@ -1,7 +1,9 @@
-package br.com.serviceframework.framework.repository;
+package br.com.serviceframework.repository;
 
-import br.com.serviceframework.framework.domain.entity.Avaliacao;
+import br.com.serviceframework.domain.entity.Avaliacao;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
 }
