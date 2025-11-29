@@ -1,7 +1,7 @@
-package br.com.serviceframework.framework.service;
+package br.com.serviceframework.service;
 
-import br.com.serviceframework.framework.domain.entity.Agendamento;
-import br.com.serviceframework.framework.domain.enumerations.Classificacao;
+import br.com.serviceframework.domain.entity.Agendamento;
+import br.com.serviceframework.domain.enumerations.Classificacao;
 
 public interface LLMService {
     Classificacao classificarIntencao(String mensagemCliente);

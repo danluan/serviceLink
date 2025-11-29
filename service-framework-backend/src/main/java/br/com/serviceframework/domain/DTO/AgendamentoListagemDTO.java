@@ -1,6 +1,6 @@
-package br.com.serviceframework.framework.domain.DTO;
+package br.com.serviceframework.domain.DTO;
 
-import br.com.serviceframework.framework.domain.entity.Agendamento;
+import br.com.serviceframework.domain.entity.Agendamento;
 
 import java.time.LocalDateTime;
 

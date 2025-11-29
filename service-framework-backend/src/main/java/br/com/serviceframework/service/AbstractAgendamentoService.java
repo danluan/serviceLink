@@ -1,7 +1,7 @@
 package br.com.serviceframework.service;
 
-import br.com.serviceframework.framework.domain.entity.Agendamento;
-import br.com.serviceframework.framework.domain.interfaces.AgendamentoStatus;
+import br.com.serviceframework.domain.entity.Agendamento;
+import br.com.serviceframework.domain.interfaces.AgendamentoStatus;
 
 public abstract class AbstractAgendamentoService<T extends Agendamento> {
     public final T criarAgendamento(T agendamento) {

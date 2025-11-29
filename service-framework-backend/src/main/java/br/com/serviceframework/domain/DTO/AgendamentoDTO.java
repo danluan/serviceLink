@@ -1,4 +1,4 @@
-package br.com.serviceframework.framework.domain.DTO;
+package br.com.serviceframework.domain.DTO;
 
 import java.time.LocalDateTime;
 

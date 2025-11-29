@@ -1,6 +1,6 @@
-package br.com.serviceframework.framework.service.auth;
+package br.com.serviceframework.service.auth;
 
-import br.com.serviceframework.framework.domain.DTO.*;
+import br.com.serviceframework.domain.DTO.*;
 import br.com.serviceframework.framework.domain.DTO.AuthDTO;
 import br.com.serviceframework.framework.domain.DTO.AuthResponseDTO;
 import br.com.serviceframework.framework.domain.DTO.UserDTO;
