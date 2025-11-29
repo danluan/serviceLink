@@ -1,4 +1,4 @@
-package br.com.serviceframework.framework.domain.entity;
+package br.com.serviceframework.domain.entity;
 
 import jakarta.persistence.*;
 
@@ -11,6 +11,11 @@ public class Cliente {
 
     @OneToOne(cascade = CascadeType.ALL)
     private User user;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "perfil_id")
+    private Perfil perfilPrestador;
+
 
     public Long getId() {
         return id;

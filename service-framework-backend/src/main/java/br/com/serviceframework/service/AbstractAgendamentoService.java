@@ -1,4 +1,4 @@
-package br.com.serviceframework.framework.service;
+package br.com.serviceframework.service;
 
 import br.com.serviceframework.framework.domain.entity.Agendamento;
 import br.com.serviceframework.framework.domain.interfaces.AgendamentoStatus;

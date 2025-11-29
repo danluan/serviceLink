@@ -1,7 +1,8 @@
-package br.com.serviceframework.framework.domain.entity;
+package br.com.serviceframework.domain.entity;
 
 import java.math.BigDecimal;
 
+import br.com.serviceframework.domain.interfaces.CategoriaServicos;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
@@ -23,10 +24,10 @@ public class Servico {
     private BigDecimal precoBase;
 
     @Column
-    private String categoria;
+    private String imagemUrl;
 
     @Column
-    private String imagemUrl;
+    private Integer categoriaId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prestador_id")
@@ -64,14 +65,6 @@ public class Servico {
 
     public void setPrecoBase(BigDecimal precoBase) {
         this.precoBase = precoBase;
-    }
-
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
     }
 
     public String getImagemUrl() {

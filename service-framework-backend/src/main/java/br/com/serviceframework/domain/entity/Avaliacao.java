@@ -1,4 +1,4 @@
-package br.com.serviceframework.framework.domain.entity;
+package br.com.serviceframework.domain.entity;
 
 import jakarta.persistence.*;
 

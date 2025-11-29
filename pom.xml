@@ -9,25 +9,15 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>service-framework-backend</module>
+        <module>service-framework-backend</module> <!-- o core -->
         <module>service-link-backend</module>
         <module>service-car-backend</module>
         <module>service-chef-backend</module>
     </modules>
 
-    <!-- BOMs e versions centralizadas -->
     <dependencyManagement>
         <dependencies>
-            <!-- Spring Framework (não Spring Boot) -->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>6.1.1</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- Spring Boot para módulos que usam Boot -->
+            <!-- Spring Boot BOM - Gerencia Spring, Spring Data, JPA API etc -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -37,5 +27,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
 
 </project>

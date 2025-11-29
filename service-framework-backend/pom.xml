@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>service-framework-backend</artifactId>
+    <packaging>jar</packaging>
 
     <dependencies>
 
@@ -26,6 +27,31 @@
             <artifactId>spring-beans</artifactId>
         </dependency>
 
+        <!-- API do JPA (anotações e contratos) -->
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+        </dependency>
+
+        <!-- Spring Data JPA (interfaces de repository) -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+        </dependency>
+
+        <!-- Autoconfig sem Boot Starter, para o framework -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

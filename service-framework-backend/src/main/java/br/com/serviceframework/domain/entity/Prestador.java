@@ -1,4 +1,4 @@
-package br.com.serviceframework.framework.domain.entity;
+package br.com.serviceframework.domain.entity;
 
 import java.util.List;
 
@@ -15,7 +15,8 @@ public class Prestador {
     private User user;
 
     @OneToOne(cascade = CascadeType.ALL)
-    private PerfilPrestador perfilPrestador;
+    @JoinColumn(name = "perfil_id")
+    private Perfil perfilPrestador;
 
     @OneToMany(mappedBy = "prestador", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
     private List<Servico> servicos;
@@ -46,11 +47,11 @@ public class Prestador {
         this.user = user;
     }
 
-    public PerfilPrestador getPerfilPrestador() {
+    public Perfil getPerfilPrestador() {
         return perfilPrestador;
     }
 
-    public void setPerfilPrestador(PerfilPrestador perfilPrestador) {
+    public void setPerfilPrestador(Perfil perfilPrestador) {
         this.perfilPrestador = perfilPrestador;
     }
 }

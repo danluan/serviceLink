@@ -1,8 +1,9 @@
-package br.com.serviceframework.framework.domain.entity;
+package br.com.serviceframework.domain.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import jakarta.persistence.*;
-import br.com.serviceframework.framework.domain.interfaces.AgendamentoStatus;
+import br.com.serviceframework.domain.interfaces.AgendamentoStatus;
 
 @MappedSuperclass
 public abstract class Agendamento {
@@ -14,7 +15,7 @@ public abstract class Agendamento {
     private LocalDateTime dataHora;
 
     @Column(name = "status")
-    private Integer statusCode;
+    private Integer statusId;
 
     @Column
     private String observacao;
@@ -30,10 +31,10 @@ public abstract class Agendamento {
     @OneToOne(fetch = FetchType.LAZY)
     private Avaliacao avaliacao;
 
-    // Getters and Setters
-    protected Integer getCodigoStatus() { return statusCode; }
+    @Column
+    private BigDecimal precoTotal;
 
-    protected void setCodigoStatus(Integer codigoStatus) { this.statusCode = codigoStatus; }
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -83,11 +84,27 @@ public abstract class Agendamento {
         this.avaliacao = avaliacao;
     }
 
+    public Integer getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(Integer statusId) {
+        this.statusId = statusId;
+    }
+
+    public BigDecimal getPrecoTotal() {
+        return precoTotal;
+    }
+
+    public void setPrecoTotal(BigDecimal precoTotal) {
+        this.precoTotal = precoTotal;
+    }
+
     public void setStatus(AgendamentoStatus status) {
         if (status != null) {
-            this.statusCode = status.getCodigoStatus();
+            this.statusId = status.getCodigoStatus();
         } else {
-            this.statusCode = null;
+            this.statusId = null;
         }
     }
 
