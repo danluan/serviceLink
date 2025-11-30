@@ -1,6 +1,6 @@
-package br.com.serviceframework.serviceLink.enumerations;
+package br.com.servicelink.enumerations;
 
-import br.com.serviceframework.framework.domain.interfaces.AgendamentoStatus;
+import br.com.serviceframework.domain.interfaces.AgendamentoStatus;
 
 public enum AgendamentoStatusServiceLink implements AgendamentoStatus {
     PENDENTE(1, "Pendente"),
@@ -23,7 +23,7 @@ public enum AgendamentoStatusServiceLink implements AgendamentoStatus {
     }
 
     @Override
-    public int getCodigoStatus() {
+    public Integer getCodigoStatus() {
         return codigo;
     }
 

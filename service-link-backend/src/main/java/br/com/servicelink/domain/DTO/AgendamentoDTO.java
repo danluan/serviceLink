@@ -1,6 +1,7 @@
-package br.com.serviceframework.domain.DTO;
+package br.com.servicelink.domain.DTO;
 
 import java.time.LocalDateTime;
+import br.com.serviceframework.domain.DTO.AvaliacaoDTO;
 
 public record AgendamentoDTO(
         Long id,

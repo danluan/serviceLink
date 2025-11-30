@@ -1,4 +1,4 @@
-package br.com.serviceframework.serviceLink.service;
+package br.com.servicelink.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,31 +9,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-
-import br.com.serviceframework.framework.domain.DTO.AgendamentoDTO;
-import br.com.serviceframework.framework.domain.DTO.AgendamentoListagemDTO;
-import br.com.serviceframework.framework.domain.DTO.AvaliacaoDTO;
-import br.com.serviceframework.framework.domain.entity.Agendamento;
-import br.com.serviceframework.framework.domain.entity.Avaliacao;
-import br.com.serviceframework.framework.domain.entity.Cliente;
-import br.com.serviceframework.framework.domain.entity.Servico;
-import br.com.serviceframework.serviceLink.enumerations.AgendamentoStatusServiceLink;
+import br.com.serviceframework.domain.DTO.AvaliacaoDTO;
+import br.com.serviceframework.domain.entity.Agendamento;
+import br.com.serviceframework.domain.entity.Avaliacao;
+import br.com.serviceframework.domain.entity.Cliente;
+import br.com.serviceframework.domain.entity.Servico;
+import br.com.serviceframework.domain.interfaces.AgendamentoStatus;
+import br.com.servicelink.enumerations.AgendamentoStatusServiceLink;
 import br.com.serviceframework.serviceLink.repository.AgendamentoServiceLinkRepository;
-import br.com.serviceframework.framework.repository.AvaliacaoRepository;
-import br.com.serviceframework.framework.repository.ClienteRepository;
-import br.com.serviceframework.framework.repository.ServicoRepository;
-import br.com.serviceframework.framework.service.AgendamentoService;
-import br.com.serviceframework.framework.service.auth.AuthService;
+import br.com.serviceframework.repository.AvaliacaoRepository;
+import br.com.serviceframework.repository.ClienteRepository;
+import br.com.serviceframework.repository.ServicoRepository;
+import br.com.serviceframework.service.AbstractAgendamentoService;
+import br.com.serviceframework.service.auth.AuthService;
 import br.com.serviceframework.serviceLink.service.validator.AgendamentoValidator;
+import br.com.servicelink.domain.DTO.AgendamentoDTO;
+import br.com.servicelink.domain.DTO.AgendamentoListagemDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import br.com.serviceframework.serviceLink.domain.AgendamentoServiceLink;
+import br.com.servicelink.domain.entity.AgendamentoServiceLink;
 
 @Service
-public class AgendamentoServiceImpl implements AgendamentoService {
+public class AgendamentoServiceImpl
+        extends AbstractAgendamentoService<AgendamentoServiceLink> {
 
     private final AgendamentoServiceLinkRepository agendamentoRepository;
     private final AvaliacaoRepository avaliacaoRepository;
@@ -58,12 +59,22 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         this.authService = authService;
     }
 
-    @Transactional
     @Override
+    protected void validarRegrasDeNegocio(AgendamentoServiceLink agendamento) {}
+
+    @Override
+    protected AgendamentoStatus getStatusInicial() { return AgendamentoStatusServiceLink.PENDENTE; }
+
+    @Override
+    protected void calcularPreco(AgendamentoServiceLink agendamento) {}
+
+    @Override
+    protected AgendamentoServiceLink salvarNoRepositorio(AgendamentoServiceLink agendamento) { return agendamentoRepository.save(agendamento); }
+}
+
+    @Transactional
     public AgendamentoDTO salvarAgendamento(AgendamentoDTO agendamentoDTO) {
-
         Long usuarioId = agendamentoDTO.clienteId();
-
         Cliente cliente = clienteRepository.findByUserId(usuarioId);
 
         if (cliente == null) {
@@ -78,23 +89,13 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         AgendamentoServiceLink agendamento = new AgendamentoServiceLink();
         agendamento.setDataHora(agendamentoDTO.dataHora());
         agendamento.setObservacao(agendamentoDTO.observacao());
-
         agendamento.setCliente(cliente);
         agendamento.setServico(servico);
         agendamento.setStatus(AgendamentoStatusServiceLink.PENDENTE);
 
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
 
-        AgendamentoDTO dto = new AgendamentoDTO(
-                agendamentoSalvo.getId(),
-                agendamentoSalvo.getDataHora(),
-                agendamentoSalvo.getObservacao(),
-                agendamentoSalvo.getStatus().toString(),
-                agendamentoSalvo.getCliente().getUser().getId(),
-                agendamentoSalvo.getServico().getId(),
-                null
-        );
-        return dto;
+        AgendamentoServiceLink agendamentoSalvo = super.criarAgendamento(agendamento);
     }
 
     @Override
@@ -140,7 +141,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     @Override
     public List<AgendamentoListagemDTO> listarAgendamentosPorPrestador(Long prestadorId) {
 
-        List<Agendamento> agendamentosDoPrestador = agendamentoRepository.findByServico_Prestador_Id(prestadorId);
+        List<AgendamentoServiceLink> agendamentosDoPrestador = agendamentoRepository.findByServico_Prestador_Id(prestadorId);
 
         return agendamentosDoPrestador.stream()
                 .map(agendamento -> new AgendamentoListagemDTO(
@@ -235,7 +236,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
-        List<Agendamento> agendamentosDoPrestador = agendamentoRepository.findByServicoPrestadorIdAndDataHoraBetween(
+        List<AgendamentoServiceLink> agendamentosDoPrestador = agendamentoRepository.findByServicoPrestadorIdAndDataHoraBetween(
                 prestadorId,
                 startOfDay,
                 endOfDay
@@ -262,7 +263,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
         LocalDateTime now = LocalDateTime.now();
 
-        List<Agendamento> agendamentosFuturos = agendamentoRepository.findTop5ByServicoPrestadorIdAndDataHoraAfterOrderByDataHoraAsc(
+        List<AgendamentoServiceLink> agendamentosFuturos = agendamentoRepository.findTop5ByServicoPrestadorIdAndDataHoraAfterOrderByDataHoraAsc(
                 prestadorId,
                 now
         );
@@ -312,7 +313,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         LocalDateTime dataInicio = yearMonth.atDay(1).atStartOfDay();
         LocalDateTime dataFim = yearMonth.atEndOfMonth().atTime(23, 59, 59, 999999999);
 
-        List<Agendamento> agendamentos = agendamentoRepository.findByServicoPrestadorIdAndDataHoraBetween(
+        List<AgendamentoServiceLink> agendamentos = agendamentoRepository.findByServicoPrestadorIdAndDataHoraBetween(
                 prestadorId,
                 dataInicio,
                 dataFim
@@ -396,4 +397,3 @@ public class AgendamentoServiceImpl implements AgendamentoService {
             );
         }
     }
-}

@@ -1,7 +1,6 @@
 package br.com.serviceframework.domain.DTO;
 
 import jakarta.validation.constraints.*;
-import org.antlr.v4.runtime.misc.NotNull;
 
 public record AvaliacaoDTO(
         Long id,

@@ -1,18 +1,17 @@
-package br.com.serviceframework.serviceLink.controller;
+package br.com.servicelink.controller;
 
-import br.com.serviceframework.framework.domain.DTO.AgendamentoDTO;
-import br.com.serviceframework.framework.domain.DTO.AgendamentoListagemDTO;
-import br.com.serviceframework.framework.domain.DTO.AvaliacaoDTO;
+import br.com.serviceframework.domain.DTO.AvaliacaoDTO;
+import br.com.servicelink.domain.DTO.AgendamentoDTO;
+import br.com.servicelink.domain.DTO.AgendamentoListagemDTO;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
-import br.com.serviceframework.serviceLink.enumerations.AgendamentoStatusServiceLink;
-import br.com.serviceframework.framework.service.AgendamentoService;
+import br.com.servicelink.enumerations.AgendamentoStatusServiceLink;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import br.com.servicelink.service.AgendamentoServiceImpl;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,7 @@ import java.util.Map;
 @RequestMapping("/api/agendamento")
 public class AgendamentoController {
     @Autowired
-    private AgendamentoService agendamentoService;
+    private AgendamentoServiceImpl agendamentoService;
 
     /**
      * Lista todos os agendamentos cadastrados.

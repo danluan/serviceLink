@@ -1,4 +1,4 @@
-package br.com.serviceframework.domain.DTO;
+package br.com.servicelink.domain.DTO;
 
 import br.com.serviceframework.domain.entity.Agendamento;
 
