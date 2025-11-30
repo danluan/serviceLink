@@ -1,6 +1,6 @@
-package br.com.serviceframework.serviceLink.repository;
+package br.com.servicelink.repository;
 
-import br.com.serviceframework.framework.domain.entity.Agendamento;
+import br.com.serviceframework.domain.entity.Agendamento;
 import br.com.servicelink.domain.entity.AgendamentoServiceLink;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
