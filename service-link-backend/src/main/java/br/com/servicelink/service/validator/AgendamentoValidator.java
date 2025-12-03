@@ -2,7 +2,7 @@ package br.com.servicelink.service.validator;
 
 import br.com.serviceframework.domain.entity.Agendamento;
 import br.com.serviceframework.domain.entity.Servico;
-import br.com.serviceframework.framework.exceptions.BusinessException;
+import br.com.serviceframework.exceptions.BusinessException;
 import br.com.servicelink.domain.entity.AgendamentoServiceLink;
 import br.com.servicelink.repository.AgendamentoServiceLinkRepository;
 import br.com.servicelink.domain.DTO.AgendamentoDTO;
