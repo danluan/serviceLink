@@ -1,10 +1,11 @@
-package br.com.serviceframework.serviceLink.service.validator;
+package br.com.servicelink.service.validator;
 
-import br.com.serviceframework.framework.domain.DTO.AgendamentoDTO;
-import br.com.serviceframework.framework.domain.entity.Agendamento;
-import br.com.serviceframework.framework.domain.entity.Servico;
+import br.com.serviceframework.domain.entity.Agendamento;
+import br.com.serviceframework.domain.entity.Servico;
 import br.com.serviceframework.framework.exceptions.BusinessException;
-import br.com.serviceframework.serviceLink.repository.AgendamentoServiceLinkRepository;
+import br.com.servicelink.domain.entity.AgendamentoServiceLink;
+import br.com.servicelink.repository.AgendamentoServiceLinkRepository;
+import br.com.servicelink.domain.DTO.AgendamentoDTO;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -52,7 +53,7 @@ public class AgendamentoValidator {
         LocalDateTime inicioJanela = dataHora.minusMinutes(30);
         LocalDateTime fimJanela = dataHora.plusMinutes(30);
 
-        List<Agendamento> agendamentosConflitantes = agendamentoRepository
+        List<AgendamentoServiceLink> agendamentosConflitantes = agendamentoRepository
                 .findByServicoPrestadorIdAndDataHoraBetween(prestadorId, inicioJanela, fimJanela);
 
         if (!agendamentosConflitantes.isEmpty()) {

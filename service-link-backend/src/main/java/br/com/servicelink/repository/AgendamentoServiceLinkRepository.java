@@ -1,6 +1,5 @@
 package br.com.servicelink.repository;
 
-import br.com.serviceframework.domain.entity.Agendamento;
 import br.com.servicelink.domain.entity.AgendamentoServiceLink;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,9 +11,9 @@ import java.util.List;
 
 @Repository
 public interface AgendamentoServiceLinkRepository extends JpaRepository<AgendamentoServiceLink, Long> {
-    List<Agendamento> findByDataHora(LocalDateTime data);
-    List<Agendamento> findByServico_Prestador_Id(Long prestadorId);
-    List<Agendamento> findByClienteId(Long clienteId);
+    List<AgendamentoServiceLink> findByDataHora(LocalDateTime data);
+    List<AgendamentoServiceLink> findByServico_Prestador_Id(Long prestadorId);
+    List<AgendamentoServiceLink> findByClienteId(Long clienteId);
 
     /**
      * Busca agendamentos por Prestador ID e restringe o intervalo de data/hora.
@@ -23,7 +22,7 @@ public interface AgendamentoServiceLinkRepository extends JpaRepository<Agendame
      * @param endOfDay O fim do dia (23:59:59.999...).
      * @return Lista de agendamentos no dia especificado para o prestador.
      */
-    List<Agendamento> findByServicoPrestadorIdAndDataHoraBetween(
+    List<AgendamentoServiceLink> findByServicoPrestadorIdAndDataHoraBetween(
             Long prestadorId,
             LocalDateTime startOfDay,
             LocalDateTime endOfDay
@@ -36,7 +35,7 @@ public interface AgendamentoServiceLinkRepository extends JpaRepository<Agendame
      * @param now O momento atual (LocalDateTime.now()).
      * @return Uma lista com até 5 agendamentos futuros.
      */
-    List<Agendamento> findTop5ByServicoPrestadorIdAndDataHoraAfterOrderByDataHoraAsc(
+    List<AgendamentoServiceLink> findTop5ByServicoPrestadorIdAndDataHoraAfterOrderByDataHoraAsc(
             Long prestadorId,
             LocalDateTime now
     );
@@ -53,7 +52,7 @@ public interface AgendamentoServiceLinkRepository extends JpaRepository<Agendame
             "JOIN a.servico s " +
             "WHERE s.prestador.id = :prestadorId " +
             "AND a.dataHora BETWEEN :dataInicio AND :dataFim " +
-            "AND a.statusCode = :statusConcluido")
+            "AND a.statusId = :statusConcluido")
     BigDecimal calcularFaturamentoPorPeriodo(
             @Param("prestadorId") Long prestadorId,
             @Param("dataInicio") LocalDateTime dataInicio,

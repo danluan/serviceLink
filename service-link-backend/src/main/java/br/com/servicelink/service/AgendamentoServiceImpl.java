@@ -10,38 +10,35 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import br.com.serviceframework.domain.DTO.AvaliacaoDTO;
-import br.com.serviceframework.domain.entity.Agendamento;
 import br.com.serviceframework.domain.entity.Avaliacao;
 import br.com.serviceframework.domain.entity.Cliente;
 import br.com.serviceframework.domain.entity.Servico;
 import br.com.serviceframework.domain.interfaces.AgendamentoStatus;
 import br.com.servicelink.enumerations.AgendamentoStatusServiceLink;
-import br.com.serviceframework.serviceLink.repository.AgendamentoServiceLinkRepository;
+import br.com.servicelink.repository.AgendamentoServiceLinkRepository;
 import br.com.serviceframework.repository.AvaliacaoRepository;
 import br.com.serviceframework.repository.ClienteRepository;
 import br.com.serviceframework.repository.ServicoRepository;
 import br.com.serviceframework.service.AbstractAgendamentoService;
 import br.com.serviceframework.service.auth.AuthService;
-import br.com.serviceframework.serviceLink.service.validator.AgendamentoValidator;
+import br.com.servicelink.service.validator.AgendamentoValidator;
 import br.com.servicelink.domain.DTO.AgendamentoDTO;
 import br.com.servicelink.domain.DTO.AgendamentoListagemDTO;
+import br.com.servicelink.domain.entity.AgendamentoServiceLink;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import br.com.servicelink.domain.entity.AgendamentoServiceLink;
 
 @Service
-public class AgendamentoServiceImpl
-        extends AbstractAgendamentoService<AgendamentoServiceLink> {
+public class AgendamentoServiceImpl extends AbstractAgendamentoService<AgendamentoServiceLink> {
 
     private final AgendamentoServiceLinkRepository agendamentoRepository;
     private final AvaliacaoRepository avaliacaoRepository;
     private final ClienteRepository clienteRepository;
     private final ServicoRepository servicoRepository;
     private final AgendamentoValidator agendamentoValidator;
-
     private final AuthService authService;
 
     @Autowired
@@ -50,7 +47,8 @@ public class AgendamentoServiceImpl
             AvaliacaoRepository avaliacaoRepository,
             ClienteRepository clienteRepository,
             ServicoRepository servicoRepository,
-            AgendamentoValidator agendamentoValidator, AuthService authService) {
+            AgendamentoValidator agendamentoValidator,
+            AuthService authService) {
         this.agendamentoRepository = agendamentoRepository;
         this.avaliacaoRepository = avaliacaoRepository;
         this.clienteRepository = clienteRepository;
@@ -59,18 +57,29 @@ public class AgendamentoServiceImpl
         this.authService = authService;
     }
 
-    @Override
-    protected void validarRegrasDeNegocio(AgendamentoServiceLink agendamento) {}
+    // --- MÉTODOS DO FRAMEWORK (Hooks) ---
 
     @Override
-    protected AgendamentoStatus getStatusInicial() { return AgendamentoStatusServiceLink.PENDENTE; }
+    protected void validarRegrasDeNegocio(AgendamentoServiceLink agendamento) {
+        // Validações extras da entidade podem vir aqui
+    }
 
     @Override
-    protected void calcularPreco(AgendamentoServiceLink agendamento) {}
+    protected AgendamentoStatus getStatusInicial() {
+        return AgendamentoStatusServiceLink.PENDENTE;
+    }
 
     @Override
-    protected AgendamentoServiceLink salvarNoRepositorio(AgendamentoServiceLink agendamento) { return agendamentoRepository.save(agendamento); }
-}
+    protected void calcularPreco(AgendamentoServiceLink agendamento) {
+        // Lógica de preço futuro
+    }
+
+    @Override
+    protected AgendamentoServiceLink salvarNoRepositorio(AgendamentoServiceLink agendamento) {
+        return agendamentoRepository.save(agendamento);
+    }
+
+    // --- MÉTODOS PÚBLICOS DA APLICAÇÃO ---
 
     @Transactional
     public AgendamentoDTO salvarAgendamento(AgendamentoDTO agendamentoDTO) {
@@ -91,14 +100,14 @@ public class AgendamentoServiceImpl
         agendamento.setObservacao(agendamentoDTO.observacao());
         agendamento.setCliente(cliente);
         agendamento.setServico(servico);
-        agendamento.setStatus(AgendamentoStatusServiceLink.PENDENTE);
 
-        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
-
+        // Chama o método do pai (Template Method)
         AgendamentoServiceLink agendamentoSalvo = super.criarAgendamento(agendamento);
+
+        // Conversão manual para DTO
+        return converterParaDTO(agendamentoSalvo);
     }
 
-    @Override
     public AgendamentoDTO editarAgendamento(AgendamentoDTO agendamentoDTO, Long id) throws BadRequestException {
         AgendamentoServiceLink agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
@@ -107,95 +116,56 @@ public class AgendamentoServiceImpl
         agendamento.setDataHora(agendamentoDTO.dataHora());
         agendamento.setObservacao(agendamentoDTO.observacao());
 
-        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
-
-        return new AgendamentoDTO(
-                agendamentoSalvo.getId(),
-                agendamentoSalvo.getDataHora(),
-                agendamentoSalvo.getObservacao(),
-                agendamentoSalvo.getStatus().toString(),
-                agendamentoSalvo.getCliente().getUser().getId(),
-                agendamentoSalvo.getServico().getId(),
-                null
-        );
+        AgendamentoServiceLink agendamentoSalvo = agendamentoRepository.save(agendamento);
+        return converterParaDTO(agendamentoSalvo);
     }
 
     @Transactional
-    @Override
     public List<AgendamentoListagemDTO> listarAgendamentos() {
         return agendamentoRepository.findAll().stream()
-                .map(agendamento -> new AgendamentoListagemDTO(
-                        agendamento.getId(),
-                        agendamento.getDataHora(),
-                        agendamento.getStatus().toString(),
-                        agendamento.getObservacao(),
-                        agendamento.getCliente().getId(),
-                        agendamento.getCliente().getUser().getNome(),
-                        agendamento.getServico().getId(),
-                        agendamento.getServico().getNome(),
-                        agendamento.getServico().getPrestador().getUser().getNome()
-                )).collect(Collectors.toList());
+                .map(this::converterParaListagemDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    @Override
     public List<AgendamentoListagemDTO> listarAgendamentosPorPrestador(Long prestadorId) {
-
         List<AgendamentoServiceLink> agendamentosDoPrestador = agendamentoRepository.findByServico_Prestador_Id(prestadorId);
 
         return agendamentosDoPrestador.stream()
-                .map(agendamento -> new AgendamentoListagemDTO(
-                        agendamento.getId(),
-                        agendamento.getDataHora(),
-                        agendamento.getStatus().toString(),
-                        agendamento.getObservacao(),
-                        agendamento.getCliente().getId(),
-                        agendamento.getCliente().getUser().getNome(),
-                        agendamento.getServico().getId(),
-                        agendamento.getServico().getNome(),
-                        agendamento.getServico().getPrestador().getUser().getNome()
-                ))
+                .map(this::converterParaListagemDTO)
                 .collect(Collectors.toList());
-
     }
 
-    @Override
     public AgendamentoListagemDTO buscarAgendamentosPorId(Long id) {
         var agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado: " + id));
-        AgendamentoListagemDTO dto = new AgendamentoListagemDTO(agendamento);
-
-        return new AgendamentoListagemDTO(agendamento);
+        return converterParaListagemDTO(agendamento);
     }
 
-    @Override
     public void deletarAgendamento(Long id) {
         agendamentoRepository.deleteById(id);
     }
 
-    @Override
     public AvaliacaoDTO avaliacaoPorAgendamentoId(Long id) {
-        Agendamento agendamento = agendamentoRepository.findById(id)
+        AgendamentoServiceLink agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
 
         try {
             Avaliacao avaliacao = agendamento.getAvaliacao();
-            AvaliacaoDTO avaliacaoDTO = new AvaliacaoDTO(
+            return new AvaliacaoDTO(
                     avaliacao.getId(),
                     avaliacao.getEstrelas(),
                     avaliacao.getComentario());
-            return avaliacaoDTO;
         } catch (Exception e) {
             throw new EntityNotFoundException("Avaliação não encontrada para o Agendamento com o ID: " + id);
         }
     }
 
-    @Override
     public AgendamentoDTO adicionarAvaliacaoAoAgendamento(Long agendamentoId, AvaliacaoDTO avaliacaoDTO) {
         AgendamentoServiceLink agendamento = agendamentoRepository.findById(agendamentoId)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + agendamentoId));
 
-        if (agendamento.getAvaliacao() == null) {
+        if (agendamento.getAvaliacao() != null) {
             throw new RuntimeException("Este agendamento já foi avaliado.");
         }
 
@@ -212,125 +182,54 @@ public class AgendamentoServiceImpl
         agendamento.setAvaliacao(avaliacao);
         agendamentoRepository.save(agendamento);
 
-        return new AgendamentoDTO(
-                agendamento.getId(),
-                agendamento.getDataHora(),
-                agendamento.getObservacao(),
-                agendamento.getStatus().toString(),
-                agendamento.getCliente().getId(),
-                agendamento.getServico().getId(),
-                new AvaliacaoDTO(
-                        agendamento.getAvaliacao().getId(),
-                        agendamento.getAvaliacao().getEstrelas(),
-                        agendamento.getAvaliacao().getComentario()
-                )
-        );
+        return converterParaDTO(agendamento);
     }
 
     @Transactional
-    @Override
     public List<AgendamentoListagemDTO> listarAgendamentosDoDia(Long prestadorId) {
-
         LocalDate today = LocalDate.now();
-
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
-        List<AgendamentoServiceLink> agendamentosDoPrestador = agendamentoRepository.findByServicoPrestadorIdAndDataHoraBetween(
-                prestadorId,
-                startOfDay,
-                endOfDay
+        List<AgendamentoServiceLink> agendamentos = agendamentoRepository.findByServicoPrestadorIdAndDataHoraBetween(
+                prestadorId, startOfDay, endOfDay
         );
 
-        return agendamentosDoPrestador.stream()
-                .map(agendamento -> new AgendamentoListagemDTO(
-                        agendamento.getId(),
-                        agendamento.getDataHora(),
-                        agendamento.getStatus().toString(),
-                        agendamento.getObservacao(),
-                        agendamento.getCliente().getId(),
-                        agendamento.getCliente().getUser().getNome(),
-                        agendamento.getServico().getId(),
-                        agendamento.getServico().getNome(),
-                        agendamento.getServico().getPrestador().getUser().getNome()
-                ))
-                .collect(Collectors.toList());
+        return agendamentos.stream().map(this::converterParaListagemDTO).collect(Collectors.toList());
     }
 
     @Transactional
-    @Override
     public List<AgendamentoListagemDTO> listarProximos5Agendamentos(Long prestadorId) {
-
         LocalDateTime now = LocalDateTime.now();
-
-        List<AgendamentoServiceLink> agendamentosFuturos = agendamentoRepository.findTop5ByServicoPrestadorIdAndDataHoraAfterOrderByDataHoraAsc(
-                prestadorId,
-                now
+        List<AgendamentoServiceLink> agendamentos = agendamentoRepository.findTop5ByServicoPrestadorIdAndDataHoraAfterOrderByDataHoraAsc(
+                prestadorId, now
         );
-
-        return agendamentosFuturos.stream()
-                .map(agendamento -> new AgendamentoListagemDTO(
-                        agendamento.getId(),
-                        agendamento.getDataHora(),
-                        agendamento.getStatus().toString(),
-                        agendamento.getObservacao(),
-                        agendamento.getCliente().getId(),
-                        agendamento.getCliente().getUser().getNome(),
-                        agendamento.getServico().getId(),
-                        agendamento.getServico().getNome(),
-                        agendamento.getServico().getPrestador().getUser().getNome()
-                ))
-                .collect(Collectors.toList());
+        return agendamentos.stream().map(this::converterParaListagemDTO).collect(Collectors.toList());
     }
 
-    @Override
     public BigDecimal calcularFaturamentoMensal(Long prestadorId, int ano, int mes) {
         YearMonth yearMonth = YearMonth.of(ano, mes);
-
-        LocalDate primeiroDiaDoMes = yearMonth.atDay(1);
-        LocalDateTime dataInicio = primeiroDiaDoMes.atStartOfDay();
-
-        LocalDate ultimoDiaDoMes = yearMonth.atEndOfMonth();
-        LocalDateTime dataFim = ultimoDiaDoMes.atTime(23, 59, 59, 999999999);
-
+        LocalDateTime dataInicio = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime dataFim = yearMonth.atEndOfMonth().atTime(23, 59, 59, 999999999);
 
         BigDecimal faturamento = agendamentoRepository.calcularFaturamentoPorPeriodo(
-                prestadorId,
-                dataInicio,
-                dataFim,
-                AgendamentoStatusServiceLink.CONCLUIDO.getCodigoStatus()
+                prestadorId, dataInicio, dataFim, AgendamentoStatusServiceLink.CONCLUIDO.getCodigoStatus()
         );
-
         return faturamento != null ? faturamento : BigDecimal.ZERO;
     }
 
     @Transactional
-    @Override
     public Map<Integer, List<AgendamentoListagemDTO>> buscarAgendamentosPorMes(Long prestadorId, int ano, int mes) {
-
         YearMonth yearMonth = YearMonth.of(ano, mes);
-
         LocalDateTime dataInicio = yearMonth.atDay(1).atStartOfDay();
         LocalDateTime dataFim = yearMonth.atEndOfMonth().atTime(23, 59, 59, 999999999);
 
         List<AgendamentoServiceLink> agendamentos = agendamentoRepository.findByServicoPrestadorIdAndDataHoraBetween(
-                prestadorId,
-                dataInicio,
-                dataFim
+                prestadorId, dataInicio, dataFim
         );
 
         return agendamentos.stream()
-                .map(agendamento -> new AgendamentoListagemDTO(
-                        agendamento.getId(),
-                        agendamento.getDataHora(),
-                        agendamento.getStatus().toString(),
-                        agendamento.getObservacao(),
-                        agendamento.getCliente().getId(),
-                        agendamento.getCliente().getUser().getNome(),
-                        agendamento.getServico().getId(),
-                        agendamento.getServico().getNome(),
-                        agendamento.getServico().getPrestador().getUser().getNome()
-                ))
+                .map(this::converterParaListagemDTO)
                 .collect(Collectors.groupingBy(
                         dto -> dto.getDataHora().getDayOfMonth(),
                         TreeMap::new,
@@ -341,59 +240,82 @@ public class AgendamentoServiceImpl
     public List<AgendamentoListagemDTO> listarAgendamentosPorCliente(Long clienteId) {
         return agendamentoRepository.findByClienteId(clienteId)
                 .stream()
-                .map(AgendamentoListagemDTO::new)
+                .map(this::converterParaListagemDTO)
                 .toList();
     }
 
-
     @Transactional
-    @Override
     public AgendamentoDTO editarStatusAgendamento(Long id, AgendamentoStatusServiceLink status) throws BadRequestException {
         AgendamentoServiceLink agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com o ID: " + id));
 
         validarTransicaoStatus(status, agendamento);
+        agendamento.setStatus(status);
 
-        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+        AgendamentoServiceLink agendamentoSalvo = agendamentoRepository.save(agendamento);
+        return converterParaDTO(agendamentoSalvo);
+    }
 
+    // --- MÉTODOS AUXILIARES ---
+
+    private AgendamentoDTO converterParaDTO(AgendamentoServiceLink agendamento) {
+        AvaliacaoDTO avaliacaoDTO = null;
+        if (agendamento.getAvaliacao() != null) {
+            avaliacaoDTO = new AvaliacaoDTO(
+                    agendamento.getAvaliacao().getId(),
+                    agendamento.getAvaliacao().getEstrelas(),
+                    agendamento.getAvaliacao().getComentario()
+            );
+        }
         return new AgendamentoDTO(
-                agendamentoSalvo.getId(),
-                agendamentoSalvo.getDataHora(),
-                agendamentoSalvo.getObservacao(),
-                agendamentoSalvo.getStatus().toString(),
-                agendamentoSalvo.getCliente().getUser().getId(),
-                agendamentoSalvo.getServico().getId(),
-                null
+                agendamento.getId(),
+                agendamento.getDataHora(),
+                agendamento.getObservacao(),
+                agendamento.getStatus().toString(),
+                agendamento.getCliente().getUser().getId(),
+                agendamento.getServico().getId(),
+                avaliacaoDTO
         );
     }
 
-    private static void validarTransicaoStatus(AgendamentoStatusServiceLink status, Agendamento agendamento) throws BadRequestException {
-        if (agendamento.getStatus().equals(AgendamentoStatusServiceLink.CONCLUIDO) || agendamento.getStatus().equals(AgendamentoStatusServiceLink.CANCELADO)) {
-            throw new BadRequestException(
-                    "Não é possível alterar o status de um agendamento que já está '" + agendamento.getStatus() + "' (finalizado)."
-            );
+    private AgendamentoListagemDTO converterParaListagemDTO(AgendamentoServiceLink agendamento) {
+        return new AgendamentoListagemDTO(
+                agendamento.getId(),
+                agendamento.getDataHora(),
+                agendamento.getStatus().toString(),
+                agendamento.getObservacao(),
+                agendamento.getCliente().getId(),
+                agendamento.getCliente().getUser().getNome(),
+                agendamento.getServico().getId(),
+                agendamento.getServico().getNome(),
+                agendamento.getServico().getPrestador().getUser().getNome()
+        );
+    }
+
+    // CORREÇÃO DE TIPO NO PARÂMETRO
+    private static void validarTransicaoStatus(AgendamentoStatusServiceLink status, AgendamentoServiceLink agendamento) throws BadRequestException {
+        AgendamentoStatus atual = agendamento.getStatus();
+
+        if (atual.equals(AgendamentoStatusServiceLink.CONCLUIDO) || atual.equals(AgendamentoStatusServiceLink.CANCELADO)) {
+            throw new BadRequestException("Não é possível alterar o status de um agendamento que já está '" + atual + "' (finalizado).");
+        }
+        if (atual.equals(status)) {
+            throw new BadRequestException("O status da requisição ('" + status + "') é o mesmo do status atual.");
         }
 
-        if (agendamento.getStatus().equals(status)) {
-            throw new BadRequestException(
-                    "O status da requisição ('" + status + "') é o mesmo do status atual do agendamento."
-            );
+        if (atual.equals(AgendamentoStatusServiceLink.PENDENTE) && status.equals(AgendamentoStatusServiceLink.CONFIRMADO)) {
+            // ok
         }
-
-        if (agendamento.getStatus().equals(AgendamentoStatusServiceLink.PENDENTE) && status.equals(AgendamentoStatusServiceLink.CONFIRMADO)) {
-            agendamento.setStatus(AgendamentoStatusServiceLink.CONFIRMADO);
+        else if (atual.equals(AgendamentoStatusServiceLink.PENDENTE) && status.equals(AgendamentoStatusServiceLink.CANCELADO)) {
+            // ok
         }
-        else if (agendamento.getStatus().equals(AgendamentoStatusServiceLink.PENDENTE) && status.equals(AgendamentoStatusServiceLink.CANCELADO)) {
-            agendamento.setStatus(AgendamentoStatusServiceLink.CANCELADO);
-        }
-        else if (agendamento.getStatus().equals(AgendamentoStatusServiceLink.CONFIRMADO) && status.equals(AgendamentoStatusServiceLink.CONCLUIDO)) {
+        else if (atual.equals(AgendamentoStatusServiceLink.CONFIRMADO) && status.equals(AgendamentoStatusServiceLink.CONCLUIDO)) {
             if(agendamento.getDataHora().isBefore(LocalDateTime.now())) {
-                agendamento.setStatus(AgendamentoStatusServiceLink.CONCLUIDO);
-            }else throw new BadRequestException("Não é possivel concluir um agendamento que ainda não aconteceu");
+                // ok
+            } else throw new BadRequestException("Não é possivel concluir um agendamento que ainda não aconteceu");
         }
         else {
-            throw new BadRequestException(
-                    "Transição de status inválida: De '" + agendamento.getStatus() + "' para '" + status + "' não é permitida."
-            );
+            throw new BadRequestException("Transição de status inválida: De '" + atual + "' para '" + status + "' não é permitida.");
         }
     }
+}
