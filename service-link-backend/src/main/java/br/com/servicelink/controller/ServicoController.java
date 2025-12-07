@@ -1,9 +1,10 @@
-package br.com.serviceframework.serviceLink.controller;
+package br.com.servicelink.controller;
 
-import br.com.serviceframework.framework.domain.DTO.BuscaServicosDTO;
-import br.com.serviceframework.framework.domain.DTO.ServicoDTO;
-import br.com.serviceframework.framework.domain.entity.Servico;
-import br.com.serviceframework.framework.service.ServicoService;
+import br.com.serviceframework.domain.DTO.BuscaServicosDTO;
+import br.com.servicelink.domain.DTO.ServicoDTO;
+import br.com.serviceframework.domain.entity.Servico;
+import br.com.serviceframework.service.ServicoService;
+import br.com.servicelink.service.ServicoServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
@@ -19,7 +20,7 @@ import java.util.List;
 @RequestMapping("api/servico")
 public class ServicoController {
     @Autowired
-    private ServicoService servicoService;
+    private ServicoServiceImpl servicoService;
 
     /**
      * Busca serviços com filtros opcionais. Se nenhum filtro for fornecido, retorna todos os serviços.
@@ -39,7 +40,8 @@ public class ServicoController {
             @RequestParam(required = false) String descricao,
             @RequestParam(required = false) BigDecimal precoMin,
             @RequestParam(required = false) BigDecimal precoMax,
-            @RequestParam(required = false) String categoria
+            //colocar converson de string para id?
+            @RequestParam(required = false) Long categoria
             ){
         boolean semFiltro = id == null && nome == null && descricao == null && precoMin == null && precoMax == null && categoria == null;
 

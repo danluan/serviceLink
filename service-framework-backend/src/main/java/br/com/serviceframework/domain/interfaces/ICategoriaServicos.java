@@ -1,6 +1,6 @@
 package br.com.serviceframework.domain.interfaces;
 
-public interface CategoriaServicos {
+public interface ICategoriaServicos {
     String getNomeCategoria();
-    Integer getIdCategoria();
+    Long getIdCategoria();
 }

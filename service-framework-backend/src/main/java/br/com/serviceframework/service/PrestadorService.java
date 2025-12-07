@@ -6,7 +6,7 @@ import br.com.serviceframework.domain.entity.Prestador;
 import br.com.serviceframework.domain.entity.User;
 import br.com.serviceframework.repository.PrestadorRepository;
 import br.com.serviceframework.repository.UserRepository;
-import br.com.serviceframework.framework.service.auth.AuthService;
+import br.com.serviceframework.service.auth.AuthService;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class PrestadorService{
                 prestador.getUser().getEmail(),
                 prestador.getUser().getTelefone(),
                 prestador.getUser().getCpfCnpj(),
-                prestador.getPerfilPrestador().getBiografia()
+                prestador.getPerfilPrestador().getDescricao()
         )).toList();
     }
 
@@ -69,7 +69,7 @@ public class PrestadorService{
                 prestador.getUser().getEmail(),
                 prestador.getUser().getTelefone(),
                 prestador.getUser().getCpfCnpj(),
-                prestador.getPerfilPrestador().getBiografia());
+                prestador.getPerfilPrestador().getDescricao());
     }
 
 

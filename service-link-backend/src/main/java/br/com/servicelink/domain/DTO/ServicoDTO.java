@@ -1,4 +1,4 @@
-package br.com.serviceframework.domain.DTO;
+package br.com.servicelink.domain.DTO;
 
 import java.math.BigDecimal;
 
@@ -7,7 +7,7 @@ public record ServicoDTO(
         String nome,
         String descricao,
         BigDecimal precoBase,
-        String categoria,
+        Long categoriaId,
         String imagemUrl
 ) {
 }

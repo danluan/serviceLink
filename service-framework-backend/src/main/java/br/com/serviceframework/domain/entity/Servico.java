@@ -2,7 +2,8 @@ package br.com.serviceframework.domain.entity;
 
 import java.math.BigDecimal;
 
-import br.com.serviceframework.domain.interfaces.CategoriaServicos;
+import br.com.serviceframework.domain.converter.CategoriaConverter;
+import br.com.serviceframework.domain.interfaces.ICategoriaServicos;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
@@ -27,7 +28,8 @@ public class Servico {
     private String imagemUrl;
 
     @Column
-    private Integer categoriaId;
+    @Convert(converter = CategoriaConverter.class)
+    private ICategoriaServicos categoria;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prestador_id")
@@ -81,5 +83,13 @@ public class Servico {
 
     public void setPrestador(Prestador prestador) {
         this.prestador = prestador;
+    }
+
+    public ICategoriaServicos getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(ICategoriaServicos categoria) {
+        this.categoria = categoria;
     }
 }

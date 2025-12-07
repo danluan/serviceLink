@@ -1,38 +1,40 @@
-package br.com.serviceframework.serviceLink.service;
+package br.com.servicelink.service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import br.com.serviceframework.framework.domain.DTO.BuscaServicosDTO;
-import br.com.serviceframework.framework.domain.DTO.ServicoDTO;
-import br.com.serviceframework.framework.domain.entity.Prestador;
-import br.com.serviceframework.framework.repository.PrestadorRepository;
+import br.com.serviceframework.domain.DTO.BuscaServicosDTO;
+import br.com.serviceframework.domain.interfaces.ICategoriaServicos;
+import br.com.servicelink.domain.DTO.ServicoDTO;
+import br.com.serviceframework.domain.entity.Prestador;
+import br.com.serviceframework.repository.PrestadorRepository;
+import br.com.servicelink.enumerations.CategoriaDomesticas;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.serviceframework.framework.domain.entity.Servico;
-import br.com.serviceframework.framework.repository.ServicoRepository;
-import br.com.serviceframework.framework.service.ServicoService;
+import br.com.serviceframework.domain.entity.Servico;
+import br.com.serviceframework.repository.ServicoRepository;
+import br.com.serviceframework.service.ServicoService;
 
 @Service
-public class ServicoServiceImpl implements ServicoService {
+public class ServicoServiceImpl extends ServicoService {
 
     private final ServicoRepository servicoRepository;
 
     @Autowired
     public ServicoServiceImpl(ServicoRepository servicoRepository) {
+        super(servicoRepository);
         this.servicoRepository = servicoRepository;
     }
 
     @Autowired
     private PrestadorRepository prestadorRepository;
 
-    @Override
     @Transactional
     public List<Servico> adicionarServicos(Long prestadorId, List<ServicoDTO> servicosDTO) throws BadRequestException {
 
@@ -56,6 +58,12 @@ public class ServicoServiceImpl implements ServicoService {
 
     @Override
     public Servico editarServico(Long servicoId, ServicoDTO newServicoDTO) throws BadRequestException {
+        ICategoriaServicos categoriaDoDominio = CategoriaDomesticas.ofId(newServicoDTO.categoriaId());
+
+        if (categoriaDoDominio == null) {
+            throw new IllegalArgumentException("ID de Categoria " + newServicoDTO.categoriaId() + " é inválido para este domínio.");
+        }
+
         validarServicoId(servicoId);
 
         validarServicoDTO(newServicoDTO);
@@ -66,7 +74,7 @@ public class ServicoServiceImpl implements ServicoService {
         servicoAtual.setNome(newServicoDTO.nome().trim());
         servicoAtual.setDescricao(newServicoDTO.descricao().trim());
         servicoAtual.setPrecoBase(newServicoDTO.precoBase());
-        servicoAtual.setCategoria(newServicoDTO.categoria().trim());
+        servicoAtual.setCategoria(categoriaDoDominio);
         servicoAtual.setImagemUrl(newServicoDTO.imagemUrl());
 
         return servicoRepository.save(servicoAtual);
@@ -85,6 +93,7 @@ public class ServicoServiceImpl implements ServicoService {
     }
 
     private void validarServicoDTO(ServicoDTO dto) throws BadRequestException {
+
         if (dto == null) {
             throw new BadRequestException("Serviço não pode ser nulo.");
         }
@@ -107,10 +116,6 @@ public class ServicoServiceImpl implements ServicoService {
 
         if (dto.precoBase().compareTo(java.math.BigDecimal.ZERO) <= 0) {
             throw new BadRequestException("Preço base deve ser maior que zero.");
-        }
-
-        if (dto.categoria() == null || dto.categoria().trim().isEmpty()) {
-            throw new BadRequestException("Categoria do serviço é obrigatória.");
         }
     }
 
@@ -137,13 +142,26 @@ public class ServicoServiceImpl implements ServicoService {
     }
 
     private Servico criarServicoFromDTO(ServicoDTO dto, Prestador prestador) {
+
+        // **PASSO 1: TRADUÇÃO DO LONG PARA ICATEGORIA**
+        // A aplicação usa seu enum específico para resolver o ID.
+        ICategoriaServicos categoriaDoDominio = CategoriaDomesticas.ofId(dto.categoriaId());
+
+        if (categoriaDoDominio == null) {
+            throw new IllegalArgumentException("ID de Categoria " + dto.categoriaId() + " é inválido para este domínio.");
+        }
+
+        // **PASSO 2: MAPEAMENTO**
         Servico servico = new Servico();
         servico.setNome(dto.nome().trim());
         servico.setDescricao(dto.descricao().trim());
         servico.setPrecoBase(dto.precoBase());
-        servico.setCategoria(dto.categoria().trim());
-        servico.setImagemUrl(dto.imagemUrl());
+
+        // **SOLUÇÃO:** Agora, o setter do Servico recebe a interface, com o objeto traduzido.
+        servico.setCategoria(categoriaDoDominio);
+
         servico.setPrestador(prestador);
+
         return servico;
     }
 
@@ -161,6 +179,7 @@ public class ServicoServiceImpl implements ServicoService {
 
     @Override
     public List<Servico> buscarServicosPorPrecoBase(String categoria, String nome) {
+
         Optional<Servico> servicoMaisCaro = servicoRepository.findTop1ByOrderByPrecoBaseDesc(categoria, nome);
         Optional<Servico> servicoMaisBarato = servicoRepository.findTop1ByOrderByPrecoBaseAsc(categoria, nome);
 
@@ -182,13 +201,19 @@ public class ServicoServiceImpl implements ServicoService {
 
         validarBuscaServicoDTO(servicoDTO);
 
+        ICategoriaServicos categoriaDoDominio = CategoriaDomesticas.ofId(servicoDTO.id());
+
+        if (categoriaDoDominio == null) {
+            throw new IllegalArgumentException("ID de Categoria " + servicoDTO.id() + " é inválido para este domínio.");
+        }
+
         List<Servico> servicos = servicoRepository.buscarServicos(
                 servicoDTO.id(),
                 servicoDTO.nome(),
                 servicoDTO.descricao(),
                 servicoDTO.precoMin(),
                 servicoDTO.precoMax(),
-                servicoDTO.categoria()
+                categoriaDoDominio
         );
 
         return servicos;

@@ -8,7 +8,7 @@ public record BuscaServicosDTO(
         String descricao,
         BigDecimal precoMin,
         BigDecimal precoMax,
-        String categoria
+        Long categoria
 ){
 
 }

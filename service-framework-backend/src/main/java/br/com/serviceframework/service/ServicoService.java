@@ -1,195 +1,80 @@
 package br.com.serviceframework.service;
 
-
-import br.com.serviceframework.domain.DTO.BuscaServicosDTO;
-import br.com.serviceframework.domain.DTO.ServicoDTO;
-import br.com.serviceframework.domain.entity.Prestador;
 import br.com.serviceframework.domain.entity.Servico;
-import br.com.serviceframework.repository.PrestadorRepository;
+import br.com.serviceframework.domain.interfaces.ICategoriaServicos;
 import br.com.serviceframework.repository.ServicoRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.apache.coyote.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-@Service
 public class ServicoService {
 
     private final ServicoRepository servicoRepository;
 
-    @Autowired
     public ServicoService(ServicoRepository servicoRepository) {
         this.servicoRepository = servicoRepository;
     }
 
-    @Autowired
-    private PrestadorRepository prestadorRepository;
 
     @Transactional
-    public List<Servico> adicionarServicos(Long prestadorId, List<ServicoDTO> servicosDTO) throws BadRequestException {
-
-        validarListaServicos(servicosDTO);
-        validarPrestadorId(prestadorId);
-
-        Prestador prestador = prestadorRepository.findById(prestadorId)
-                .orElseThrow(() -> new EntityNotFoundException("Prestador não encontrado com o ID: " + prestadorId));
-
-        for (ServicoDTO dto : servicosDTO) {
-            validarServicoDTO(dto);
-        }
-
-        List<Servico> novosServicos = servicosDTO.stream()
-                .map(dto -> criarServicoFromDTO(dto, prestador))
-                .collect(Collectors.toList());
-
+    public List<Servico> adicionarServicos(List<Servico> novosServicos) {
+        novosServicos.forEach(this::validarIntegridadeBase);
         return servicoRepository.saveAll(novosServicos);
-
     }
 
-
-    public Servico editarServico(Long servicoId, ServicoDTO newServicoDTO) throws BadRequestException {
+    @Transactional
+    public Servico editarServico(Long servicoId, Servico servicoAtualizado) {
         validarServicoId(servicoId);
+        validarIntegridadeBase(servicoAtualizado);
 
-        validarServicoDTO(newServicoDTO);
-
-        Servico servicoAtual = servicoRepository.findById(servicoId)
+        Servico servicoExistente = servicoRepository.findById(servicoId)
                 .orElseThrow(() -> new EntityNotFoundException("Serviço não encontrado com o ID: " + servicoId));
 
-        servicoAtual.setNome(newServicoDTO.nome().trim());
-        servicoAtual.setDescricao(newServicoDTO.descricao().trim());
-        servicoAtual.setPrecoBase(newServicoDTO.precoBase());
-        //servicoAtual.setCategoria(newServicoDTO.categoria().trim());
-        servicoAtual.setImagemUrl(newServicoDTO.imagemUrl());
+        servicoAtualizado.setId(servicoExistente.getId());
+        servicoAtualizado.setPrestador(servicoExistente.getPrestador());
 
-        return servicoRepository.save(servicoAtual);
+        return servicoRepository.save(servicoAtualizado);
     }
 
-    private void validarListaServicos(List<ServicoDTO> servicosDTO) throws BadRequestException {
-        if (servicosDTO == null || servicosDTO.isEmpty()) {
-            throw new BadRequestException("A lista de serviços não pode estar vazia.");
-        }
-    }
-
-    private void validarPrestadorId(Long prestadorId) throws BadRequestException {
-        if (prestadorId == null || prestadorId <= 0) {
-            throw new BadRequestException("ID do prestador inválido.");
-        }
-    }
-
-    private void validarServicoDTO(ServicoDTO dto) throws BadRequestException {
-        if (dto == null) {
-            throw new BadRequestException("Serviço não pode ser nulo.");
-        }
-
-        if (dto.nome() == null || dto.nome().trim().isEmpty()) {
-            throw new BadRequestException("Nome do serviço é obrigatório.");
-        }
-
-        if (dto.descricao() == null || dto.descricao().trim().isEmpty()) {
-            throw new BadRequestException("Descrição do serviço é obrigatória.");
-        }
-
-        if (dto.descricao().length() > 300) {
-            throw new BadRequestException("Descrição do serviço não pode exceder 300 caracteres.");
-        }
-
-        if (dto.precoBase() == null) {
-            throw new BadRequestException("Preço base do serviço é obrigatório.");
-        }
-
-        if (dto.precoBase().compareTo(java.math.BigDecimal.ZERO) <= 0) {
-            throw new BadRequestException("Preço base deve ser maior que zero.");
-        }
-
-        if (dto.categoria() == null || dto.categoria().trim().isEmpty()) {
-            throw new BadRequestException("Categoria do serviço é obrigatória.");
-        }
-    }
-
-    private void validarBuscaServicoDTO(BuscaServicosDTO dto) throws BadRequestException {
-        if (dto == null) {
-            throw new BadRequestException("Serviço não pode ser nulo.");
-        }
-
-        if(dto.precoMax() != null && dto.precoMin() != null){
-            if (dto.precoMax().compareTo(dto.precoMin()) < 1) {
-                throw new BadRequestException("Preço max deve ser maior que preço min");
-            }
-        }
-        if(dto.precoMax() !=null){
-            if(dto.precoMax().compareTo(java.math.BigDecimal.ZERO) <= 0){
-                throw new BadRequestException("Preco max deve ser maior que zero");
-            }
-        }
-        if(dto.precoMin() !=null){
-            if(dto.precoMin().compareTo(java.math.BigDecimal.ZERO) <= 0){
-                throw new BadRequestException("Preco min deve ser maior que zero");
-            }
-        }
-    }
-
-    private Servico criarServicoFromDTO(ServicoDTO dto, Prestador prestador) {
-        Servico servico = new Servico();
-        servico.setNome(dto.nome().trim());
-        servico.setDescricao(dto.descricao().trim());
-        servico.setPrecoBase(dto.precoBase());
-        //servico.setCategoria(dto.categoria().trim());
-        servico.setImagemUrl(dto.imagemUrl());
-        servico.setPrestador(prestador);
-        return servico;
-    }
 
     public List<Servico> listarServicos() {
         return servicoRepository.findAll();
     }
 
-
     public void deletarServico(Long id) {
         servicoRepository.deleteById(id);
     }
 
+    public final List<Servico> buscarServicosPorPrecoBase(ICategoriaServicos categoria, String nome) {
+        // A categoria é uma interface, o JPA lida com ela via AttributeConverter.
+        Optional<Servico> servicoMaisCaro = servicoRepository.findTop1ByOrderByPrecoBaseDesc(categoria, nome);
+        Optional<Servico> servicoMaisBarato = servicoRepository.findTop1ByOrderByPrecoBaseAsc(categoria, nome);
 
-//    public List<Servico> buscarServicosPorPrecoBase(String categoria, String nome) {
-//        Optional<Servico> servicoMaisCaro = servicoRepository.findTop1ByOrderByPrecoBaseDesc(categoria, nome);
-//        Optional<Servico> servicoMaisBarato = servicoRepository.findTop1ByOrderByPrecoBaseAsc(categoria, nome);
-//
-//        List<Servico> servicosEncontrados = new ArrayList<>();
-//        servicoMaisCaro.ifPresent(servicosEncontrados::add);
-//        servicoMaisBarato.ifPresent(servicosEncontrados::add);
-//
-//        return servicosEncontrados;
-//    }
+        List<Servico> servicosEncontrados = new ArrayList<>();
+        servicoMaisCaro.ifPresent(servicosEncontrados::add);
+        servicoMaisBarato.ifPresent(servicosEncontrados::add);
 
-    public List<Servico> buscarServicosPorPrestadorId(Long prestadorId) {
-        List<Servico> servicos = servicoRepository.findByPrestadorId(prestadorId);
-        return servicos;
+        return servicosEncontrados;
     }
 
-//    public List<Servico> buscarServico(BuscaServicosDTO servicoDTO) throws BadRequestException {
-//
-//        validarBuscaServicoDTO(servicoDTO);
-//
-//        List<Servico> servicos = servicoRepository.buscarServicos(
-//                servicoDTO.id(),
-//                servicoDTO.nome(),
-//                servicoDTO.descricao(),
-//                servicoDTO.precoMin(),
-//                servicoDTO.precoMax(),
-//                servicoDTO.categoria()
-//        );
-//
-//        return servicos;
-//    }
+    // Validações (FIXAS)
 
-    private void validarServicoId(Long servicoId) throws BadRequestException {
+    private void validarIntegridadeBase(Servico servico) {
+        if (servico.getPrestador() == null || servico.getPrestador().getId() == null) {
+            throw new IllegalArgumentException("O Prestador é obrigatório (Framework Rule).");
+        }
+        if (servico.getNome() == null || servico.getNome().trim().isEmpty()) {
+            throw new IllegalArgumentException("O nome do serviço é obrigatório.");
+        }
+    }
+
+    private void validarServicoId(Long servicoId) {
         if (servicoId == null || servicoId <= 0) {
-            throw new BadRequestException("Id do Serviço inválido");
+            throw new IllegalArgumentException("Id do Serviço inválido");
         }
     }
 }
