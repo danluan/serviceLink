@@ -1,4 +1,4 @@
-package main.java.br.com.serviceframework.framework.chatbot.model;
+package br.com.serviceframework.chatbot.model;
 
 public enum EtapaConversa {
     INICIO,

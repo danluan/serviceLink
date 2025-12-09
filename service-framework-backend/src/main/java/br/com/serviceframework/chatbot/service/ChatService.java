@@ -1,7 +1,7 @@
-package main.java.br.com.serviceframework.framework.chatbot.service;
+package br.com.serviceframework.chatbot.service;
 
-import main.java.br.com.serviceframework.framework.chatbot.model.EtapaConversa;
-import main.java.br.com.serviceframework.framework.chatbot.model.UserState;
+import br.com.serviceframework.chatbot.model.EtapaConversa;
+import br.com.serviceframework.chatbot.model.UserState;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

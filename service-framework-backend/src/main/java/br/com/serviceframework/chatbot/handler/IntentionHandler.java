@@ -1,4 +1,4 @@
-package main.java.br.com.serviceframework.framework.chatbot.handler;
+package br.com.serviceframework.chatbot.handler;
 
 import main.java.br.com.serviceframework.framework.chatbot.model.UserState;
 

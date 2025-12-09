@@ -1,9 +1,10 @@
-package br.com.serviceframework.framework.chatbot.service;
+package br.com.servicelink.chatbot.service;
 
-import br.com.serviceframework.framework.chatbot.handler.IntentionHandler;
-import br.com.serviceframework.framework.chatbot.model.EtapaConversa;
-import br.com.serviceframework.framework.chatbot.model.UserState;
-import br.com.serviceframework.framework.domain.enumerations.Classificacao;
+import br.com.serviceframework.chatbot.handler.IntentionHandler;
+import br.com.serviceframework.chatbot.model.EtapaConversa;
+import br.com.serviceframework.chatbot.model.UserState;
+import br.com.serviceframework.chatbot.service.ChatService;
+import br.com.serviceframework.domain.enumerations.Classificacao;
 import br.com.serviceframework.serviceLink.service.LLMServiceImpl;
 import org.springframework.stereotype.Service;
 

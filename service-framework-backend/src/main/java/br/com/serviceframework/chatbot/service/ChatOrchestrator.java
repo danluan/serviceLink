@@ -1,10 +1,10 @@
-package main.java.br.com.serviceframework.framework.chatbot.service;
+package br.com.serviceframework.chatbot.service;
 
-import br.com.serviceframework.framework.domain.enumerations.Classificacao;
-import main.java.br.com.serviceframework.framework.chatbot.handler.IntentionHandler;
-import main.java.br.com.serviceframework.framework.chatbot.model.EtapaConversa;
+import br.com.serviceframework.domain.enumerations.Classificacao;
+import br.com.serviceframework.chatbot.handler.IntentionHandler;
+import br.com.serviceframework.chatbot.model.EtapaConversa;
 import org.springframework.stereotype.Service;
-import br.com.serviceframework.framework.service.LLMService;
+import br.com.serviceframework.service.LLMService;
 
 import java.util.Map;
 

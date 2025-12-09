@@ -1,7 +1,7 @@
 package br.com.serviceframework.domain.entity;
 
-import br.com.serviceframework.framework.domain.enumerations.Perfis;
-import br.com.serviceframework.framework.exceptions.BusinessException;
+import br.com.serviceframework.domain.enumerations.Perfis;
+import br.com.serviceframework.exceptions.BusinessException;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
