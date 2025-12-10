@@ -3,6 +3,7 @@ package br.com.servicelink.service;
 import java.util.List;
 
 import br.com.serviceframework.domain.DTO.PrestadorDTO;
+import br.com.serviceframework.domain.entity.PerfilUsuario;
 import br.com.serviceframework.domain.entity.User;
 import br.com.serviceframework.repository.UserRepository;
 import br.com.serviceframework.service.auth.AuthService;
@@ -32,16 +33,21 @@ public class PrestadorServiceImpl{
         this.prestadorRepository = prestadorRepository;
     }
 
-    @Override
+    //@Override
     public Prestador salvarPrestador(User user) {
         Prestador prestador = new Prestador();
-        prestador.setPerfilPrestador(new PerfilPrestador());
+        prestador.setPerfilPrestador(new PerfilUsuario() {
+            @Override
+            public Long getId() {
+                return super.getId();
+            }
+        });
         prestador.setUser(user);
 
         return prestadorRepository.save(prestador);
     }
 
-    @Override
+    //@Override
     public List<PrestadorDTO> listarPrestadores() {
         List<Prestador> prestadores = prestadorRepository.findAll();
 
@@ -51,13 +57,11 @@ public class PrestadorServiceImpl{
                 prestador.getUser().getId(),
                 prestador.getUser().getUsername(),
                 prestador.getUser().getEmail(),
-                prestador.getUser().getTelefone(),
-                prestador.getUser().getCpfCnpj(),
-                prestador.getPerfilPrestador().getBiografia()
+                prestador.getPerfilPrestador().getDescricao()
         )).toList();
     }
 
-    @Override
+    //@Override
     public PrestadorDTO buscarPrestadorPorId(Long id) {
         Prestador prestador = prestadorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Prestador não encontrado com o ID: " + id));
@@ -69,12 +73,10 @@ public class PrestadorServiceImpl{
                 prestador.getUser().getId(),
                 prestador.getUser().getUsername(),
                 prestador.getUser().getEmail(),
-                prestador.getUser().getTelefone(),
-                prestador.getUser().getCpfCnpj(),
-                prestador.getPerfilPrestador().getBiografia());
+                prestador.getPerfilPrestador().getDescricao());
     }
 
-    @Override
+    //@Override
     public void deletarPrestador(Long id) {
         Prestador prestador = prestadorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Prestador não encontrado com o ID: " + id));

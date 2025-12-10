@@ -2,19 +2,19 @@ package br.com.servicelink.service;
 
 import java.util.List;
 
-import br.com.serviceframework.framework.domain.DTO.ClienteDTO;
-import br.com.serviceframework.framework.domain.entity.User;
-import br.com.serviceframework.framework.repository.UserRepository;
-import br.com.serviceframework.framework.service.auth.AuthService;
+import br.com.serviceframework.domain.DTO.ClienteDTO;
+import br.com.serviceframework.domain.entity.User;
+import br.com.serviceframework.repository.UserRepository;
+import br.com.serviceframework.service.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.serviceframework.framework.repository.ClienteRepository;
-import br.com.serviceframework.framework.service.ClienteService;
-import br.com.serviceframework.framework.domain.entity.Cliente;
+import br.com.serviceframework.repository.ClienteRepository;
+import br.com.serviceframework.service.ClienteService;
+import br.com.serviceframework.domain.entity.Cliente;
 
 @Service
-public class ClienteServiceImpl implements ClienteService {
+public class ClienteServiceImpl extends ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
@@ -40,10 +40,8 @@ public class ClienteServiceImpl implements ClienteService {
         return clientes.stream().map(cliente -> new ClienteDTO(
                 cliente.getId(),
                 cliente.getUser().getId(),
-                cliente.getUser().getNome(),
-                cliente.getUser().getEmail(),
-                cliente.getUser().getTelefone(),
-                cliente.getUser().getCpfCnpj()
+                cliente.getUser().getUsername(),
+                cliente.getUser().getEmail()
         )).toList();
     }
 
@@ -55,10 +53,8 @@ public class ClienteServiceImpl implements ClienteService {
         return new ClienteDTO(
                 cliente.getId(),
                 cliente.getUser().getId(),
-                cliente.getUser().getNome(),
-                cliente.getUser().getEmail(),
-                cliente.getUser().getTelefone(),
-                cliente.getUser().getCpfCnpj()
+                cliente.getUser().getUsername(),
+                cliente.getUser().getEmail()
         );
     }
 
