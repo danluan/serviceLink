@@ -1,18 +1,20 @@
 package br.com.serviceframework.service.auth;
 
-import br.com.serviceframework.domain.DTO.*;
-import br.com.serviceframework.domain.entity.User;
+import br.com.serviceframework.domain.DTO.AuthDTO;
+import br.com.serviceframework.domain.DTO.AuthResponseDTO;
+import br.com.serviceframework.domain.DTO.UserDTO;
 import br.com.serviceframework.domain.DTO.UserRegisterDTO;
+import br.com.serviceframework.domain.entity.User;
 import br.com.serviceframework.repository.UserRepository;
-import br.com.serviceframework.service.ClienteService;
-import br.com.serviceframework.service.PrestadorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import br.com.serviceframework.service.auth.TokenService;
 import org.springframework.web.server.ResponseStatusException;
+
 
 @Service
 public class AuthService {
@@ -20,13 +22,6 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PrestadorService prestadorService;
-
-    @Autowired
-    private ClienteService clienteService;
-
-    @Autowired
     private TokenService tokenService;
 
     @Autowired
@@ -50,14 +45,6 @@ public class AuthService {
 
             UserDTO userDTO = new UserDTO(user);
 
-            if (user.getPerfil() == Perfis.PRESTADOR) {
-                Long prestadorId = prestadorService.getPrestadorIdByUserId(user.getId());
-                userDTO.setProfileId(prestadorId);
-            } else if (user.getPerfil() == Perfis.CLIENTE) {
-                Long clienteId = clienteService.getClienteIdByUserId(user.getId());
-                userDTO.setProfileId(clienteId);
-            }
-
             return new AuthResponseDTO(userDTO, token);
 
         } catch (Exception e) {
@@ -75,18 +62,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        UserDTO userDTO = new UserDTO(user);
-
-        if (user.getPerfil() == Perfis.PRESTADOR) {
-            Prestador prestador = prestadorService.salvarPrestador(user);
-            userDTO.setProfileId(prestador.getId());
-        }
-        else if (user.getPerfil() == Perfis.CLIENTE) {
-            Cliente cliente = clienteService.salvarCliente(user);
-            userDTO.setProfileId(cliente.getId());
-        }
-
-        return userDTO;
+        return new UserDTO(user);
     }
 
     public UserDTO updateUser(User user) {
@@ -97,18 +73,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        UserDTO userDTO = new UserDTO(user);
-
-        if (user.getPerfil() == Perfis.PRESTADOR) {
-            Long prestadorId = prestadorService.getPrestadorIdByUserId(user.getId());
-            userDTO.setProfileId(prestadorId);
-        }
-        else if (user.getPerfil() == Perfis.CLIENTE) {
-            Long clienteId = clienteService.getClienteIdByUserId(user.getId());
-            userDTO.setProfileId(clienteId);
-        }
-
-        return userDTO;
+        return new UserDTO(user);
     }
 
     private void validateNewUser(User user) {

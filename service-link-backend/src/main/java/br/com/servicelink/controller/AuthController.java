@@ -1,11 +1,11 @@
-package br.com.serviceframework.serviceLink.controller;
+package br.com.servicelink.controller;
 
-import br.com.serviceframework.framework.domain.DTO.*;
-import br.com.serviceframework.framework.domain.DTO.AuthDTO;
-import br.com.serviceframework.framework.domain.DTO.AuthResponseDTO;
-import br.com.serviceframework.framework.domain.DTO.UserDTO;
-import br.com.serviceframework.framework.domain.DTO.UserRegisterDTO;
-import br.com.serviceframework.framework.service.auth.AuthService;
+import br.com.serviceframework.domain.DTO.*;
+import br.com.serviceframework.domain.DTO.AuthDTO;
+import br.com.serviceframework.domain.DTO.AuthResponseDTO;
+import br.com.serviceframework.domain.DTO.UserDTO;
+import br.com.serviceframework.domain.DTO.UserRegisterDTO;
+import br.com.serviceframework.service.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
