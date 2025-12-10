@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PrestadorRepository extends JpaRepository<Prestador, Long> {
-
     Prestador findByUserId(Long id);
 }

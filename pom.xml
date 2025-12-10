@@ -18,8 +18,7 @@
     <modules>
         <module>service-framework-backend</module> <!-- o core -->
         <module>service-link-backend</module>
-        <module>service-car-backend</module>
-        <module>service-chef-backend</module>
+
     </modules>
 
     <dependencyManagement>
