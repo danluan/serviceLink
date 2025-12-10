@@ -1,18 +1,17 @@
 package br.com.servicelink.controller;
 
-import br.com.servicelink.DTO.AgendamentoDTO;
-import br.com.servicelink.DTO.AgendamentoListagemDTO;
-import br.com.servicelink.DTO.AvaliacaoDTO;
+import br.com.serviceframework.domain.DTO.AvaliacaoDTO;
+import br.com.servicelink.domain.DTO.AgendamentoDTO;
+import br.com.servicelink.domain.DTO.AgendamentoListagemDTO;
+import br.com.servicelink.service.AgendamentoServiceImpl;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
-import br.com.servicelink.enumerations.AgendamentoStatus;
-import br.com.servicelink.service.AgendamentoService;
+import br.com.servicelink.enumerations.AgendamentoStatusServiceLink;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,7 @@ import java.util.Map;
 @RequestMapping("/api/agendamento")
 public class AgendamentoController {
     @Autowired
-    private AgendamentoService agendamentoService;
+    private AgendamentoServiceImpl agendamentoService;
 
     /**
      * Lista todos os agendamentos cadastrados.
@@ -192,7 +191,7 @@ public class AgendamentoController {
     @PutMapping("/{agendamentoId}/status/{status}")
     public ResponseEntity<Void> updateStatus(
             @PathVariable Long agendamentoId,
-            @PathVariable AgendamentoStatus status
+            @PathVariable AgendamentoStatusServiceLink status
     ) {
         try{
             agendamentoService.editarStatusAgendamento(agendamentoId, status);

@@ -1,13 +1,12 @@
 package br.com.servicelink.controller;
 
-import br.com.servicelink.DTO.*;
-import br.com.servicelink.entity.User;
-import br.com.servicelink.security.TokenService;
-import br.com.servicelink.service.auth.AuthService;
+import br.com.serviceframework.domain.DTO.AuthDTO;
+import br.com.serviceframework.domain.DTO.AuthResponseDTO;
+import br.com.serviceframework.domain.DTO.UserDTO;
+import br.com.serviceframework.domain.DTO.UserRegisterDTO;
+import br.com.servicelink.security.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +27,7 @@ public class AuthController {
      * @return Resposta com token de autenticação
      */
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody  AuthDTO authData) {
+    public ResponseEntity login(@RequestBody AuthDTO authData) {
 
 
         AuthResponseDTO loginResponse = authService.login(authData);

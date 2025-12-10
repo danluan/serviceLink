@@ -1,20 +1,19 @@
 package br.com.servicelink.controller;
 
-import br.com.servicelink.DTO.ClienteCadastroDTO;
-import br.com.servicelink.DTO.ClienteDTO;
-import br.com.servicelink.entity.Cliente;
-import br.com.servicelink.service.ClienteService;
+import br.com.serviceframework.domain.DTO.ClienteDTO;
+
+import br.com.serviceframework.domain.entity.Cliente;
+import br.com.servicelink.service.ClienteServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/cliente")
 public class ClienteController {
     @Autowired
-    private ClienteService clienteService;
+    private ClienteServiceImpl clienteService;
 
     /**
      * Lista todos os clientes cadastrados.
@@ -23,7 +22,8 @@ public class ClienteController {
      */
     @GetMapping
     public List<ClienteDTO> findAll(){
-        return clienteService.listarClientes();
+        List<Cliente> listaClientes = clienteService.buscarTodos();
+        return clienteService.mapearParaDTO(listaClientes);
     }
 
     /**
@@ -34,7 +34,8 @@ public class ClienteController {
      */
     @GetMapping(value = "/{id}")
     public ClienteDTO findById(@PathVariable Long id){
-        return clienteService.buscarClientePorId(id);
+        Cliente cliente =  clienteService.buscarPorUserId(id);
+        return  clienteService.mapearParaDTO(cliente);
     }
 
     /**
@@ -44,6 +45,7 @@ public class ClienteController {
      */
     @DeleteMapping(value = "/{id}")
     public void delete(@PathVariable Long id){
-        clienteService.deletarCliente(id);
+        Cliente cliente =  clienteService.buscarPorUserId(id);
+        clienteService.desativarUsuario(cliente);
     }
 }

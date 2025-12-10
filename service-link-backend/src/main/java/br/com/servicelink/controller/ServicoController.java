@@ -1,9 +1,10 @@
 package br.com.servicelink.controller;
 
-import br.com.servicelink.DTO.BuscaServicosDTO;
-import br.com.servicelink.DTO.ServicoDTO;
-import br.com.servicelink.entity.Servico;
-import br.com.servicelink.service.ServicoService;
+import br.com.serviceframework.domain.DTO.BuscaServicosDTO;
+import br.com.servicelink.domain.DTO.ServicoDTO;
+import br.com.serviceframework.domain.entity.Servico;
+import br.com.serviceframework.service.ServicoService;
+import br.com.servicelink.service.ServicoServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
@@ -19,7 +20,7 @@ import java.util.List;
 @RequestMapping("api/servico")
 public class ServicoController {
     @Autowired
-    private ServicoService servicoService;
+    private ServicoServiceImpl servicoService;
 
     /**
      * Busca serviços com filtros opcionais. Se nenhum filtro for fornecido, retorna todos os serviços.
@@ -32,14 +33,15 @@ public class ServicoController {
      * @param categoria Categoria do serviço
      * @return Lista de serviços que atendem aos filtros
      */
-    @GetMapping()
-    public List<Servico> findServico(
+    @GetMapping
+    public List<Servico> findAll(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) String descricao,
             @RequestParam(required = false) BigDecimal precoMin,
             @RequestParam(required = false) BigDecimal precoMax,
-            @RequestParam(required = false) String categoria
+            //colocar converson de string para id?
+            @RequestParam(required = false) Long categoria
             ){
         boolean semFiltro = id == null && nome == null && descricao == null && precoMin == null && precoMax == null && categoria == null;
 

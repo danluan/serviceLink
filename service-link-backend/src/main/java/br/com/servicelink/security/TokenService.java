@@ -1,10 +1,9 @@
 package br.com.servicelink.security;
 
-import br.com.servicelink.entity.User;
+import br.com.serviceframework.domain.entity.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Service
-public class TokenService {
+public class TokenService implements br.com.serviceframework.service.auth.TokenService {
     @Value("${app.secret_key}")
     private String secret;
 
