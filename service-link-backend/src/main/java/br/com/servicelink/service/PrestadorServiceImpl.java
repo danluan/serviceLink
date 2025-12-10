@@ -1,24 +1,23 @@
-package br.com.serviceframework.serviceLink.service;
+package br.com.servicelink.service;
 
 import java.util.List;
 
-import br.com.serviceframework.framework.domain.DTO.PrestadorDTO;
-import br.com.serviceframework.framework.domain.entity.PerfilPrestador;
-import br.com.serviceframework.framework.domain.entity.User;
-import br.com.serviceframework.framework.repository.UserRepository;
-import br.com.serviceframework.framework.service.auth.AuthService;
+import br.com.serviceframework.domain.DTO.PrestadorDTO;
+import br.com.serviceframework.domain.entity.User;
+import br.com.serviceframework.repository.UserRepository;
+import br.com.serviceframework.service.auth.AuthService;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.serviceframework.framework.domain.entity.Prestador;
-import br.com.serviceframework.framework.repository.PrestadorRepository;
-import br.com.serviceframework.framework.service.PrestadorService;
+import br.com.serviceframework.domain.entity.Prestador;
+import br.com.serviceframework.repository.PrestadorRepository;
+import br.com.serviceframework.service.PrestadorService;
 
 @Service
-public class PrestadorServiceImpl implements PrestadorService {
+public class PrestadorServiceImpl{
 
     private static final Logger log = LoggerFactory.getLogger(PrestadorServiceImpl.class);
     private final PrestadorRepository prestadorRepository;

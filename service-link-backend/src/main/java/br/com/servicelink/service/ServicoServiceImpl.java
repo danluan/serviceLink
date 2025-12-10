@@ -56,7 +56,6 @@ public class ServicoServiceImpl extends ServicoService {
 
     }
 
-    @Override
     public Servico editarServico(Long servicoId, ServicoDTO newServicoDTO) throws BadRequestException {
         ICategoriaServicos categoriaDoDominio = CategoriaDomesticas.ofId(newServicoDTO.categoriaId());
 
@@ -190,13 +189,12 @@ public class ServicoServiceImpl extends ServicoService {
         return servicosEncontrados;
     }
 
-    @Override
+
     public List<Servico> buscarServicosPorPrestadorId(Long prestadorId) {
         List<Servico> servicos = servicoRepository.findByPrestadorId(prestadorId);
         return servicos;
     }
 
-    @Override
     public List<Servico> buscarServico(BuscaServicosDTO servicoDTO) throws BadRequestException {
 
         validarBuscaServicoDTO(servicoDTO);

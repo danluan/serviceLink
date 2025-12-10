@@ -48,8 +48,6 @@ public class PrestadorService{
                 prestador.getUser().getId(),
                 prestador.getUser().getUsername(),
                 prestador.getUser().getEmail(),
-                prestador.getUser().getTelefone(),
-                prestador.getUser().getCpfCnpj(),
                 prestador.getPerfilPrestador().getDescricao()
         )).toList();
     }
@@ -66,8 +64,6 @@ public class PrestadorService{
                 prestador.getUser().getId(),
                 prestador.getUser().getUsername(),
                 prestador.getUser().getEmail(),
-                prestador.getUser().getTelefone(),
-                prestador.getUser().getCpfCnpj(),
                 prestador.getPerfilPrestador().getDescricao());
     }
 
