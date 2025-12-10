@@ -1,4 +1,4 @@
-package br.com.serviceframework.serviceLink.service;
+package br.com.servicelink.service;
 
 import java.util.List;
 

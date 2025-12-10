@@ -1,7 +1,7 @@
 package br.com.serviceframework.chatbot.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.*;
 
 import java.util.HashMap;
 import java.util.Map;

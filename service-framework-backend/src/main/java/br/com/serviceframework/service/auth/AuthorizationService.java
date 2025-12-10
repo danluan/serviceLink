@@ -1,6 +1,6 @@
-package br.com.serviceframework.framework.service.auth;
+package br.com.serviceframework.service.auth;
 
-import br.com.serviceframework.framework.repository.UserRepository;
+import br.com.serviceframework.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

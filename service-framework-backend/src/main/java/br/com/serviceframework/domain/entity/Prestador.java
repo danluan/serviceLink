@@ -16,7 +16,7 @@ public class Prestador {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "perfil_id")
-    private Perfil perfilPrestador;
+    private PerfilUsuario perfilPrestador;
 
     @OneToMany(mappedBy = "prestador", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
     private List<Servico> servicos;
@@ -47,11 +47,11 @@ public class Prestador {
         this.user = user;
     }
 
-    public Perfil getPerfilPrestador() {
+    public PerfilUsuario getPerfilPrestador() {
         return perfilPrestador;
     }
 
-    public void setPerfilPrestador(Perfil perfilPrestador) {
+    public void setPerfilPrestador(PerfilUsuario perfilPrestador) {
         this.perfilPrestador = perfilPrestador;
     }
 }

@@ -1,22 +1,14 @@
 package br.com.serviceframework.service.auth;
 
 import br.com.serviceframework.domain.DTO.*;
-import br.com.serviceframework.framework.domain.DTO.AuthDTO;
-import br.com.serviceframework.framework.domain.DTO.AuthResponseDTO;
-import br.com.serviceframework.framework.domain.DTO.UserDTO;
+import br.com.serviceframework.domain.entity.User;
 import br.com.serviceframework.framework.domain.DTO.UserRegisterDTO;
-import br.com.serviceframework.framework.domain.entity.Cliente;
-import br.com.serviceframework.framework.domain.entity.Prestador;
-import br.com.serviceframework.framework.domain.entity.User;
-import br.com.serviceframework.framework.domain.enumerations.Perfis;
-import br.com.serviceframework.framework.repository.UserRepository;
-import main.java.br.com.servicelink.security.TokenService;
-import br.com.serviceframework.serviceLink.service.ClienteServiceImpl;
-import br.com.serviceframework.serviceLink.service.PrestadorServiceImpl;
+import br.com.serviceframework.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;

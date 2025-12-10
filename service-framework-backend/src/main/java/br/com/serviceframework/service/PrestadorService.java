@@ -1,7 +1,6 @@
 package br.com.serviceframework.service;
 
 import br.com.serviceframework.domain.DTO.PrestadorDTO;
-import br.com.serviceframework.domain.entity.Perfil;
 import br.com.serviceframework.domain.entity.Prestador;
 import br.com.serviceframework.domain.entity.User;
 import br.com.serviceframework.repository.PrestadorRepository;

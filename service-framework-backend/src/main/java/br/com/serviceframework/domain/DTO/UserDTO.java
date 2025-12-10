@@ -1,6 +1,7 @@
-package br.com.serviceframework.framework.domain.DTO;
+package br.com.serviceframework.domain.DTO;
 
-import br.com.serviceframework.framework.domain.entity.User;
+
+import br.com.serviceframework.domain.entity.User;
 
 public class UserDTO {
     private Long id;
@@ -17,8 +18,6 @@ public class UserDTO {
     public UserDTO(Long id, String nome, String telefone, String cpfCnpj, String email, String perfil) {
         this.id = id;
         this.nome = nome;
-        this.telefone = telefone;
-        this.cpfCnpj = cpfCnpj;
         this.email = email;
         this.perfil = perfil;
     }
@@ -26,9 +25,6 @@ public class UserDTO {
     public UserDTO(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
-        this.nome = user.getNome();
-        this.telefone = user.getTelefone();
-        this.cpfCnpj = user.getCpfCnpj();
         this.perfil = user.getPerfil().name();
     }
 
@@ -64,27 +60,4 @@ public class UserDTO {
         this.nome = nome;
     }
 
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public String getCpfCnpj() {
-        return cpfCnpj;
-    }
-
-    public void setCpfCnpj(String cpfCnpj) {
-        this.cpfCnpj = cpfCnpj;
-    }
-
-    public Long getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(Long profileId) {
-        this.profileId = profileId;
-    }
 }

@@ -14,7 +14,7 @@ public class Cliente {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "perfil_id")
-    private Perfil perfilPrestador;
+    private PerfilUsuario perfilPrestador;
 
 
     public Long getId() {

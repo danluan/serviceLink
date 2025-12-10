@@ -2,6 +2,7 @@ package br.com.serviceframework.domain.entity;
 
 import br.com.serviceframework.domain.enumerations.Perfis;
 import br.com.serviceframework.exceptions.BusinessException;
+
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
 
 @Entity(name = "users")
 public class User implements UserDetails {
@@ -26,24 +28,16 @@ public class User implements UserDetails {
     private String senha;
 
     @Column
-    private String nome;
-
-    @Column
-    private String telefone;
-
-    @Column(unique = true)
-    private String cpfCnpj;
-
-    @Column
     private Perfis perfil;
 
-    public User(String email, String senha, String nome, String telefone, String cpfCnpj, Perfis perfil) {
+    @JoinColumn(name = "perfil_usuario_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    private PerfilUsuario perfilUsuario;
+
+    public User(String email, String senha, PerfilUsuario perfilUsuario) {
         this.email = email;
         this.senha = senha;
-        this.nome = nome;
-        this.telefone = telefone;
-        this.cpfCnpj = cpfCnpj;
-        this.perfil = perfil;
+        this.perfilUsuario = perfilUsuario;
         this.active = true;
     }
 
@@ -128,28 +122,12 @@ public class User implements UserDetails {
         this.senha = senha;
     }
 
-    public String getNome() {
-        return nome;
+    public void setPerfil(PerfilUsuario perfilUsuario) {
+        this.perfilUsuario = perfilUsuario;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public String getCpfCnpj() {
-        return cpfCnpj;
-    }
-
-    public void setCpfCnpj(String cpfCnpj) {
-        this.cpfCnpj = cpfCnpj;
+    public PerfilUsuario getPerfilUsuario() {
+        return this.perfilUsuario;
     }
 
     public Perfis getPerfil() {
