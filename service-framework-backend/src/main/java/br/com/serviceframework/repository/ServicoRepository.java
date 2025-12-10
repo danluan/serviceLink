@@ -39,6 +39,16 @@ public interface ServicoRepository extends JpaRepository<Servico, Long> {
 
     @Query("""
     SELECT s FROM Servico s
+    WHERE (:id IS NULL OR s.id != :id)
+      AND (:categoria IS NULL OR s.categoria = :categoria)
+""")
+    List<Servico> findByCategoriaAndIdNot(
+            @Param("categoria") ICategoriaServicos categoria,
+            @Param("id") Long id
+    );
+
+    @Query("""
+    SELECT s FROM Servico s
     WHERE (:id IS NULL OR s.id = :id)
       AND (:nome IS NULL OR s.nome LIKE %:nome%)
       AND (:descricao IS NULL OR s.descricao LIKE %:descricao%)
