@@ -6,8 +6,6 @@ public record PrestadorDTO(
         Long userId,
         String nome,
         String email,
-        String telefone,
-        String cpfCnpj,
         String biografia
 ) {
 }
