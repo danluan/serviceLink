@@ -5,7 +5,7 @@ import br.com.serviceframework.domain.entity.Cliente;
 import br.com.serviceframework.domain.entity.User;
 import br.com.serviceframework.repository.ClienteRepository;
 import br.com.serviceframework.repository.UserRepository;
-import br.com.serviceframework.framework.service.auth.AuthService;
+import br.com.serviceframework.service.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +20,11 @@ public class ClienteService {
     @Autowired
     UserRepository userRepository;
 
-    private AuthService authService;
+    //private AuthService authService;
 
     public Cliente salvarCliente(User user) {
         Cliente cliente = new Cliente();
-
         cliente.setUser(user);
-
         return clienteRepository.save(cliente);
     }
 
@@ -36,10 +34,8 @@ public class ClienteService {
         return clientes.stream().map(cliente -> new ClienteDTO(
                 cliente.getId(),
                 cliente.getUser().getId(),
-                cliente.getUser().getNome(),
-                cliente.getUser().getEmail(),
-                cliente.getUser().getTelefone(),
-                cliente.getUser().getCpfCnpj()
+                cliente.getUser().getUsername(),
+                cliente.getUser().getEmail()
         )).toList();
     }
 
@@ -50,10 +46,8 @@ public class ClienteService {
         return new ClienteDTO(
                 cliente.getId(),
                 cliente.getUser().getId(),
-                cliente.getUser().getNome(),
-                cliente.getUser().getEmail(),
-                cliente.getUser().getTelefone(),
-                cliente.getUser().getCpfCnpj()
+                cliente.getUser().getUsername(),
+                cliente.getUser().getEmail()
         );
     }
 

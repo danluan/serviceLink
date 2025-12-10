@@ -2,7 +2,7 @@ package br.com.serviceframework.service.auth;
 
 import br.com.serviceframework.domain.DTO.*;
 import br.com.serviceframework.domain.entity.User;
-import br.com.serviceframework.framework.domain.DTO.UserRegisterDTO;
+import br.com.serviceframework.domain.DTO.UserRegisterDTO;
 import br.com.serviceframework.repository.UserRepository;
 import br.com.serviceframework.service.ClienteService;
 import br.com.serviceframework.service.PrestadorService;
