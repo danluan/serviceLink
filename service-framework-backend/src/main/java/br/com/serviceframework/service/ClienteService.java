@@ -20,13 +20,11 @@ public class ClienteService {
     @Autowired
     UserRepository userRepository;
 
-    private AuthService authService;
+    //private AuthService authService;
 
     public Cliente salvarCliente(User user) {
         Cliente cliente = new Cliente();
-
         cliente.setUser(user);
-
         return clienteRepository.save(cliente);
     }
 
@@ -36,10 +34,8 @@ public class ClienteService {
         return clientes.stream().map(cliente -> new ClienteDTO(
                 cliente.getId(),
                 cliente.getUser().getId(),
-                cliente.getUser().getNome(),
-                cliente.getUser().getEmail(),
-                cliente.getUser().getTelefone(),
-                cliente.getUser().getCpfCnpj()
+                cliente.getUser().getUsername(),
+                cliente.getUser().getEmail()
         )).toList();
     }
 
@@ -50,10 +46,8 @@ public class ClienteService {
         return new ClienteDTO(
                 cliente.getId(),
                 cliente.getUser().getId(),
-                cliente.getUser().getNome(),
-                cliente.getUser().getEmail(),
-                cliente.getUser().getTelefone(),
-                cliente.getUser().getCpfCnpj()
+                cliente.getUser().getUsername(),
+                cliente.getUser().getEmail()
         );
     }
 
