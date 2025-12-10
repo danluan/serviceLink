@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Service
-public class TokenService {
+public class TokenService implements br.com.serviceframework.service.auth.TokenService {
     @Value("${app.secret_key}")
     private String secret;
 

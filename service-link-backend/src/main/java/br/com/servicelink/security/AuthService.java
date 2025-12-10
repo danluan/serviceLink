@@ -1,11 +1,11 @@
-package br.com.serviceframework.service.auth;
+package br.com.servicelink.security;
 
 import br.com.serviceframework.domain.DTO.AuthDTO;
 import br.com.serviceframework.domain.DTO.AuthResponseDTO;
 import br.com.serviceframework.domain.DTO.UserDTO;
 import br.com.serviceframework.domain.DTO.UserRegisterDTO;
 import br.com.serviceframework.domain.entity.User;
-import br.com.serviceframework.repository.UserRepository;
+import br.com.servicelink.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;

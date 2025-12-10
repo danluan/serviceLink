@@ -36,6 +36,11 @@ public class Servico {
     @JsonIgnore
     private Prestador prestador;
 
+    @ManyToOne
+    @JoinColumn(name = "recomendacoes_cliente_id")
+    private RecomendacoesCliente recomendacoesCliente;
+
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -91,5 +96,13 @@ public class Servico {
 
     public void setCategoria(ICategoriaServicos categoria) {
         this.categoria = categoria;
+    }
+
+    public RecomendacoesCliente getRecomendacoesCliente() {
+        return recomendacoesCliente;
+    }
+
+    public void setRecomendacoesCliente(RecomendacoesCliente recomendacoesCliente) {
+        this.recomendacoesCliente = recomendacoesCliente;
     }
 }

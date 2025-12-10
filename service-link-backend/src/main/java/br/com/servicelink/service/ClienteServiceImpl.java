@@ -4,52 +4,84 @@ import java.util.List;
 
 import br.com.serviceframework.domain.DTO.ClienteDTO;
 import br.com.serviceframework.domain.entity.User;
-import br.com.serviceframework.repository.UserRepository;
-import br.com.serviceframework.service.auth.AuthService;
+import br.com.serviceframework.service.AbstractClienteService;
+import br.com.servicelink.repository.UserRepository;
+import br.com.servicelink.security.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.serviceframework.repository.ClienteRepository;
-import br.com.serviceframework.service.ClienteService;
 import br.com.serviceframework.domain.entity.Cliente;
 
+
 @Service
-public class ClienteServiceImpl extends ClienteService {
+public class ClienteServiceImpl extends AbstractClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
+    @Autowired
     private AuthService authService;
 
     @Override
-    public Cliente salvarCliente(User user) {
+    protected void validarCriacao(User user) {
+        if (user == null) {
+            throw new RuntimeException("Usuário é obrigatório.");
+        }
+        // Se quiser usar o AuthService, ele entra aqui:
+        // authService.validar(user);
+    }
+
+    @Override
+    protected Cliente instanciarCliente(User user) {
         Cliente cliente = new Cliente();
-
         cliente.setUser(user);
+        return cliente;
+    }
 
+    @Override
+    protected Cliente salvar(Cliente cliente) {
         return clienteRepository.save(cliente);
     }
 
     @Override
-    public List<ClienteDTO> listarClientes() {
-        List<Cliente> clientes = clienteRepository.findAll();
-
-        return clientes.stream().map(cliente -> new ClienteDTO(
-                cliente.getId(),
-                cliente.getUser().getId(),
-                cliente.getUser().getUsername(),
-                cliente.getUser().getEmail()
-        )).toList();
+    public List<Cliente> buscarTodos() {
+        return clienteRepository.findAll();
     }
 
     @Override
-    public ClienteDTO buscarClientePorId(Long id) {
-        Cliente cliente = clienteRepository.findById(id)
+    protected Cliente buscarOuFalhar(Long id) {
+        return clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado com o ID: " + id));
+    }
 
+    @Override
+    public Cliente buscarPorUserId(Long userId) {
+        return clienteRepository.findByUserId(userId);
+    }
+
+    @Override
+    public void desativarUsuario(Cliente cliente) {
+        User user = cliente.getUser();
+        user.setActive(false);
+        userRepository.save(user);
+    }
+
+    @Override
+    protected void salvarAlteracoes(Cliente cliente) {
+        clienteRepository.save(cliente);
+    }
+
+    @Override
+    public List<ClienteDTO> mapearParaDTO(List<Cliente> clientes) {
+        return clientes.stream().map(this::mapearParaDTO).toList();
+    }
+
+    @Override
+    public ClienteDTO mapearParaDTO(Cliente cliente) {
         return new ClienteDTO(
                 cliente.getId(),
                 cliente.getUser().getId(),
@@ -57,24 +89,5 @@ public class ClienteServiceImpl extends ClienteService {
                 cliente.getUser().getEmail()
         );
     }
-
-    @Override
-    public void deletarCliente(Long id) {
-        // ClienteRepository.deleteById(id);
-
-        Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado com o ID: " + id));
-
-        User user = cliente.getUser();
-        user.setActive(false);
-        userRepository.save(user);
-
-        clienteRepository.save(cliente);
-    }
-
-    public Long getClienteIdByUserId(Long id) {
-        Cliente cliente = clienteRepository.findByUserId(id);
-
-        return cliente.getId();
-    }
 }
+

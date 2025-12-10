@@ -14,7 +14,7 @@ public class RecomendacoesCliente {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "recomendacoes_cliente", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "recomendacoesCliente", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
     private List<Servico> servicos;
 
 

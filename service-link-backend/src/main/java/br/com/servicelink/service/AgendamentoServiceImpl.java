@@ -20,7 +20,7 @@ import br.com.serviceframework.repository.AvaliacaoRepository;
 import br.com.serviceframework.repository.ClienteRepository;
 import br.com.serviceframework.repository.ServicoRepository;
 import br.com.serviceframework.service.AbstractAgendamentoService;
-import br.com.serviceframework.service.auth.AuthService;
+import br.com.servicelink.security.AuthService;
 import br.com.servicelink.service.validator.AgendamentoValidator;
 import br.com.servicelink.domain.DTO.AgendamentoDTO;
 import br.com.servicelink.domain.DTO.AgendamentoListagemDTO;

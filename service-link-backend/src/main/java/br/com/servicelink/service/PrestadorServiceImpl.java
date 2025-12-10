@@ -1,94 +1,87 @@
 package br.com.servicelink.service;
 
-import java.util.List;
-
 import br.com.serviceframework.domain.DTO.PrestadorDTO;
-import br.com.serviceframework.domain.entity.PerfilUsuario;
+import br.com.serviceframework.domain.entity.Prestador;
 import br.com.serviceframework.domain.entity.User;
-import br.com.serviceframework.repository.UserRepository;
-import br.com.serviceframework.service.auth.AuthService;
+import br.com.serviceframework.repository.PrestadorRepository;
+import br.com.serviceframework.service.AbstractPrestadorService;
+import br.com.servicelink.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.serviceframework.domain.entity.Prestador;
-import br.com.serviceframework.repository.PrestadorRepository;
-import br.com.serviceframework.service.PrestadorService;
+import java.util.List;
 
 @Service
-public class PrestadorServiceImpl{
-
-    private static final Logger log = LoggerFactory.getLogger(PrestadorServiceImpl.class);
-    private final PrestadorRepository prestadorRepository;
-
-    private AuthService authService;
+public class PrestadorServiceImpl extends AbstractPrestadorService {
 
     @Autowired
-    UserRepository userRepository;
+    private PrestadorRepository prestadorRepository;
 
     @Autowired
-    public PrestadorServiceImpl(PrestadorRepository prestadorRepository) {
-        this.prestadorRepository = prestadorRepository;
+    private UserRepository userRepository;
+
+    @Override
+    public void validarCriacao(User user) {
+        if (user == null) {
+            throw new RuntimeException("Usuário é obrigatório.");
+        }
     }
 
-    //@Override
-    public Prestador salvarPrestador(User user) {
+    @Override
+    public Prestador instanciarPrestador(User user) {
         Prestador prestador = new Prestador();
-        prestador.setPerfilPrestador(new PerfilUsuario() {
-            @Override
-            public Long getId() {
-                return super.getId();
-            }
-        });
         prestador.setUser(user);
+        return prestador;
+    }
 
+    @Override
+    public Prestador salvar(Prestador prestador) {
         return prestadorRepository.save(prestador);
     }
 
-    //@Override
-    public List<PrestadorDTO> listarPrestadores() {
-        List<Prestador> prestadores = prestadorRepository.findAll();
+    @Override
+    public List<Prestador> buscarTodos() {
+        return prestadorRepository.findAll();
+    }
 
-        return prestadores.stream().map(prestador -> new PrestadorDTO(
+    @Override
+    public Prestador buscarOuFalhar(Long id) {
+        return prestadorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Prestador não encontrado com o ID: " + id));
+    }
+
+    @Override
+    public Prestador buscarPorUserId(Long userId) {
+        return prestadorRepository.findByUserId(userId);
+    }
+
+    @Override
+    public void desativarUsuario(Prestador prestador) {
+        User user = prestador.getUser();
+        user.setActive(false);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void salvarAlteracoes(Prestador prestador) {
+        prestadorRepository.save(prestador);
+    }
+
+    @Override
+    public List<PrestadorDTO> mapearParaDTO(List<Prestador> prestadores) {
+        return prestadores.stream().map(this::mapearParaDTO).toList();
+    }
+
+    @Override
+    public PrestadorDTO mapearParaDTO(Prestador prestador) {
+        return new PrestadorDTO(
                 prestador.getId(),
                 prestador.getUser().isActive(),
                 prestador.getUser().getId(),
                 prestador.getUser().getUsername(),
                 prestador.getUser().getEmail(),
                 prestador.getPerfilPrestador().getDescricao()
-        )).toList();
-    }
-
-    //@Override
-    public PrestadorDTO buscarPrestadorPorId(Long id) {
-        Prestador prestador = prestadorRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Prestador não encontrado com o ID: " + id));
-
-        System.out.println(prestador);
-
-        return new PrestadorDTO(prestador.getId(),
-                prestador.getUser().isActive(),
-                prestador.getUser().getId(),
-                prestador.getUser().getUsername(),
-                prestador.getUser().getEmail(),
-                prestador.getPerfilPrestador().getDescricao());
-    }
-
-    //@Override
-    public void deletarPrestador(Long id) {
-        Prestador prestador = prestadorRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Prestador não encontrado com o ID: " + id));
-
-        User user = prestador.getUser();
-        user.setActive(false);
-         userRepository.save(user);
-    }
-
-    public Long getPrestadorIdByUserId(Long id) {
-        Prestador prestador = prestadorRepository.findByUserId(id);
-
-        return prestador.getId();
+        );
     }
 }
