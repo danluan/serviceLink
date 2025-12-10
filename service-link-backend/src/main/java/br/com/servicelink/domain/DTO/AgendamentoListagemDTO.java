@@ -35,10 +35,10 @@ public class AgendamentoListagemDTO {
         this.status = agendamento.getStatus().getNomeStatus();
         this.observacao = agendamento.getObservacao();
         this.clienteId = agendamento.getCliente().getId();
-        this.nomeCliente = agendamento.getCliente().getUser().getNome();
+        this.nomeCliente = agendamento.getCliente().getUser().getUsername();
         this.servicoId = agendamento.getServico().getId();
         this.nomeServico = agendamento.getServico().getNome();
-        this.nomePrestador = agendamento.getServico().getPrestador().getUser().getNome();
+        this.nomePrestador = agendamento.getServico().getPrestador().getUser().getUsername();
     }
 
     public Long getId() {

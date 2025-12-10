@@ -176,11 +176,12 @@ public class ServicoServiceImpl extends ServicoService {
     }
 
 
-    @Override
     public List<Servico> buscarServicosPorPrecoBase(String categoria, String nome) {
 
-        Optional<Servico> servicoMaisCaro = servicoRepository.findTop1ByOrderByPrecoBaseDesc(categoria, nome);
-        Optional<Servico> servicoMaisBarato = servicoRepository.findTop1ByOrderByPrecoBaseAsc(categoria, nome);
+        CategoriaDomesticas categoriaDomestica = CategoriaDomesticas.fromString(categoria);
+
+        Optional<Servico> servicoMaisCaro = servicoRepository.findTop1ByOrderByPrecoBaseDesc(categoriaDomestica, nome);
+        Optional<Servico> servicoMaisBarato = servicoRepository.findTop1ByOrderByPrecoBaseAsc(categoriaDomestica, nome);
 
         List<Servico> servicosEncontrados = new ArrayList<>();
         servicoMaisCaro.ifPresent(servicosEncontrados::add);

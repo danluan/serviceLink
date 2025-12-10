@@ -1,7 +1,7 @@
-package br.com.serviceframework.serviceLink.controller;
+package br.com.servicelink.controller;
 
-import br.com.serviceframework.framework.domain.DTO.ClienteDTO;
-import br.com.serviceframework.framework.service.ClienteService;
+import br.com.serviceframework.domain.DTO.ClienteDTO;
+import br.com.serviceframework.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

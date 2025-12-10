@@ -1,5 +1,6 @@
-package main.java.br.com.servicelink.security;
+package br.com.servicelink.security;
 
+import br.com.servicelink.security.SecurityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;

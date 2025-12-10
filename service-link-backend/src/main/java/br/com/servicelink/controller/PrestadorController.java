@@ -1,7 +1,7 @@
-package br.com.serviceframework.serviceLink.controller;
+package br.com.servicelink.controller;
 
-import br.com.serviceframework.framework.domain.DTO.PrestadorDTO;
-import br.com.serviceframework.framework.service.PrestadorService;
+import br.com.serviceframework.domain.DTO.PrestadorDTO;
+import br.com.serviceframework.service.PrestadorService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

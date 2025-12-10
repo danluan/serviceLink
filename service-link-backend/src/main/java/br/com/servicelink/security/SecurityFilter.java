@@ -1,6 +1,6 @@
 package br.com.servicelink.security;
 
-import br.com.serviceframework.framework.repository.UserRepository;
+import br.com.serviceframework.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,6 +1,6 @@
-package main.java.br.com.servicelink.controller;
+package br.com.servicelink.controller;
 
-import br.com.serviceframework.framework.domain.entity.Servico;
+import br.com.serviceframework.domain.entity.Servico;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
