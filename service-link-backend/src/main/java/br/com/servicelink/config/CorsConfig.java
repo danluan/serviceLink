@@ -1,4 +1,4 @@
-package main.java.br.com.servicelink.config;
+package br.com.servicelink.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

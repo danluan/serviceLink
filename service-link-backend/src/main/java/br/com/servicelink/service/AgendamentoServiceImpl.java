@@ -285,10 +285,10 @@ public class AgendamentoServiceImpl extends AbstractAgendamentoService<Agendamen
                 agendamento.getStatus().toString(),
                 agendamento.getObservacao(),
                 agendamento.getCliente().getId(),
-                agendamento.getCliente().getUser().getNome(),
+                agendamento.getCliente().getUser().getUsername(),
                 agendamento.getServico().getId(),
                 agendamento.getServico().getNome(),
-                agendamento.getServico().getPrestador().getUser().getNome()
+                agendamento.getServico().getPrestador().getUser().getUsername()
         );
     }
 
