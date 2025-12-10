@@ -1,6 +1,6 @@
-package main.java.br.com.servicelink.security;
+package br.com.servicelink.security;
 
-import br.com.serviceframework.framework.domain.entity.User;
+import br.com.serviceframework.domain.entity.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
