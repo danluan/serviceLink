@@ -2,8 +2,10 @@ package br.com.serviceframework.service.auth;
 
 import br.com.serviceframework.domain.DTO.*;
 import br.com.serviceframework.domain.entity.User;
-import br.com.serviceframework.framework.domain.DTO.UserRegisterDTO;
+import br.com.serviceframework.domain.DTO.UserRegisterDTO;
 import br.com.serviceframework.repository.UserRepository;
+import br.com.serviceframework.service.ClienteService;
+import br.com.serviceframework.service.PrestadorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,10 +21,10 @@ public class AuthService {
     private UserRepository userRepository;
 
     @Autowired
-    private PrestadorServiceImpl prestadorService;
+    private PrestadorService prestadorService;
 
     @Autowired
-    private ClienteServiceImpl clienteService;
+    private ClienteService clienteService;
 
     @Autowired
     private TokenService tokenService;

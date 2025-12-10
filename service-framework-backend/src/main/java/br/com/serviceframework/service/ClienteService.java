@@ -5,7 +5,7 @@ import br.com.serviceframework.domain.entity.Cliente;
 import br.com.serviceframework.domain.entity.User;
 import br.com.serviceframework.repository.ClienteRepository;
 import br.com.serviceframework.repository.UserRepository;
-import br.com.serviceframework.framework.service.auth.AuthService;
+import br.com.serviceframework.service.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
-package br.com.serviceframework.framework.domain.DTO;
+package br.com.serviceframework.domain.DTO;
 
-import br.com.serviceframework.framework.domain.entity.User;
-import br.com.serviceframework.framework.domain.enumerations.Perfis;
+import br.com.serviceframework.domain.entity.User;
+import br.com.serviceframework.domain.enumerations.Perfis;
 
 public class UserRegisterDTO {
     private String nome;
