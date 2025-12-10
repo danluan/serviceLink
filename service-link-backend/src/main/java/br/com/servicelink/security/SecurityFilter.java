@@ -1,4 +1,4 @@
-package main.java.br.com.servicelink.security;
+package br.com.servicelink.security;
 
 import br.com.serviceframework.framework.repository.UserRepository;
 import jakarta.servlet.FilterChain;

@@ -10,13 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.token.TokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -37,11 +37,17 @@ public class AuthService {
 
     public AuthResponseDTO login(AuthDTO authData) {
         try {
-            var usernamePassword = new UsernamePasswordAuthenticationToken(authData.email(), authData.senha());
-            var auth = authenticationManager.authenticate(usernamePassword);
-            var token = tokenService.generateToken((User) auth.getPrincipal());
+            var authToken = new UsernamePasswordAuthenticationToken(
+                    authData.email(),
+                    authData.senha()
+            );
 
-            User user = userRepository.findUserByEmail(authData.email());
+            var auth = authenticationManager.authenticate(authToken);
+
+            User user = (User) auth.getPrincipal();
+
+            String token = tokenService.generateToken(user);
+
             UserDTO userDTO = new UserDTO(user);
 
             if (user.getPerfil() == Perfis.PRESTADOR) {
@@ -52,10 +58,8 @@ public class AuthService {
                 userDTO.setProfileId(clienteId);
             }
 
-            return new AuthResponseDTO(
-                    userDTO,
-                    token
-            );
+            return new AuthResponseDTO(userDTO, token);
+
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou senha inválidos.");
         }
@@ -63,15 +67,14 @@ public class AuthService {
 
     public UserDTO registerUser(UserRegisterDTO registerData) {
         User user = registerData.toEntity();
-        user = this.validateUser(user);
-        if(userRepository.findUserDetailsByEmail(user.getEmail()) != null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já está em uso.");
-        }
+
+        validateNewUser(user);
 
         String encryptedPassword = passwordEncoder.encode(user.getSenha());
         user.setSenha(encryptedPassword);
 
         userRepository.save(user);
+
         UserDTO userDTO = new UserDTO(user);
 
         if (user.getPerfil() == Perfis.PRESTADOR) {
@@ -87,18 +90,20 @@ public class AuthService {
     }
 
     public UserDTO updateUser(User user) {
-        user = this.validateUser(user);
+        validateExistingUser(user);
 
         String encryptedPassword = passwordEncoder.encode(user.getSenha());
         user.setSenha(encryptedPassword);
 
         userRepository.save(user);
+
         UserDTO userDTO = new UserDTO(user);
 
         if (user.getPerfil() == Perfis.PRESTADOR) {
             Long prestadorId = prestadorService.getPrestadorIdByUserId(user.getId());
             userDTO.setProfileId(prestadorId);
-        } else if (user.getPerfil() == Perfis.CLIENTE) {
+        }
+        else if (user.getPerfil() == Perfis.CLIENTE) {
             Long clienteId = clienteService.getClienteIdByUserId(user.getId());
             userDTO.setProfileId(clienteId);
         }
@@ -106,31 +111,33 @@ public class AuthService {
         return userDTO;
     }
 
-    private User validateUser(User user) {
-        if (user.getNome() == null || user.getNome().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome é obrigatório.");
+    private void validateNewUser(User user) {
+        if (user.getUsername() == null || user.getUsername().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UserName é obrigatório.");
         }
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email é obrigatório.");
         }
-        if (user.getSenha() == null || user.getSenha().isEmpty()) {
+        if (user.getSenha() == null || user.getSenha().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha é obrigatória.");
         }
         if (user.getSenha().length() < 6) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha deve ter no mínimo 6 caracteres.");
         }
-        if (userRepository.findUserByEmail(user.getEmail()) != null){
+        if (userRepository.findUserByEmail(user.getEmail()) != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já está em uso.");
         }
-        if (user.getCpfCnpj() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CPF ou CNPJ é obrigatório.");
+    }
+
+    private void validateExistingUser(User user) {
+        if (user.getId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário inexistente.");
         }
-        if (user.getCpfCnpj().length() >= 11 && user.getCpfCnpj().length() >= 14) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CPF ou CNPJ inválido.");
+        if (user.getSenha() == null || user.getSenha().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha é obrigatória.");
         }
-        if (userRepository.findUserByCpfCnpj(user.getCpfCnpj()) != null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CPF ou CNPJ já está em uso.");
+        if (user.getSenha().length() < 6) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha deve ter no mínimo 6 caracteres.");
         }
-        return user;
     }
 }
