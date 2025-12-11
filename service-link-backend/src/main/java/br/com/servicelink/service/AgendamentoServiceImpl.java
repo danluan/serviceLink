@@ -61,7 +61,7 @@ public class AgendamentoServiceImpl extends AbstractAgendamentoService<Agendamen
         this.precoStrategy = precoStrategy;
     }
 
-    // --- MÉTODOS DO FRAMEWORK (Hooks) ---
+    // --- MÉTODOS DO FRAMEWORK ---
 
     @Override
     protected void validarRegrasDeNegocio(AgendamentoServiceLink agendamento) {

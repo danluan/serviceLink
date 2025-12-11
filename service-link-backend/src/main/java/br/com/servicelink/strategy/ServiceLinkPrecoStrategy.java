@@ -23,6 +23,6 @@ public class ServiceLinkPrecoStrategy implements PrecoStrategy<AgendamentoServic
     }
 
     public BigDecimal calcularCustoMateriais(AgendamentoServiceLink agendamento) {
-        return null; // logica de materiais
+        return BigDecimal.ZERO; // logica de materiais
     }
 }
