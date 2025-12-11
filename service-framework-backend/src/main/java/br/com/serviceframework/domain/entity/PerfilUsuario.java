@@ -3,7 +3,8 @@ package br.com.serviceframework.domain.entity;
 import jakarta.persistence.*;
 
 @Entity
-public class PerfilUsuario {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class PerfilUsuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

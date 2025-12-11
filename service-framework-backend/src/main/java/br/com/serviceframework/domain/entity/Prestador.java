@@ -14,7 +14,7 @@ public class Prestador {
     @OneToOne(cascade = CascadeType.ALL)
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "perfil_id")
     private PerfilUsuario perfilPrestador;
 

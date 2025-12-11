@@ -6,6 +6,7 @@ import br.com.serviceframework.domain.DTO.UserDTO;
 import br.com.serviceframework.domain.DTO.UserRegisterDTO;
 import br.com.serviceframework.domain.entity.Cliente;
 import br.com.serviceframework.domain.entity.PerfilUsuario;
+import br.com.serviceframework.domain.entity.Prestador;
 import br.com.serviceframework.domain.entity.User;
 import br.com.serviceframework.domain.enumerations.Perfis;
 import br.com.servicelink.domain.entity.ClientePerfil;
@@ -66,9 +67,10 @@ public class AuthService {
                     userDTO.setProfileId(cliente.getId());
                 }
             } else if (user.getPerfil() == Perfis.PRESTADOR) {
-                var prestador = prestadorService.buscarPorUserId(user.getId());
+                Prestador prestador = prestadorService.buscarPorUserId(user.getId());
                 if (prestador != null && prestador.getPerfilPrestador() != null) {
-                    userDTO.setNome(prestador.getPerfilPrestador().getNome());
+                    // TODO: Entender por que o nome não está vindo do perfil
+                    // userDTO.setNome(prestador.getPerfilPrestador().getNome());
                     userDTO.setProfileId(prestador.getId());
                 }
             }
