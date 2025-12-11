@@ -35,9 +35,9 @@ public class ServicoController {
      */
     @GetMapping
     public List<Servico> findAll(
-            @RequestParam(required = false) Long id,
-            @RequestParam(required = false) String nome,
-            @RequestParam(required = false) String descricao,
+            @RequestParam(required = false, name = "id") Long id,
+            @RequestParam(required = false, name = "nome") String nome,
+            @RequestParam(required = false, name = "descricao") String descricao,
             @RequestParam(required = false) BigDecimal precoMin,
             @RequestParam(required = false) BigDecimal precoMax,
             //colocar converson de string para id?

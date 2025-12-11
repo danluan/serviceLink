@@ -4,17 +4,22 @@ import br.com.serviceframework.domain.entity.Cliente;
 import br.com.serviceframework.domain.entity.RecomendacoesCliente;
 import br.com.serviceframework.repository.ClienteRepository;
 import br.com.serviceframework.service.AbstractRecomendacoesClienteService;
+import br.com.servicelink.domain.DTO.RecomendacoesClienteResponseDTO;
+import br.com.servicelink.domain.mapper.RecomendacoesClienteMapper;
+import br.com.servicelink.service.RecomendacoesClienteServiceImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/recomendacoes")
 public class RecomendacoesClienteController {
 
-    private final AbstractRecomendacoesClienteService recomendacoesService;
+    private final RecomendacoesClienteServiceImpl recomendacoesService;
     private final ClienteRepository clienteRepository;
 
     public RecomendacoesClienteController(
-            AbstractRecomendacoesClienteService recomendacoesService,
+            RecomendacoesClienteServiceImpl recomendacoesService,
             ClienteRepository clienteRepository
     ) {
         this.recomendacoesService = recomendacoesService;
@@ -25,11 +30,21 @@ public class RecomendacoesClienteController {
      * Gera e salva uma nova recomendação para o cliente
      */
     @PostMapping("/cliente/{clienteId}")
-    public RecomendacoesCliente gerar(@PathVariable Integer clienteId) {
-        Cliente cliente = clienteRepository.findById(clienteId.longValue())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+    public RecomendacoesClienteResponseDTO gerar(@PathVariable Long clienteId) {
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
+        RecomendacoesCliente entidade;
+        try {
+            entidade = recomendacoesService.criarRecomendacao(cliente);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Cliente não encontrado") || e.getMessage().contains("não possui agendamentos")) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            } else {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            }
+        }
 
-        return recomendacoesService.criarRecomendacao(cliente);
+        return RecomendacoesClienteMapper.toResponseDTO(entidade);
     }
 
     /**
