@@ -94,6 +94,7 @@ const Page = () => {
   };
 
   const handleSubmitAll = async () => {
+    console.log("Enviando serviços:", servicos);
       if (servicos.length === 0) {
           toast.error("Adicione pelo menos um serviço antes de enviar");
           return;
@@ -116,9 +117,9 @@ const Page = () => {
       }
 
       const prestadorId = authData.profileId;
-
+      console.log("AuthDat:", authData);
       const token = localStorage.getItem('@servicelink:token');
-
+      console.log("Token de autenticação:", token);
       if (!prestadorId) {
           toast.error("ID do prestador não encontrado. Tente relogar.");
           return;
@@ -128,6 +129,9 @@ const Page = () => {
           toast.error("Token de autenticação não encontrado. Faça login novamente.");
           return;
       }
+
+      console.log("Enviando para o prestador ID:", prestadorId);
+      console.log("Serviços a serem enviados:", servicos);
 
     setIsSubmitting(true);
     try {
@@ -139,7 +143,7 @@ const Page = () => {
         },
         body: JSON.stringify(servicos),
       });
-
+      
       if (!response.ok) {
         throw new Error("Erro ao enviar serviços");
       }

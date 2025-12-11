@@ -29,7 +29,7 @@ const HomePage = () => {
                     </div>
 
                     {/* Cards Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="flex flex-row gap-12 justify-center mb-8">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Gerenciar Serviços</CardTitle>
@@ -61,23 +61,8 @@ const HomePage = () => {
                                 </Link>
                             </CardContent>
                         </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Meus Agendamentos</CardTitle>
-                                <CardDescription>
-                                    Gerencie seus agendamentos
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Button variant="outline" className="w-full">
-                                    Gerenciar Agendamentos
-                                </Button>
-                            </CardContent>
-                        </Card>
                     </div>
 
-                    {/* Info Section */}
                     {/* Info Section */}
                     <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
                         <h3 className="text-lg font-semibold text-blue-900 mb-2">

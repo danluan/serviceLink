@@ -30,14 +30,10 @@ public class User implements UserDetails {
     @Column
     private Perfis perfil;
 
-    @JoinColumn(name = "perfil_usuario_id")
-    @OneToOne(cascade = CascadeType.ALL)
-    private PerfilUsuario perfilUsuario;
-
-    public User(String email, String senha, PerfilUsuario perfilUsuario) {
+    public User(String email, String senha, Perfis perfil) {
         this.email = email;
         this.senha = senha;
-        this.perfilUsuario = perfilUsuario;
+        this.perfil = perfil;
         this.active = true;
     }
 
@@ -120,14 +116,6 @@ public class User implements UserDetails {
 
     public void setSenha(String senha) {
         this.senha = senha;
-    }
-
-    public void setPerfil(PerfilUsuario perfilUsuario) {
-        this.perfilUsuario = perfilUsuario;
-    }
-
-    public PerfilUsuario getPerfilUsuario() {
-        return this.perfilUsuario;
     }
 
     public Perfis getPerfil() {

@@ -1,6 +1,7 @@
 package br.com.serviceframework.service;
 
 import br.com.serviceframework.domain.DTO.PrestadorDTO;
+import br.com.serviceframework.domain.entity.PerfilUsuario;
 import br.com.serviceframework.domain.entity.Prestador;
 import br.com.serviceframework.domain.entity.User;
 
@@ -8,9 +9,10 @@ import java.util.List;
 
 public abstract class AbstractPrestadorService {
 
-    public final Prestador criarPrestador(User user) {
+    public final Prestador criarPrestador(User user, PerfilUsuario perfilUsuario) {
         validarCriacao(user);
         Prestador prestador = instanciarPrestador(user);
+        prestador.setPerfilPrestador(perfilUsuario);
         return salvar(prestador);
     }
 

@@ -1,5 +1,6 @@
 package br.com.serviceframework.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,8 +13,9 @@ public class Cliente {
     @OneToOne(cascade = CascadeType.ALL)
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "perfil_id")
+    @JsonIgnore
     private PerfilUsuario perfilPrestador;
 
 
@@ -31,5 +33,13 @@ public class Cliente {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public PerfilUsuario getPerfilUsuario() {
+        return perfilPrestador;
+    }
+
+    public void setPerfilUsuario(PerfilUsuario perfilUsuario) {
+        this.perfilPrestador = perfilUsuario;
     }
 }

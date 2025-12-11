@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AgendamentoServiceLinkRepository extends JpaRepository<AgendamentoServiceLink, Long> {
@@ -40,6 +41,7 @@ public interface AgendamentoServiceLinkRepository extends JpaRepository<Agendame
             LocalDateTime now
     );
 
+    Optional<AgendamentoServiceLink> findTop1ByClienteIdOrderByDataHoraDesc(Long clienteId);
     /**
      * Calcula a soma do precoBase dos serviços concluídos (ou pagos) em um intervalo de datas para um prestador.
      * * @param prestadorId ID do Prestador.

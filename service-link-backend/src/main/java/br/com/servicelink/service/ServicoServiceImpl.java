@@ -141,22 +141,16 @@ public class ServicoServiceImpl extends ServicoService {
     }
 
     private Servico criarServicoFromDTO(ServicoDTO dto, Prestador prestador) {
-
-        // **PASSO 1: TRADUÇÃO DO LONG PARA ICATEGORIA**
-        // A aplicação usa seu enum específico para resolver o ID.
         ICategoriaServicos categoriaDoDominio = CategoriaDomesticas.ofId(dto.categoriaId());
 
         if (categoriaDoDominio == null) {
             throw new IllegalArgumentException("ID de Categoria " + dto.categoriaId() + " é inválido para este domínio.");
         }
-
-        // **PASSO 2: MAPEAMENTO**
         Servico servico = new Servico();
         servico.setNome(dto.nome().trim());
         servico.setDescricao(dto.descricao().trim());
         servico.setPrecoBase(dto.precoBase());
 
-        // **SOLUÇÃO:** Agora, o setter do Servico recebe a interface, com o objeto traduzido.
         servico.setCategoria(categoriaDoDominio);
 
         servico.setPrestador(prestador);
