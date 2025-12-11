@@ -23,16 +23,11 @@ public class ClienteServiceImpl extends AbstractClienteService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private AuthService authService;
-
     @Override
     protected void validarCriacao(User user) {
         if (user == null) {
             throw new RuntimeException("Usuário é obrigatório.");
         }
-        // Se quiser usar o AuthService, ele entra aqui:
-        // authService.validar(user);
     }
 
     @Override

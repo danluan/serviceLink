@@ -32,4 +32,12 @@ public class Cliente {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public PerfilUsuario getPerfilUsuario() {
+        return perfilPrestador;
+    }
+
+    public void setPerfilUsuario(PerfilUsuario perfilUsuario) {
+        this.perfilPrestador = perfilUsuario;
+    }
 }

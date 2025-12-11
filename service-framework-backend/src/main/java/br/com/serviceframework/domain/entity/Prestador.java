@@ -54,4 +54,6 @@ public class Prestador {
     public void setPerfilPrestador(PerfilUsuario perfilPrestador) {
         this.perfilPrestador = perfilPrestador;
     }
+
+
 }

@@ -3,8 +3,7 @@ package br.com.serviceframework.domain.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-public abstract class PerfilUsuario {
+public class PerfilUsuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,5 +34,29 @@ public abstract class PerfilUsuario {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getCpfCnpj() {
+        return cpfCnpj;
+    }
+
+    public void setCpfCnpj(String cpfCnpj) {
+        this.cpfCnpj = cpfCnpj;
     }
 }
