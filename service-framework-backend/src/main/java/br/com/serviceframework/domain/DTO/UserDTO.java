@@ -26,7 +26,6 @@ public class UserDTO {
         this.id = user.getId();
         this.email = user.getEmail();
         this.perfil = user.getPerfil().name();
-
     }
 
     public Long getId() {

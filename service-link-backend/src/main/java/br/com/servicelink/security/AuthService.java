@@ -8,6 +8,8 @@ import br.com.serviceframework.domain.entity.Cliente;
 import br.com.serviceframework.domain.entity.PerfilUsuario;
 import br.com.serviceframework.domain.entity.User;
 import br.com.serviceframework.domain.enumerations.Perfis;
+import br.com.servicelink.domain.entity.ClientePerfil;
+import br.com.servicelink.domain.entity.PrestadorPerfil;
 import br.com.servicelink.repository.UserRepository;
 import br.com.servicelink.service.ClienteServiceImpl;
 import br.com.servicelink.service.PrestadorServiceImpl;
@@ -89,15 +91,20 @@ public class AuthService {
 
             userRepository.save(user);
 
-            PerfilUsuario perfilUsuario = new PerfilUsuario();
-            perfilUsuario.setNome(registerData.getNome());
-            perfilUsuario.setCpfCnpj(registerData.getCpfCnpj());
-            perfilUsuario.setTelefone(registerData.getTelefone());
+            PrestadorPerfil prestadorPerfil = new PrestadorPerfil();
+            prestadorPerfil.setNome(registerData.getNome());
+            prestadorPerfil.setCpfCnpj(registerData.getCpfCnpj());
+            prestadorPerfil.setTelefone(registerData.getTelefone());
+
+            ClientePerfil clientePerfil = new ClientePerfil();
+            clientePerfil.setNome(registerData.getNome());
+            clientePerfil.setCpfCnpj(registerData.getCpfCnpj());
+            clientePerfil.setTelefone(registerData.getTelefone());
 
             if (user.getPerfil() == Perfis.CLIENTE) {
-                clienteService.criarCliente(user, perfilUsuario);
+                clienteService.criarCliente(user, clientePerfil);
             } else {
-                prestadorService.criarPrestador(user, perfilUsuario);
+                prestadorService.criarPrestador(user, prestadorPerfil);
             }
 
             return new UserDTO(user);
