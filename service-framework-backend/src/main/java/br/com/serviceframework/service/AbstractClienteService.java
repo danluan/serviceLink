@@ -2,15 +2,17 @@ package br.com.serviceframework.service;
 
 import br.com.serviceframework.domain.DTO.ClienteDTO;
 import br.com.serviceframework.domain.entity.Cliente;
+import br.com.serviceframework.domain.entity.PerfilUsuario;
 import br.com.serviceframework.domain.entity.User;
 
 import java.util.List;
 
 public abstract class AbstractClienteService {
 
-    public final Cliente criarCliente(User user) {
+    public final Cliente criarCliente(User user, PerfilUsuario perfilUsuario) {
         validarCriacao(user);
         Cliente cliente = instanciarCliente(user);
+        cliente.setPerfilUsuario(perfilUsuario);
         return salvar(cliente);
     }
 

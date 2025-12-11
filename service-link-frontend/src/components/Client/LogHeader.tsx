@@ -24,7 +24,9 @@ const ClienteNavbarSimples = () => {
 
                 {/* Lado Esquerdo: Apenas a Logo (Nome do Aplicativo) */}
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground">ServiceLink</h1>
+                    <Link href="/">
+                        <h1 className="text-2xl font-bold text-foreground">ServiceLink</h1>
+                    </Link>
                 </div>
 
                 {/* Lado Direito: Notificações e Perfil Dropdown */}

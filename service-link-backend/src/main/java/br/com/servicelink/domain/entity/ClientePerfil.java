@@ -1,0 +1,8 @@
+package br.com.servicelink.domain.entity;
+
+import br.com.serviceframework.domain.entity.PerfilUsuario;
+import jakarta.persistence.Entity;
+
+@Entity
+public class ClientePerfil extends PerfilUsuario {
+}
