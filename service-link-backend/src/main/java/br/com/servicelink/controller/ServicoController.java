@@ -75,7 +75,7 @@ public class ServicoController {
      * @return Lista de serviços criados
      */
     @PostMapping("/prestador/{prestadorId}")
-    public List<Servico> addServicos(@PathVariable Long prestadorId, @RequestBody @Valid List<ServicoDTO> servicosDTO) {
+    public List<Servico> addServicos(@PathVariable("prestadorId") Long prestadorId, @RequestBody @Valid List<ServicoDTO> servicosDTO) {
         try {
             return servicoService.adicionarServicos(prestadorId, servicosDTO);
         } catch (Exception e) {

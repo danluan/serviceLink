@@ -55,8 +55,21 @@ public class AuthService {
 
             String token = tokenService.generateToken(user);
 
-
             UserDTO userDTO = new UserDTO(user);
+
+            if (user.getPerfil() == Perfis.CLIENTE) {
+                Cliente cliente = clienteService.buscarPorUserId(user.getId());
+                if (cliente != null && cliente.getPerfilUsuario() != null) {
+                    userDTO.setNome(cliente.getPerfilUsuario().getNome());
+                    userDTO.setProfileId(cliente.getId());
+                }
+            } else if (user.getPerfil() == Perfis.PRESTADOR) {
+                var prestador = prestadorService.buscarPorUserId(user.getId());
+                if (prestador != null && prestador.getPerfilPrestador() != null) {
+                    userDTO.setNome(prestador.getPerfilPrestador().getNome());
+                    userDTO.setProfileId(prestador.getId());
+                }
+            }
 
             return new AuthResponseDTO(userDTO, token);
 
